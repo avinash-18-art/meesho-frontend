@@ -137,10 +137,14 @@ function App() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const uploadRes = await axios.post("https://product-report-bk.onrender.com/upload", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      
+      const uploadRes = await axios.post(
+        "https://product-report-bk.onrender.com/upload",
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+
       const result = uploadRes.data;
       const totalListed = result.totals?.totalSupplierListedPrice || 0;
       const totalDiscounted = result.totals?.totalSupplierDiscountedPrice || 0;
@@ -170,7 +174,7 @@ function App() {
 
       setData(updatedData);
 
-      const calcProfitPercent = 
+      const calcProfitPercent =
         sellInMonthProducts > 0
           ? (totalProfit / (sellInMonthProducts * 500)) * 100
           : 0;
@@ -179,17 +183,17 @@ function App() {
       if (result.profitByDate) {
         let graphArr = [];
         if (!Array.isArray(result.profitByDate)) {
-          graphArr = Object.entries(result.profitByDate).map(([date, profit]) => ({
-            date,
-            profit,
-          }));
+          graphArr = Object.entries(result.profitByDate).map(
+            ([date, profit]) => ({
+              date,
+              profit,
+            })
+          );
         } else {
           graphArr = result.profitByDate;
         }
         setGraphData(graphArr);
       }
-
-      
     } catch (err) {
       console.error("Submit all failed", err);
       alert("Failed to process & store data");
@@ -198,68 +202,104 @@ function App() {
 
   return (
     <div className="App">
-      {/* Navbar */}
-     {/* Navbar */}
-<nav className="navbar">
-  <div
-    className="navbar-logo"
-    onClick={() => {
-      window.scrollTo({ top: 0, behavior: "smooth" }); // ✅ scroll to top smoothly
-    }}
-    style={{ cursor: "pointer" }} // make it clickable
-  >
-    Meesho
-  </div>
-  <div className="navbar-search">
-    <input
-      type="search"
-      placeholder="Add here Sub Order No"
-      value={subOrderNo}
-      onChange={(e) => setSubOrderNo(e.target.value)}
-    />
-    <button className="back-btn" onClick={handleFilter}>
-      Filter
-    </button>
-    {showFilteredView && (
-      <button
-        className="back-btn"
-        onClick={() => {
-          setShowFilteredView(false);
-          setProfitPercent(0);
-        }}
-      >
-        Back
-      </button>
-    )}
-  </div>
-</nav>
-
+      {/* ✅ Navbar */}
+      <nav className="navbar">
+        <div
+          className="navbar-logo"
+          onClick={() => {
+            // ✅ Reset states & go "home"
+            setShowFilteredView(false);
+            setProfitPercent(0);
+            setSubOrderNo("");
+            setFilterResult(null);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          style={{ cursor: "pointer" }}
+        >
+          Meesho
+        </div>
+        <div className="navbar-search">
+          <input
+            type="search"
+            placeholder="Add here Sub Order No"
+            value={subOrderNo}
+            onChange={(e) => setSubOrderNo(e.target.value)}
+          />
+          <button className="back-btn" onClick={handleFilter}>
+            Filter
+          </button>
+          {showFilteredView && (
+            <button
+              className="back-btn"
+              onClick={() => {
+                setShowFilteredView(false);
+                setProfitPercent(0);
+                setSubOrderNo("");
+                setFilterResult(null);
+              }}
+            >
+              Back
+            </button>
+          )}
+        </div>
+      </nav>
 
       <h1 className="heading">Product Status Dashboard</h1>
 
       {/* Main Dashboard */}
       {!showFilteredView ? (
         <div className="status-boxes">
-          <div className="box all">All<br /><span>{data.all}</span></div>
-          <div className="box rto">RTO<br /><span>{data.rto}</span></div>
-          <div className="box door_step_exchanged">
-            Door Step Exchanged<br /><span>{data.door_step_exchanged}</span>
-            <br />
-            <small style={{ fontSize: "32px", color: "#222" }}>
-              {data.totalDoorStepExchanger.toLocaleString()}
-            </small>
+          
+            <div className="box all">
+              All<br />
+              <span>{data.all}</span>
+            </div>
+          
+          
+            <div className="box rto">
+              RTO<br />
+              <span>{data.rto}</span>
+            </div>
+          
+
+          
+            <div className="box door_step_exchanged">
+              Door Step Exchanged<br />
+              <span>{data.door_step_exchanged}</span>
+              <br />
+              <small style={{ fontSize: "25px", color: "#222" }}>
+                {data.totalDoorStepExchanger.toLocaleString()}
+              </small>
+            </div>
+          
+
+          
+            <div className="box delivered">
+              Delivered<br />
+              <span>{data.delivered}</span>
+              <br />
+              <small style={{ fontSize: "25px", color: "#222" }}>
+                ₹{data.deliveredSupplierDiscountedPriceTotal.toLocaleString()}
+              </small>
+            </div>
+          
+
+          <div className="box cancelled">
+            Cancelled<br />
+            <span>{data.cancelled}</span>
           </div>
-          <div className="box delivered">
-            Delivered<br /><span>{data.delivered}</span>
-            <br />
-            <small style={{ fontSize: "32px", color: "#222" }}>
-              ₹{data.deliveredSupplierDiscountedPriceTotal.toLocaleString()}
-            </small>
+          <div className="box ready_to_ship">
+            Pending<br />
+            <span>{data.ready_to_ship}</span>
           </div>
-          <div className="box cancelled">Cancelled<br /><span>{data.cancelled}</span></div>
-          <div className="box ready_to_ship">Pending<br /><span>{data.ready_to_ship}</span></div>
-          <div className="box shipped">Shipped<br /><span>{data.shipped}</span></div>
-          <div className="box other">Other<br /><span>{data.other}</span></div>
+          <div className="box shipped">
+            Shipped<br />
+            <span>{data.shipped}</span>
+          </div>
+          <div className="box other">
+            Other<br />
+            <span>{data.other}</span>
+          </div>
           <div className="box other">
             Supplier Listed Total Price<br />
             <span>{data.totalSupplierListedPrice.toLocaleString()}</span>
@@ -273,7 +313,8 @@ function App() {
             <span>{data.totalProfit.toLocaleString()}</span>
           </div>
           <div className="box other">
-            Profit %<br /><span>{profitPercent}%</span>
+            Profit %<br />
+            <span>{profitPercent}%</span>
           </div>
         </div>
       ) : (
@@ -292,7 +333,8 @@ function App() {
               <span>{(500 - filterResult.discountedPrice).toLocaleString()}</span>
             </div>
             <div className="box other">
-              Profit %<br /><span>{profitPercent}%</span>
+              Profit %<br />
+              <span>{profitPercent}%</span>
             </div>
           </div>
         )
@@ -316,30 +358,37 @@ function App() {
         </button>
       </div>
 
-    {showGraph && graphData.length > 0 && (
-  <div className="graph-container">
-    <h2 className="graph-title">📈 Profit Trend (Per Date)</h2>
-    <ResponsiveContainer>
-      <LineChart data={graphData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="5 5" stroke="#ddd" />
-        <XAxis dataKey="date" tick={{ fontSize: 12, fill: "black" }} />
-        <YAxis tick={{ fontSize: 12, fill: "black" }} />
-        <Tooltip
-          contentStyle={{ backgroundColor: "#fff", borderRadius: "8px", border: "1px solid #ccc" }}
-          labelStyle={{ fontWeight: "bold", color: "#333" }}
-        />
-        <Line
-          type="monotone"
-          dataKey="profit"
-          stroke="#007bff"
-          strokeWidth={3}
-          dot={{ r: 5, stroke: "#007bff", strokeWidth: 2, fill: "#fff" }}
-          activeDot={{ r: 8 }}
-        />
-      </LineChart>
-    </ResponsiveContainer>
-  </div>
-)}
+      {showGraph && graphData.length > 0 && (
+        <div className="graph-container">
+          <h2 className="graph-title">📈 Profit Trend (Per Date)</h2>
+          <ResponsiveContainer>
+            <LineChart
+              data={graphData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="5 5" stroke="#ddd" />
+              <XAxis dataKey="date" tick={{ fontSize: 12, fill: "black" }} />
+              <YAxis tick={{ fontSize: 12, fill: "black" }} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "#fff",
+                  borderRadius: "8px",
+                  border: "1px solid #ccc",
+                }}
+                labelStyle={{ fontWeight: "bold", color: "#333" }}
+              />
+              <Line
+                type="monotone"
+                dataKey="profit"
+                stroke="#007bff"
+                strokeWidth={3}
+                dot={{ r: 5, stroke: "#007bff", strokeWidth: 2, fill: "#fff" }}
+                activeDot={{ r: 8 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      )}
 
       {/* File Upload */}
       <div
@@ -349,7 +398,11 @@ function App() {
         onDragLeave={handleDragLeave}
       >
         <p>Drag and drop your CSV or Excel file here</p>
-        <input type="file" accept=".csv, .xlsx, .xls" onChange={handleFileChange} />
+        <input
+          type="file"
+          accept=".csv, .xlsx, .xls"
+          onChange={handleFileChange}
+        />
         {file && <p className="filename">Selected File: {file.name}</p>}
       </div>
 
