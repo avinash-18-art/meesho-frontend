@@ -1,0 +1,243 @@
+/* Full background */
+.loginpage-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: url("https://images.unsplash.com/photo-1501785888041-af3ef285b470?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80")
+    no-repeat center center/cover;
+  font-family: "Poppins", sans-serif;
+}
+
+/* Glassmorphism card */
+.loginpage-box {
+  width: 380px;
+  padding: 40px 30px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  text-align: center;
+  color: #fff;
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+/* Smooth fade-in effect */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.loginpage-box h2 {
+  margin-bottom: 20px;
+  font-size: 26px;
+  font-weight: 600;
+}
+
+/* Input fields */
+.loginpage-form input {
+  width: 100%;
+  padding: 12px 15px;
+  margin: 10px 0;
+  border-radius: 25px;
+  border: none;
+  outline: none;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.loginpage-form input::placeholder {
+  color: #ddd;
+}
+
+.loginpage-form input:focus {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Buttons */
+.loginpage-form button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 25px;
+  border: none;
+  background: #fff;
+  color: #6a1b9a;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-top: 10px;
+}
+
+.loginpage-form button:hover {
+  background: #f3e5f5;
+}
+
+/* Profile section */
+.loginpage-profile {
+  text-align: center;
+}
+
+.loginpage-profile h2 {
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.loginpage-profile button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  border-radius: 25px;
+  border: none;
+  background: #fff;
+  color: #6a1b9a;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.loginpage-profile button:hover {
+  background: #f3e5f5;
+}
+
+/* Toggle login/signup */
+.loginpage-toggle {
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.loginpage-link-button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 5px;
+  transition: 0.3s;
+}
+
+.loginpage-link-button:hover {
+  text-decoration: underline;
+}
+
+/* Enhanced Popup CSS - Modern & Attractive */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6); /* darker overlay for focus */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  backdrop-filter: blur(2px);
+}
+
+.popup-box {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(15px); /* glass effect */
+  border-radius: 20px;
+  padding: 35px 30px;
+  width: 380px;
+  max-width: 90%;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  text-align: center;
+  position: relative;
+  animation: popupFade 0.5s ease forwards;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.popup-box h2 {
+  font-size: 26px;
+  color: #ff6a00; /* warm gradient accent */
+  margin-bottom: 25px;
+  font-weight: 700;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+.popup-box input {
+  width: 100%;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  font-size: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  transition: all 0.3s ease;
+}
+
+.popup-box input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.popup-box input:focus {
+  border-color: #ff6a00;
+  box-shadow: 0 0 15px rgba(255, 106, 0, 0.4);
+  outline: none;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.popup-box button {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #ff6a00, #ff9a00);
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  box-shadow: 0 8px 20px rgba(255, 106, 0, 0.3);
+}
+
+.popup-box button:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 12px 25px rgba(255, 106, 0, 0.45);
+}
+
+.popup-close {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 22px;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.popup-close:hover {
+  color: #ff6a00;
+  transform: rotate(90deg) scale(1.2);
+}
+
+@keyframes popupFade {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Optional: add smooth transition for overlay */
+.popup-overlay {
+  transition: all 0.3s ease;
+}
+

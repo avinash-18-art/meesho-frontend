@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { FaUserCircle } from "react-icons/fa";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import {
   LineChart,
@@ -241,6 +243,19 @@ function App() {
               Back
             </button>
           )}
+
+    <Link to="/Login">
+
+    <div className="navbar-login">
+    <FaUserCircle
+      size={28}
+      color="#fdefefff"
+      style={{ cursor: "pointer" }}
+      
+    />
+  </div>
+    
+    </Link>
         </div>
       </nav>
 
