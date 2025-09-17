@@ -21,7 +21,7 @@ function Login() {
 
     if (mode === 'signup') {
       try {
-        const res = await fetch('https://product-report-bk.onrender.com/signup', {
+        const res = await fetch('https://report-backend-bnv1.onrender.com/signup', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -42,7 +42,7 @@ function Login() {
       }
     } else if (mode === 'login') {
       try {
-        const res = await fetch('https://product-report-bk.onrender.com/login', {
+        const res = await fetch('https://report-backend-bnv1.onrender.com/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -68,7 +68,7 @@ function Login() {
   const handleOtpSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('https://product-report-bk.onrender.com/verify-otp', {
+      const res = await fetch('https://report-backend-bnv1.onrender.com/verify-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: formData.email, otp }),
