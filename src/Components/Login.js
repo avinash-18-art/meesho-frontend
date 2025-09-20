@@ -19,30 +19,30 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (mode === 'signup') {
+    if (mode === 'register') {
       try {
-        const res = await fetch('https://report-backend-bnv1.onrender.com/signup', {
+        const res = await fetch('https://product-backend-1-xfps.onrender.com/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            name: formData.fullName,   // ✅ match backend
+            fullname: formData.fullName,
             email: formData.email,
-            phone: formData.phone,     // ✅ match backend
+            phoneNumber: formData.phone,
             password: formData.password,
           }),
         });
 
         const data = await res.json();
-        alert(data.msg);
-        if (res.ok) {
+        alert(data.message);
+        if (data.message === 'the registration successful') {
           setMode('otp');
         }
       } catch {
-        alert('Signup failed.');
+        alert('Registration failed.');
       }
     } else if (mode === 'login') {
       try {
-        const res = await fetch('https://report-backend-bnv1.onrender.com/login', {
+        const res = await fetch('https://product-backend-1-xfps.onrender.com/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -57,7 +57,7 @@ function Login() {
           alert('Login successful');
           setMode('profile');
         } else {
-          alert(data.msg || 'Login failed');
+          alert(data.message || 'Login failed');
         }
       } catch {
         alert('Login failed.');
@@ -68,15 +68,15 @@ function Login() {
   const handleOtpSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('https://report-backend-bnv1.onrender.com/verify-otp', {
+      const res = await fetch('https://product-backend-1-xfps.onrender.com/verify-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: formData.email, otp }),
       });
 
       const data = await res.json();
-      alert(data.msg);
-      if (res.ok) {
+      alert(data.message);
+      if (data.success) {
         setMode('login');
         setFormData({ fullName: '', email: '', phone: '', password: '' });
         setOtp('');
@@ -100,14 +100,14 @@ function Login() {
             <h2>
               {mode === 'login'
                 ? 'Login'
-                : mode === 'signup'
-                ? 'Signup'
+                : mode === 'register'
+                ? 'Register'
                 : 'Verify OTP'}
             </h2>
 
             {mode !== 'otp' ? (
               <form onSubmit={handleSubmit} className="loginpage-form">
-                {mode === 'signup' && (
+                {mode === 'register' && (
                   <>
                     <input
                       name="fullName"
@@ -142,7 +142,7 @@ function Login() {
                   required
                 />
                 <button type="submit">
-                  {mode === 'signup' ? 'Signup' : 'Login'}
+                  {mode === 'register' ? 'Register' : 'Login'}
                 </button>
               </form>
             ) : (
@@ -160,16 +160,16 @@ function Login() {
 
             {mode !== 'otp' && (
               <p className="loginpage-toggle">
-                {mode === 'signup'
+                {mode === 'register'
                   ? 'Already have an account?'
                   : "Don't have an account?"}{' '}
                 <button
                   className="loginpage-link-button"
                   onClick={() => {
-                    setMode(mode === 'signup' ? 'login' : 'signup');
+                    setMode(mode === 'register' ? 'login' : 'register');
                   }}
                 >
-                  {mode === 'signup' ? 'Login' : 'Signup'}
+                  {mode === 'register' ? 'Login' : 'Register'}
                 </button>
               </p>
             )}

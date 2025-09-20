@@ -42,7 +42,7 @@ function App() {
 
   // ✅ Download PDF
   const handleDownload = () => {
-    fetch("https://product-report-bk.onrender.com/download-pdf", {
+    fetch("https://product-backend-1-xfps.onrender.com/download-pdf", {
       method: "GET",
       headers: { Accept: "application/pdf" },
     })
@@ -114,7 +114,7 @@ function App() {
     }
     try {
       const res = await axios.get(
-        `https://product-report-bk.onrender.com/filter/${subOrderNo}`
+        `https://product-backend-1-xfps.onrender.com/filter/${subOrderNo}`
       );
       setFilterResult(res.data);
 
@@ -140,7 +140,7 @@ function App() {
       formData.append("file", file);
 
       const uploadRes = await axios.post(
-        "https://product-report-bk.onrender.com/upload",
+        "https://product-backend-1-xfps.onrender.com/upload",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
