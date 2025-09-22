@@ -1,6 +1,6 @@
 import React, { useState } from "react";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
-import { Link } from "react-router-dom";
 import axios from "axios";
 import {
   LineChart,
@@ -12,8 +12,197 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import "./Excel.css";
+ 
 
-function App() {
+// ---------------------- LOGIN COMPONENT ----------------------
+function Login() {
+  const [mode, setMode] = useState("login"); // login, register, otp, profile
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    password: "",
+  });
+  const [otp, setOtp] = useState("");
+
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (mode === "signup") {
+      try {
+        const res = await fetch(
+          "https://product-backend-2-6atb.onrender.com/signup",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              fullname: formData.fullName,
+              email: formData.email,
+              phoneNumber: formData.phone,
+              password: formData.password,
+            }),
+          }
+        );
+
+        const data = await res.json();
+        alert(data.message);
+        if (data.message === "the signup successful") {
+          setMode("otp");
+        }
+      } catch {
+        alert("Signup failed.");
+      }
+    } else if (mode === "login") {
+      try {
+        const res = await fetch(
+          "https://product-backend-2-6atb.onrender.com/login",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: formData.email,
+              password: formData.password,
+            }),
+          }
+        );
+
+        const data = await res.json();
+        if (data.token) {
+          localStorage.setItem("token", data.token);
+          alert("Login successful");
+          setMode("profile");
+        } else {
+          alert(data.message || "Login failed");
+        }
+      } catch {
+        alert("Login failed.");
+      }
+    }
+  };
+
+  const handleOtpSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(
+        "https://product-backend-2-6atb.onrender.com/verify-otp",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: formData.email, otp }),
+        }
+      );
+
+      const data = await res.json();
+      alert(data.message);
+      if (data.success) {
+        setMode("login");
+        setFormData({ fullName: "", email: "", phone: "", password: "" });
+        setOtp("");
+      }
+    } catch {
+      alert("OTP verification failed.");
+    }
+  };
+
+  return (
+    <div className="loginpage-container">
+      <div className="loginpage-box">
+        {mode === "profile" ? (
+          <div className="loginpage-profile">
+            <h2>Welcome, {formData.email}!</h2>
+            <p>You are now logged in to your profile.</p>
+            <button onClick={() => setMode("login")}>Logout</button>
+          </div>
+        ) : (
+          <>
+            <h2>
+              {mode === "login"
+                ? "Login"
+                : mode === "signup"
+                ? "signup"
+                : "Verify OTP"}
+            </h2>
+
+            {mode !== "otp" ? (
+              <form onSubmit={handleSubmit} className="loginpage-form">
+                {mode === "signup" && (
+                  <>
+                    <input
+                      name="fullName"
+                      placeholder="Full Name"
+                      value={formData.fullName}
+                      onChange={handleChange}
+                      required
+                    />
+                    <input
+                      name="phone"
+                      placeholder="Phone Number"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      required
+                    />
+                  </>
+                )}
+                <input
+                  name="email"
+                  type="email"
+                  placeholder="Email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
+                <input
+                  name="password"
+                  type="password"
+                  placeholder="Password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                />
+                <button type="submit">
+                  {mode === "signup" ? "Signup" : "Login"}
+                </button>
+              </form>
+            ) : (
+              <form onSubmit={handleOtpSubmit} className="loginpage-form">
+                <input
+                  type="text"
+                  placeholder="Enter OTP"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  required
+                />
+                <button type="submit">Verify OTP</button>
+              </form>
+            )}
+
+            {mode !== "otp" && (
+              <p className="loginpage-toggle">
+                {mode === "register"
+                  ? "Already have an account?"
+                  : "Don't have an account?"}{" "}
+                <button
+                  className="loginpage-link-button"
+                  onClick={() => {
+                    setMode(mode === "signup" ? "login" : "signup");
+                  }}
+                >
+                  {mode === "signup" ? "Login" : "Signup"}
+                </button>
+              </p>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ---------------------- DASHBOARD COMPONENT ----------------------
+function Dashboard() {
   const [file, setFile] = useState(null);
   const [subOrderNo, setSubOrderNo] = useState("");
   const [filterResult, setFilterResult] = useState(null);
@@ -35,14 +224,12 @@ function App() {
     deliveredSupplierDiscountedPriceTotal: 0,
     totalDoorStepExchanger: 0,
   });
-
   const [profitPercent, setProfitPercent] = useState(0);
   const [dragActive, setDragActive] = useState(false);
   const [showFilteredView, setShowFilteredView] = useState(false);
 
-  // ✅ Download PDF
   const handleDownload = () => {
-    fetch("https://product-backend-1-xfps.onrender.com/download-pdf", {
+    fetch("https://product-backend-2-6atb.onrender.com/download-pdf", {
       method: "GET",
       headers: { Accept: "application/pdf" },
     })
@@ -65,7 +252,6 @@ function App() {
       });
   };
 
-  // ✅ File Validation
   const validateFile = (file) => {
     return (
       file &&
@@ -75,7 +261,6 @@ function App() {
     );
   };
 
-  // ✅ File Input
   const handleFileChange = (e) => {
     const selectedFile = e.target.files?.[0];
     if (validateFile(selectedFile)) {
@@ -85,7 +270,6 @@ function App() {
     }
   };
 
-  // ✅ Drag & Drop
   const handleDrop = (e) => {
     e.preventDefault();
     setDragActive(false);
@@ -106,7 +290,6 @@ function App() {
     setDragActive(false);
   };
 
-  // ✅ Filter Sub Order
   const handleFilter = async () => {
     if (!subOrderNo) {
       alert("Please enter a Sub Order No.");
@@ -114,10 +297,9 @@ function App() {
     }
     try {
       const res = await axios.get(
-        `https://product-backend-1-xfps.onrender.com/filter/${subOrderNo}`
+        `https://product-backend-2-6atb.onrender.com/filter/${subOrderNo}`
       );
       setFilterResult(res.data);
-
       const calcProfit = 500 - res.data.discountedPrice;
       const calcProfitPercent = (calcProfit / 500) * 100;
       setProfitPercent(calcProfitPercent.toFixed(2));
@@ -128,20 +310,18 @@ function App() {
     }
   };
 
-  // ✅ Upload & Process File
   const handleSubmitAll = async () => {
     if (!file) {
       alert("Please select a file first");
       return;
     }
-
     try {
-      const formData = new FormData();
-      formData.append("file", file);
+      const formDataObj = new FormData();
+      formDataObj.append("file", file);
 
       const uploadRes = await axios.post(
-        "https://product-backend-1-xfps.onrender.com/upload",
-        formData,
+        "https://product-backend-2-6atb.onrender.com/upload",
+        formDataObj,
         {
           headers: { "Content-Type": "multipart/form-data" },
         }
@@ -204,12 +384,11 @@ function App() {
 
   return (
     <div className="App">
-      {/* ✅ Navbar */}
+      {/* Navbar */}
       <nav className="navbar">
         <div
           className="navbar-logo"
           onClick={() => {
-            // ✅ Reset states & go "home"
             setShowFilteredView(false);
             setProfitPercent(0);
             setSubOrderNo("");
@@ -244,61 +423,45 @@ function App() {
             </button>
           )}
 
-    <Link to="/Login">
-
-    <div className="navbar-login">
-    <FaUserCircle
-      size={28}
-      color="#fdefefff"
-      style={{ cursor: "pointer" }}
-      
-    />
-  </div>
-    
-    </Link>
+          {/* Login Icon */}
+          <Link to="/login">
+            <div className="navbar-login">
+              <FaUserCircle size={28} color="#fdefefff" style={{ cursor: "pointer" }} />
+            </div>
+          </Link>
         </div>
       </nav>
 
+      {/* Dashboard Heading */}
       <h1 className="heading">Product Status Dashboard</h1>
 
-      {/* Main Dashboard */}
+      {/* Dashboard Stats */}
       {!showFilteredView ? (
         <div className="status-boxes">
-          
-            <div className="box all">
-              All<br />
-              <span>{data.all}</span>
-            </div>
-          
-          
-            <div className="box rto">
-              RTO<br />
-              <span>{data.rto}</span>
-            </div>
-          
-
-          
-            <div className="box door_step_exchanged">
-              Door Step Exchanged<br />
-              <span>{data.door_step_exchanged}</span>
-              <br />
-              <small style={{ fontSize: "25px", color: "#222" }}>
-                {data.totalDoorStepExchanger.toLocaleString()}
-              </small>
-            </div>
-          
-
-          
-            <div className="box delivered">
-              Delivered<br />
-              <span>{data.delivered}</span>
-              <br />
-              <small style={{ fontSize: "25px", color: "#222" }}>
-                ₹{data.deliveredSupplierDiscountedPriceTotal.toLocaleString()}
-              </small>
-            </div>
-          
-
+          <div className="box all">
+            All<br />
+            <span>{data.all}</span>
+          </div>
+          <div className="box rto">
+            RTO<br />
+            <span>{data.rto}</span>
+          </div>
+          <div className="box door_step_exchanged">
+            Door Step Exchanged<br />
+            <span>{data.door_step_exchanged}</span>
+            <br />
+            <small style={{ fontSize: "25px", color: "#222" }}>
+              {data.totalDoorStepExchanger.toLocaleString()}
+            </small>
+          </div>
+          <div className="box delivered">
+            Delivered<br />
+            <span>{data.delivered}</span>
+            <br />
+            <small style={{ fontSize: "25px", color: "#222" }}>
+              ₹{data.deliveredSupplierDiscountedPriceTotal.toLocaleString()}
+            </small>
+          </div>
           <div className="box cancelled">
             Cancelled<br />
             <span>{data.cancelled}</span>
@@ -355,7 +518,7 @@ function App() {
         )
       )}
 
-      {/* Profit Graph */}
+      {/* Graph */}
       <div style={{ margin: "20px 0" }}>
         <button
           onClick={() => setShowGraph(!showGraph)}
@@ -421,7 +584,7 @@ function App() {
         {file && <p className="filename">Selected File: {file.name}</p>}
       </div>
 
-      {/* Action Buttons */}
+      {/* Buttons */}
       <div style={{ marginTop: "20px" }}>
         <button
           onClick={handleSubmitAll}
@@ -458,4 +621,16 @@ function App() {
   );
 }
 
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/login" element={<Login />} />
+      </Routes>
+    </Router>
+  );
+}
+
 export default App;
+
