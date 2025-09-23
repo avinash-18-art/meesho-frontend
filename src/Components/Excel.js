@@ -50,13 +50,12 @@ function Login() {
         );
 
         const data = await res.json();
-        console.log("Signup response:", data);
+        console.log("Signup API response:", data);
+        alert(data.message || "Signup attempt made");
 
-        if (data.success) {
-          alert("OTP sent to your email/phone!");
+        // ✅ Always move to OTP if signup did not fail
+        if (res.ok) {
           setMode("otp"); // move to OTP screen
-        } else {
-          alert(data.message || "Signup failed");
         }
       } catch (err) {
         console.error(err);
@@ -77,7 +76,7 @@ function Login() {
         );
 
         const data = await res.json();
-        console.log("Login response:", data);
+        console.log("Login API response:", data);
 
         if (data.token) {
           localStorage.setItem("token", data.token);
@@ -109,7 +108,7 @@ function Login() {
       const data = await res.json();
       console.log("OTP verify response:", data);
 
-      if (data.success) {
+      if (data.success || data.message?.toLowerCase().includes("success")) {
         alert("Signup successful! Please login now.");
         setMode("login");
         setFormData({ fullName: "", email: "", phone: "", password: "" });
