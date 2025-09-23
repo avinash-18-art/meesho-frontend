@@ -25,11 +25,9 @@ function Login() {
   });
   const [otp, setOtp] = useState("");
 
-  // handle input change
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  // signup / login submit
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -50,16 +48,17 @@ function Login() {
         );
 
         const data = await res.json();
-        console.log("Signup response:", data);
+        console.log("Signup Response:", data); // debug
+        alert(data.message);
 
-        if (res.ok) {
-          alert("OTP has been generated and sent to your email/phone!");
-          setMode("otp"); // move to OTP entry page
-        } else {
-          alert(data.message || "Signup failed");
+        // ✅ If OTP is generated, switch to OTP screen
+        if (
+          data.message?.toLowerCase().includes("otp") ||
+          data.success === true
+        ) {
+          setMode("otp");
         }
-      } catch (err) {
-        console.error(err);
+      } catch {
         alert("Signup failed.");
       }
     } else if (mode === "login") {
@@ -77,8 +76,7 @@ function Login() {
         );
 
         const data = await res.json();
-        console.log("Login response:", data);
-
+        console.log("Login Response:", data); // debug
         if (data.token) {
           localStorage.setItem("token", data.token);
           alert("Login successful");
@@ -86,14 +84,12 @@ function Login() {
         } else {
           alert(data.message || "Login failed");
         }
-      } catch (err) {
-        console.error(err);
+      } catch {
         alert("Login failed.");
       }
     }
   };
 
-  // verify otp
   const handleOtpSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -102,29 +98,20 @@ function Login() {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: formData.email,
-            otp,
-            fullname: formData.fullName,
-            phoneNumber: formData.phone,
-            password: formData.password,
-          }),
+          body: JSON.stringify({ email: formData.email, otp }),
         }
       );
 
       const data = await res.json();
-      console.log("OTP verify response:", data);
+      console.log("OTP Verify Response:", data); // debug
+      alert(data.message);
 
-      if (res.ok && (data.success || data.message?.toLowerCase().includes("success"))) {
-        alert("Registration successful! Please login now.");
+      if (data.success) {
         setMode("login");
         setFormData({ fullName: "", email: "", phone: "", password: "" });
         setOtp("");
-      } else {
-        alert(data.message || "Invalid OTP");
       }
-    } catch (err) {
-      console.error(err);
+    } catch {
       alert("OTP verification failed.");
     }
   };
