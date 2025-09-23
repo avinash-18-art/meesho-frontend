@@ -25,11 +25,11 @@ function Login() {
   });
   const [otp, setOtp] = useState("");
 
-  // input change
+  // handle input change
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  // signup / login
+  // signup / login submit
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -50,12 +50,13 @@ function Login() {
         );
 
         const data = await res.json();
-        console.log("Signup API response:", data);
-        alert(data.message || "Signup attempt made");
+        console.log("Signup response:", data);
 
-        // ✅ Always move to OTP if signup did not fail
         if (res.ok) {
-          setMode("otp"); // move to OTP screen
+          alert("OTP has been generated and sent to your email/phone!");
+          setMode("otp"); // move to OTP entry page
+        } else {
+          alert(data.message || "Signup failed");
         }
       } catch (err) {
         console.error(err);
@@ -76,7 +77,7 @@ function Login() {
         );
 
         const data = await res.json();
-        console.log("Login API response:", data);
+        console.log("Login response:", data);
 
         if (data.token) {
           localStorage.setItem("token", data.token);
@@ -92,7 +93,7 @@ function Login() {
     }
   };
 
-  // otp verify
+  // verify otp
   const handleOtpSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -101,15 +102,21 @@ function Login() {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: formData.email, otp }),
+          body: JSON.stringify({
+            email: formData.email,
+            otp,
+            fullname: formData.fullName,
+            phoneNumber: formData.phone,
+            password: formData.password,
+          }),
         }
       );
 
       const data = await res.json();
       console.log("OTP verify response:", data);
 
-      if (data.success || data.message?.toLowerCase().includes("success")) {
-        alert("Signup successful! Please login now.");
+      if (res.ok && (data.success || data.message?.toLowerCase().includes("success"))) {
+        alert("Registration successful! Please login now.");
         setMode("login");
         setFormData({ fullName: "", email: "", phone: "", password: "" });
         setOtp("");
@@ -215,6 +222,7 @@ function Login() {
     </div>
   );
 }
+
 
 // ---------------------- DASHBOARD COMPONENT ----------------------
 function Dashboard() {
