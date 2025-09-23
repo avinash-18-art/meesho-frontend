@@ -16,112 +16,135 @@ import "./Excel.css";
 
 // ---------------------- LOGIN COMPONENT ----------------------
 function Login() {
-  const [mode, setMode] = useState('login'); // login, register, otp, profile
-
+  const [mode, setMode] = useState("login"); // login | signup | otp | profile
   const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    phone: '',
-    password: '',
+    fullName: "",
+    email: "",
+    phone: "",
+    password: "",
   });
+  const [otp, setOtp] = useState("");
 
-  const [otp, setOtp] = useState('');
-
+  // input change
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
+  // signup / login
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (mode === 'signup') {
+    if (mode === "signup") {
       try {
-        const res = await fetch('https://product-backend-2-6atb.onrender.com/signup', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            fullname: formData.fullName,
-            email: formData.email,
-            phoneNumber: formData.phone,
-            password: formData.password,
-          }),
-        });
+        const res = await fetch(
+          "https://product-backend-2-6atb.onrender.com/signup",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              fullname: formData.fullName,
+              email: formData.email,
+              phoneNumber: formData.phone,
+              password: formData.password,
+            }),
+          }
+        );
 
         const data = await res.json();
-        alert(data.message);
-        if (data.message === 'the registration successful') {
-          setMode('otp');
-        }
-      } catch {
-        alert('Registration failed.');
-      }
-    } else if (mode === 'login') {
-      try {
-        const res = await fetch('https://product-backend-2-6atb.onrender.com/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: formData.email,
-            password: formData.password,
-          }),
-        });
+        console.log("Signup response:", data);
 
-        const data = await res.json();
-        if (data.token) {
-          localStorage.setItem('token', data.token);
-          alert('Login successful');
-          setMode('profile');
+        if (data.success) {
+          alert("OTP sent to your email/phone!");
+          setMode("otp"); // move to OTP screen
         } else {
-          alert(data.message || 'Login failed');
+          alert(data.message || "Signup failed");
         }
-      } catch {
-        alert('Login failed.');
+      } catch (err) {
+        console.error(err);
+        alert("Signup failed.");
+      }
+    } else if (mode === "login") {
+      try {
+        const res = await fetch(
+          "https://product-backend-2-6atb.onrender.com/login",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: formData.email,
+              password: formData.password,
+            }),
+          }
+        );
+
+        const data = await res.json();
+        console.log("Login response:", data);
+
+        if (data.token) {
+          localStorage.setItem("token", data.token);
+          alert("Login successful");
+          setMode("profile");
+        } else {
+          alert(data.message || "Login failed");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Login failed.");
       }
     }
   };
 
+  // otp verify
   const handleOtpSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('https://product-backend-2-6atb.onrender.com/verify-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: formData.email, otp }),
-      });
+      const res = await fetch(
+        "https://product-backend-2-6atb.onrender.com/verify-otp",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: formData.email, otp }),
+        }
+      );
 
       const data = await res.json();
-      alert(data.message);
+      console.log("OTP verify response:", data);
+
       if (data.success) {
-        setMode('login');
-        setFormData({ fullName: '', email: '', phone: '', password: '' });
-        setOtp('');
+        alert("Signup successful! Please login now.");
+        setMode("login");
+        setFormData({ fullName: "", email: "", phone: "", password: "" });
+        setOtp("");
+      } else {
+        alert(data.message || "Invalid OTP");
       }
-    } catch {
-      alert('OTP verification failed.');
+    } catch (err) {
+      console.error(err);
+      alert("OTP verification failed.");
     }
   };
 
   return (
-    <div className='loginpage-container'>
+    <div className="loginpage-container">
       <div className="loginpage-box">
-        {mode === 'profile' ? (
+        {mode === "profile" ? (
           <div className="loginpage-profile">
             <h2>Welcome, {formData.email}!</h2>
             <p>You are now logged in to your profile.</p>
-            <button onClick={() => setMode('login')}>Logout</button>
+            <button onClick={() => setMode("login")}>Logout</button>
           </div>
         ) : (
           <>
             <h2>
-              {mode === 'login'
-                ? 'Login'
-                : mode === 'signup'
-                ? 'Register'
-                : 'Verify OTP'}
+              {mode === "login"
+                ? "Login"
+                : mode === "signup"
+                ? "Signup"
+                : "Verify OTP"}
             </h2>
 
-            {mode !== 'otp' ? (
+            {mode !== "otp" ? (
               <form onSubmit={handleSubmit} className="loginpage-form">
-                {mode === 'signup' && (
+                {mode === "signup" && (
                   <>
                     <input
                       name="fullName"
@@ -156,7 +179,7 @@ function Login() {
                   required
                 />
                 <button type="submit">
-                  {mode === 'signup' ? 'Signup' : 'Login'}
+                  {mode === "signup" ? "Signup" : "Login"}
                 </button>
               </form>
             ) : (
@@ -172,18 +195,18 @@ function Login() {
               </form>
             )}
 
-            {mode !== 'otp' && (
+            {mode !== "otp" && (
               <p className="loginpage-toggle">
-                {mode === 'register'
-                  ? 'Already have an account?'
-                  : "Don't have an account?"}{' '}
+                {mode === "signup"
+                  ? "Already have an account?"
+                  : "Don't have an account?"}{" "}
                 <button
                   className="loginpage-link-button"
                   onClick={() => {
-                    setMode(mode === 'signup' ? 'login' : 'signup');
+                    setMode(mode === "signup" ? "login" : "signup");
                   }}
                 >
-                  {mode === 'signup' ? 'Login' : 'Signup'}
+                  {mode === "signup" ? "Login" : "Signup"}
                 </button>
               </p>
             )}
