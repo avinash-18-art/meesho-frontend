@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import { FaUserCircle } from "react-icons/fa";
+import { IoSearch } from "react-icons/io5";
 import axios from "axios";
 import {
   LineChart,
@@ -409,14 +409,21 @@ function Dashboard() {
         >
           Meesho
         </div>
+
         <div className="navbar-search">
+          <IoSearch  className="search"/>
           <input
             type="search"
             placeholder="Add here Sub Order No"
             value={subOrderNo}
             onChange={(e) => setSubOrderNo(e.target.value)}
           />
-          <button className="back-btn" onClick={handleFilter}>
+         
+        </div>
+
+             
+         <div>
+          <button className="filter-btn" onClick={handleFilter}>
             Filter
           </button>
           {showFilteredView && (
@@ -432,78 +439,155 @@ function Dashboard() {
               Back
             </button>
           )}
+       </div>
 
-          {/* Login Icon */}
+   
+
+        <div>
           <Link to="/login">
             <div className="navbar-login">
-              <FaUserCircle size={28} color="#fdefefff" style={{ cursor: "pointer" }} />
+             <h1 className="heading1"><img src="/Ellipse 2.png" alt="cart" className="logo" /> Shivayom</h1> 
             </div>
           </Link>
         </div>
-      </nav>
+        </nav>
 
-      {/* Dashboard Heading */}
+
+      <div className="dashboard-container">
       <h1 className="heading">Product Status Dashboard</h1>
-
-      {/* Dashboard Stats */}
       {!showFilteredView ? (
+        <div className="adjust-box">
         <div className="status-boxes">
-          <div className="box all">
-            All<br />
-            <span>{data.all}</span>
-          </div>
+
+  <div className="box all">
+  <div className="box-content">
+    All<br />
+    <span>{data.all}</span>
+  </div>
+  <div className="background-logo">
+    <img src="/Vector.png" className="box-logo" alt="cart" />
+  </div>
+</div>
+
           <div className="box rto">
+           <div className="box-content"> 
             RTO<br />
             <span>{data.rto}</span>
+            </div>
+            <div className="background-logo">
+           <img src="/Group.png" className="box-logo" alt="cart" />
+           </div>
           </div>
+
+
           <div className="box door_step_exchanged">
+           <div className="box-content">
             Door Step Exchanged<br />
             <span>{data.door_step_exchanged}</span>
             <br />
             <small style={{ fontSize: "25px", color: "#222" }}>
               {data.totalDoorStepExchanger.toLocaleString()}
             </small>
+            </div>
+            <div className="background-logo">
+           <img src="/gir.png" className="box-logo" alt="cart" />
+           </div>
           </div>
+
           <div className="box delivered">
+            <div className="box-content">
             Delivered<br />
             <span>{data.delivered}</span>
             <br />
             <small style={{ fontSize: "25px", color: "#222" }}>
               ₹{data.deliveredSupplierDiscountedPriceTotal.toLocaleString()}
             </small>
+            </div>
+            <div className="background-logo">
+           <img src="/Vector (2).png" className="box-logo" alt="cart" />
+           </div>
           </div>
+
           <div className="box cancelled">
+            <div className="box-content">
             Cancelled<br />
             <span>{data.cancelled}</span>
+            </div>
+            <div className="background-logo">
+           <img src="/Group (1).png" className="box-logo" alt="cart" />
+           </div>
           </div>
+
           <div className="box ready_to_ship">
+            <div className="box-content">
             Pending<br />
             <span>{data.ready_to_ship}</span>
+            </div>
+           <div className="background-logo">
+           <img src="/pending.png" className="box-logo" alt="cart" />
+           </div>
           </div>
+
           <div className="box shipped">
+            <div className="box-content">
             Shipped<br />
             <span>{data.shipped}</span>
+            </div>
+           <div className="background-logo">
+           <img src="/Group (2).png" className="box-logo" alt="cart" />
+           </div>
           </div>
+
           <div className="box other">
+            <div className="box-content">
             Other<br />
             <span>{data.other}</span>
+            </div>
+            <div className="background-logo">
+           <img src="/other.png" className="box-logo" alt="cart" />
+           </div>
           </div>
+
           <div className="box other">
+            <div className="box-content">
             Supplier Listed Total Price<br />
             <span>{data.totalSupplierListedPrice.toLocaleString()}</span>
           </div>
+           <div className="background-logo">
+           <img src="/Group (3).png" className="box-logo" alt="cart" />
+           </div>
+          </div>
+
           <div className="box other">
+            <div className="box-content">
             Supplier Discounted Total Price<br />
             <span>{data.totalSupplierDiscountedPrice.toLocaleString()}</span>
+            </div>
+            <div className="background-logo">
+           <img src="/Group (4).png" className="box-logo" alt="cart" />
+           </div>
           </div>
+
           <div className="box other">
+            <div className="box-content">
             Total Profit<br />
             <span>{data.totalProfit.toLocaleString()}</span>
+            </div>
+            <div className="background-logo">
+           <img src="/total profit.png" className="box-logo" alt="cart" />
+           </div>
           </div>
+
           <div className="box other">
+            <div className="box-content">
             Profit %<br />
             <span>{profitPercent}%</span>
           </div>
+            <div className="background-logo">
+           <img src="/Group (5).png" className="box-logo" alt="cart" />
+           </div>
+          </div>
+        </div>
         </div>
       ) : (
         filterResult && (
@@ -627,6 +711,7 @@ function Dashboard() {
           Download PDF
         </button>
       </div>
+    </div>
     </div>
   );
 }
