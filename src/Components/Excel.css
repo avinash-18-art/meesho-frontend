@@ -136,7 +136,7 @@ h1 {
   box-shadow: 0 6px 18px rgba(0,0,0,0.08);
   padding: 20px;
   text-align: left;
-  font-size: 18px;
+  font-size: 19px;
   font-weight: 600;
   color: #444;
   transition: transform 0.25s ease;
@@ -414,7 +414,7 @@ h1 {
 /* Right side logo */
 .background-logo {
   background: rgba(255, 255, 255, 0.4);
-  padding: 16px;
+  padding: 18px;
   border-radius: 12px;
   display: flex;
   justify-content: center;

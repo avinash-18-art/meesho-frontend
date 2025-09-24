@@ -428,7 +428,7 @@ function Dashboard() {
           </button>
           {showFilteredView && (
             <button
-              className="back-btn"
+              className="filter-btn"
               onClick={() => {
                 setShowFilteredView(false);
                 setProfitPercent(0);
