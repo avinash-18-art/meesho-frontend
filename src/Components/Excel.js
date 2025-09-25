@@ -613,22 +613,15 @@ function Dashboard() {
       )}
 
       {/* Graph */}
-       <div style={{ margin: "20px 0" }}>
-        <button
-          onClick={() => setShowGraph(!showGraph)}
-          style={{
-            backgroundColor: "#17a2b8",
-            color: "#fff",
-            padding: "10px 20px",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer",
-            fontSize: "14px",
-          }}
-        >
-          {showGraph ? "Hide Profit Graph" : "Show Profit Graph"}
-        </button>
-      </div>
+        <div style={{ margin: "20px 0" }}>
+       <button
+       className="graph-toggle-btn"
+      onClick={() => setShowGraph(!showGraph)}
+       >
+     {showGraph ? "Hide Profit Graph" : "Show Profit Graph"}
+    </button>
+    </div>
+
 
       {showGraph && graphData.length > 0 && (
         <div className="graph-container">
