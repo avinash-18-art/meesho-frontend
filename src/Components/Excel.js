@@ -614,6 +614,7 @@ function Dashboard() {
 
       {/* Graph */}
    
+ {/* Graph */}
       <div style={{ margin: "20px 0" }}>
         <button
           onClick={() => setShowGraph(!showGraph)}
