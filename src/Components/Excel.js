@@ -614,11 +614,12 @@ function Dashboard() {
 
       {/* Graph */}
    
+ {/* Graph */}
       <div style={{ margin: "20px 0" }}>
         <button
           onClick={() => setShowGraph(!showGraph)}
           style={{
-            backgroundColor: "#17a2b8",
+            backgroundColor: "linear-gradient(90deg, #B00087, #E8AED9)",
             color: "#fff",
             padding: "10px 20px",
             border: "none",
@@ -653,16 +654,15 @@ function Dashboard() {
               <Line
                 type="monotone"
                 dataKey="profit"
-                stroke="#f984dcff"
+                stroke="#E8AED9"
                 strokeWidth={3}
-                dot={{ r: 5, stroke: "#c806b5ff", strokeWidth: 2, fill: "#fff" }}
+                dot={{ r: 5, stroke: "#B00087", strokeWidth: 2, fill: "#fff" }}
                 activeDot={{ r: 8 }}
               />
             </LineChart>
           </ResponsiveContainer>
         </div>
       )}
-
 
       {/* File Upload */}
       <div
