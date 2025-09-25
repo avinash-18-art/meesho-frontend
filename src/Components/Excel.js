@@ -616,15 +616,16 @@ function Dashboard() {
       <div style={{ margin: "20px 0" }}>
         <button
           onClick={() => setShowGraph(!showGraph)}
-          style={{
-            backgroundColor: "#17a2b8",
-            color: "#fff",
-            padding: "10px 20px",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer",
-            fontSize: "14px",
-          }}
+         style={{
+              backgroundImage: "linear-gradient(90deg, #B00087, #E8AED9)",
+              color: "#fff",
+              padding: "10px 20px",
+              border: "none",
+              borderRadius: "6px",
+              cursor: "pointer",
+              fontSize: "14px",
+            }}
+
         >
           {showGraph ? "Hide Profit Graph" : "Show Profit Graph"}
         </button>
@@ -684,7 +685,7 @@ function Dashboard() {
           onClick={handleSubmitAll}
           disabled={!file}
           style={{
-            backgroundColor: "#28a745",
+            backgroundImage: "linear-gradient(90deg, #B00087, #E8AED9)",
             color: "#fff",
             padding: "10px 20px",
             border: "none",
@@ -699,7 +700,7 @@ function Dashboard() {
         <button
           onClick={handleDownload}
           style={{
-            backgroundColor: "#007bff",
+            backgroundImage: "linear-gradient(90deg, #B00087, #E8AED9)",
             color: "#fff",
             padding: "10px 20px",
             border: "none",

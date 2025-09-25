@@ -1,7 +1,7 @@
 /* ====== Global App Style ====== */
 .App {
   font-family: 'Segoe UI', sans-serif;
-  background: #ffe6f9;
+  background: #f9dbf2;
   min-height: 100vh;
   padding-top: 150px;
   
@@ -319,7 +319,7 @@ h1 {
 
 
 .dashboard-container{
-  background-color: #ffe6f9;
+  background-color: #f9dbf2;
   padding-top: -10px;
 } 
 
@@ -353,7 +353,7 @@ h1 {
 .background-logo{
   height: 63px;
   width: 82px;
-  background-color: #EFCCE7;
+  background-color: #B0008733;
   border-radius: 5px;
   display: flex;
   flex-direction: row;
@@ -382,7 +382,7 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #f4cde0;   /* light pink background */
+  background: #EFCCE7;   /* light pink background */
   border-radius: 12px;
   padding: 20px;
   width: 320px;
@@ -424,4 +424,132 @@ h1 {
 .box-logo {
   width: 40px;
   height: 40px;
+}
+
+.upload-container {
+  background: #f7cfe0;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  padding: 20px;
+  max-width: 450px;
+  margin: auto;
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+.upload-container h3 {
+  margin-bottom: 15px;
+  color: #444;
+}
+
+.upload-section {
+  border: 2px dashed #d63384;
+  border-radius: 8px;
+  padding: 30px;
+  margin-bottom: 15px;
+  background: #f7cfe0;
+  position: relative;
+}
+
+.upload-section input {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  left: 0;
+  top: 0;
+  cursor: pointer;
+}
+
+.upload-box {
+  color: #444;
+}
+
+.cloud-icon {
+  font-size: 40px;
+  color: #d63384;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.browse {
+  display: block;
+  margin-top: 5px;
+  color: #d63384;
+  cursor: pointer;
+}
+
+.filename {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #555;
+}
+
+.upload-btn {
+  background: #d63384;
+  color: white;
+  border: none;
+  padding: 10px 30px;
+  border-radius: 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.upload-btn:hover {
+  background: #b52c6f;
+}
+
+.drag-active {
+  background-color: #fddde6;
+}
+
+
+.graph-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.graph-title {
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #d63384; /* pink heading */
+}
+
+/* Tooltip style (override inline if needed) */
+.recharts-tooltip-wrapper {
+  font-size: 13px;
+  border-radius: 8px;
+}
+
+/* Line dots hollow style */
+.recharts-line-dot {
+  fill: #fff !important;       /* white center */
+  stroke: #d63384 !important;  /* pink border */
+  stroke-width: 2px !important;
+}
+
+/* Active dot (when hover) */
+.recharts-active-dot {
+  r: 8 !important; /* slightly bigger */
+  fill: #d63384 !important;
+}
+
+/* Axis text style */
+.recharts-cartesian-axis-tick text {
+  font-size: 12px;
+  fill: #333;
+}
+
+/* Grid line style */
+.recharts-cartesian-grid line {
+  stroke: #ccc;
+  stroke-dasharray: 0; /* solid lines */
 }
