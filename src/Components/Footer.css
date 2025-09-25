@@ -1,6 +1,87 @@
-.footer{
-    background-color: #B00087;
-    height:1000px;
-    width: 1000px;
-    background-size: cover;
+.footer {
+  background-color: #b00087; /* Purple background */
+  color: #fff;
+  text-align: center;
+  padding: 20px;
+  font-family: "Arial", sans-serif;
+  height: 140px;
+  
 }
+
+.footer-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+}
+
+.footer-logo {
+  font-size: 33px;
+  font-weight: bold;
+}
+
+.footer-title {
+  font-size: 33px;
+  font-weight: bold;
+  
+}
+
+.footer-form {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  border-color: #fff;
+  border-style: solid ;
+  border-width: 2px;
+  border-radius: 5px;
+  margin-right: -470px;
+}
+
+.footer-input {
+  padding: 8px 12px;
+  border: 2px solid #fff;
+  border-radius: 6px;
+  outline: none;
+  background: transparent;
+  color: #fff;
+}
+
+.footer-input::placeholder {
+  color: #fff;
+}
+
+.footer-btn {
+  padding: 8px 16px;
+  background-color: #EFCCE7;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s ease;
+  width: 100px;
+  height: 40px;
+  margin-right: -10px;;
+}
+
+.footer-btn:hover {
+  background: #fff;
+  color: #b00087;
+}
+
+.footer-divider {
+  border: 0;
+  height: 1px;
+  background: #fff;
+  margin: 10px 0;
+}
+
+.footer-bottom {
+  font-size: 14px;
+}
+
+.paragraph{
+  font-size: 17px;
+  margin-right: 200px;
+}
+

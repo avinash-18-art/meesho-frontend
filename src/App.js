@@ -1,15 +1,14 @@
 import React from 'react';
 import Excel from './Components/Excel'
+import Footer from './Components/Footer';
 
-
-import './App.css';
 
 
 function App() {
   return (
     <div>
     <Excel/>
-    
+    <Footer/>
     
     </div>
   );

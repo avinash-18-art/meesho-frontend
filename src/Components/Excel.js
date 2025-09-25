@@ -461,15 +461,15 @@ function Dashboard() {
         <div className="adjust-box">
         <div className="status-boxes">
 
-  <div className="box all">
-  <div className="box-content">
-    All<br />
+      <div className="box all">
+      <div className="box-content">
+      All<br />
     <span>{data.all}</span>
-  </div>
-  <div className="background-logo">
+     </div>
+    <div className="background-logo">
     <img src="/Vector.png" className="box-symbol" alt="cart" />
-  </div>
-</div>
+    </div>
+    </div>
 
           <div className="box rto">
            <div className="box-content"> 
@@ -667,15 +667,19 @@ function Dashboard() {
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
+        
       >
-        <p>Drag and drop your CSV or Excel file here</p>
+        <h1 className="head">Upload File</h1>
         <input
           type="file"
           accept=".csv, .xlsx, .xls"
           onChange={handleFileChange}
-        />
+        /> 
+        <img src="/Group (6).png" className="cloud-icon" alt="upload" />
+        <p className="drag">Drag and drop your CSV or Excel file here</p>
+        <p className="drop">Or Browser</p>
         {file && <p className="filename">Selected File: {file.name}</p>}
-        <button className="upload-btn">Choose File</button>
+        <button className="upload-btn">Upload</button>
       </div>
 
       {/* Buttons */}
@@ -715,7 +719,6 @@ function Dashboard() {
     </div>
   );
 }
-
 function App() {
   return (
     <Router>
