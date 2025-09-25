@@ -613,54 +613,55 @@ function Dashboard() {
       )}
 
       {/* Graph */}
-     <div style={{ margin: "20px 0" }}>
-  <button
-    onClick={() => setShowGraph(!showGraph)}
-    style={{
-      backgroundImage: "linear-gradient(90deg, #B00087, #E8AED9)",
-      color: "#fff",
-      padding: "10px 20px",
-      border: "none",
-      borderRadius: "6px",
-      cursor: "pointer",
-      fontSize: "14px",
-    }}
-  >
-    {showGraph ? "Hide Profit Graph" : "Show Profit Graph"}
-  </button>
-</div>
-
-{showGraph && graphData.length > 0 && (
-  <div className="graph-container" style={{ width: "100%", height: 400 }}>
-    <h2 className="graph-title">📈 Profit Trend (Per Date)</h2>
-    <ResponsiveContainer width="100%" height="100%">
-      <LineChart
-        data={graphData}
-        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-      >
-        <CartesianGrid strokeDasharray="5 5" stroke="#ddd" />
-        <XAxis dataKey="date" tick={{ fontSize: 12, fill: "black" }} />
-        <YAxis tick={{ fontSize: 12, fill: "black" }} />
-        <Tooltip
-          contentStyle={{
-            backgroundColor: "#fff",
-            borderRadius: "8px",
-            border: "1px solid #ccc",
+   
+      <div style={{ margin: "20px 0" }}>
+        <button
+          onClick={() => setShowGraph(!showGraph)}
+          style={{
+            backgroundColor: "#17a2b8",
+            color: "#fff",
+            padding: "10px 20px",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer",
+            fontSize: "14px",
           }}
-          labelStyle={{ fontWeight: "bold", color: "#333" }}
-        />
-        <Line
-          type="monotone"
-          dataKey="profit"
-          stroke="#007bff"
-          strokeWidth={3}
-          dot={{ r: 5, stroke: "#007bff", strokeWidth: 2, fill: "#fff" }}
-          activeDot={{ r: 8 }}
-        />
-      </LineChart>
-    </ResponsiveContainer>
-  </div>
-)}
+        >
+          {showGraph ? "Hide Profit Graph" : "Show Profit Graph"}
+        </button>
+      </div>
+
+      {showGraph && graphData.length > 0 && (
+        <div className="graph-container">
+          <h2 className="graph-title">📈 Profit Trend (Per Date)</h2>
+          <ResponsiveContainer>
+            <LineChart
+              data={graphData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="5 5" stroke="#ddd" />
+              <XAxis dataKey="date" tick={{ fontSize: 12, fill: "black" }} />
+              <YAxis tick={{ fontSize: 12, fill: "black" }} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "#fff",
+                  borderRadius: "8px",
+                  border: "1px solid #ccc",
+                }}
+                labelStyle={{ fontWeight: "bold", color: "#333" }}
+              />
+              <Line
+                type="monotone"
+                dataKey="profit"
+                stroke="#007bff"
+                strokeWidth={3}
+                dot={{ r: 5, stroke: "#007bff", strokeWidth: 2, fill: "#fff" }}
+                activeDot={{ r: 8 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      )}
 
 
       {/* File Upload */}
