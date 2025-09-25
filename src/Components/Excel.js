@@ -617,7 +617,7 @@ function Dashboard() {
   <button
     onClick={() => setShowGraph(!showGraph)}
     style={{
-      backgroundColor: "#17a2b8",
+      background: "linear-gradient(90deg, #B00087, #E8AED9)",
       color: "#fff",
       padding: "10px 20px",
       border: "none",
