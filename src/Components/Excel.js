@@ -653,9 +653,9 @@ function Dashboard() {
               <Line
                 type="monotone"
                 dataKey="profit"
-                stroke="#007bff"
+                stroke="#f984dcff"
                 strokeWidth={3}
-                dot={{ r: 5, stroke: "#007bff", strokeWidth: 2, fill: "#fff" }}
+                dot={{ r: 5, stroke: "#c806b5ff", strokeWidth: 2, fill: "#fff" }}
                 activeDot={{ r: 8 }}
               />
             </LineChart>
