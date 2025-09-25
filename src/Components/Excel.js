@@ -614,12 +614,11 @@ function Dashboard() {
 
       {/* Graph */}
    
- {/* Graph */}
       <div style={{ margin: "20px 0" }}>
         <button
           onClick={() => setShowGraph(!showGraph)}
           style={{
-            backgroundColor: "linear-gradient(90deg, #B00087, #E8AED9)",
+            backgroundColor: "#17a2b8",
             color: "#fff",
             padding: "10px 20px",
             border: "none",
@@ -654,9 +653,9 @@ function Dashboard() {
               <Line
                 type="monotone"
                 dataKey="profit"
-                stroke="#E8AED9"
+                stroke="#007bff"
                 strokeWidth={3}
-                dot={{ r: 5, stroke: "#B00087", strokeWidth: 2, fill: "#fff" }}
+                dot={{ r: 5, stroke: "#007bff", strokeWidth: 2, fill: "#fff" }}
                 activeDot={{ r: 8 }}
               />
             </LineChart>
