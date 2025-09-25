@@ -609,22 +609,37 @@ h1 {
 }
 
 /* Button styling */
-button {
+.graph-toggle-btn {
   background: linear-gradient(90deg, #B00087, #E8AED9);
   color: #fff;
-  font-weight: bold;
-  padding: 12px 24px;
-  border-radius: 8px;
+  padding: 10px 20px;
   border: none;
+  border-radius: 6px;
   cursor: pointer;
-  transition: 0.3s ease-in-out;
-  box-shadow: 0px 4px 10px rgba(176, 0, 135, 0.4);
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0px 4px 8px rgba(176, 0, 135, 0.3);
 }
 
-button:hover {
+.graph-toggle-btn:hover {
   background: linear-gradient(90deg, #E8AED9, #B00087);
-  box-shadow: 0px 6px 15px rgba(176, 0, 135, 0.6);
-  transform: scale(1.05);
+  box-shadow: 0px 6px 12px rgba(176, 0, 135, 0.5);
 }
+
+.graph-container {
+  background: linear-gradient(180deg, #E8AED9 0%, #B00087 100%);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.1);
+  color: #fff;
+}
+
+.graph-title {
+  margin-bottom: 10px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
 
 

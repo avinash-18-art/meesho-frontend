@@ -610,52 +610,52 @@ function Dashboard() {
             </div>
           </div>
         )
-      )}
+      )} 
 
-      {/* Graph */}
-        <div style={{ margin: "20px 0" }}>
-       <button
-       className="graph-toggle-btn"
-      onClick={() => setShowGraph(!showGraph)}
-       >
-     {showGraph ? "Hide Profit Graph" : "Show Profit Graph"}
-    </button>
-    </div>
+      
 
+    {/* Button to toggle graph */}
+<div style={{ margin: "20px 0" }}>
+  <button
+    className="graph-toggle-btn"
+    onClick={() => setShowGraph(!showGraph)}
+  >
+    {showGraph ? "Hide Profit Graph" : "Show Profit Graph"}
+  </button>
+</div>
 
-      {showGraph && graphData.length > 0 && (
-        <div className="graph-container">
-          <h2 className="graph-title">📈 Profit Trend (Per Date)</h2>
-          <ResponsiveContainer>
-            <LineChart
-              data={graphData}
-              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-            >
-              <CartesianGrid strokeDasharray="5 5" stroke="#ddd" />
-              <XAxis dataKey="date" tick={{ fontSize: 12, fill: "black" }} />
-              <YAxis tick={{ fontSize: 12, fill: "black" }} />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "#fff",
-                  borderRadius: "8px",
-                  border: "1px solid #ccc",
-                }}
-                labelStyle={{ fontWeight: "bold", color: "#333" }}
-              />
-              <Line
-                type="monotone"
-                dataKey="profit"
-                stroke="#007bff"
-                strokeWidth={3}
-                dot={{ r: 5, stroke: "#007bff", strokeWidth: 2, fill: "#fff" }}
-                activeDot={{ r: 8 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      )}
-
-
+{/* Graph */}
+{showGraph && graphData.length > 0 && (
+  <div className="graph-container" style={{ width: "100%", height: "400px" }}>
+    <h2 className="graph-title">📈 Profit Trend (Per Date)</h2>
+    <ResponsiveContainer width="100%" height="100%">
+      <LineChart
+        data={graphData}
+        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+      >
+        <CartesianGrid strokeDasharray="5 5" stroke="#ddd" />
+        <XAxis dataKey="date" tick={{ fontSize: 12, fill: "black" }} />
+        <YAxis tick={{ fontSize: 12, fill: "black" }} />
+        <Tooltip
+          contentStyle={{
+            backgroundColor: "#fff",
+            borderRadius: "8px",
+            border: "1px solid #ccc",
+          }}
+          labelStyle={{ fontWeight: "bold", color: "#333" }}
+        />
+        <Line
+          type="monotone"
+          dataKey="profit"
+          stroke="#fff" // line color for visibility on gradient background
+          strokeWidth={3}
+          dot={{ r: 5, stroke: "#fff", strokeWidth: 2, fill: "#B00087" }}
+          activeDot={{ r: 8 }}
+        />
+      </LineChart>
+    </ResponsiveContainer>
+  </div>
+)}
 
 
 
