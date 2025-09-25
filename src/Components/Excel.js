@@ -677,6 +677,7 @@ function Dashboard() {
           onChange={handleFileChange}
         />
         {file && <p className="filename">Selected File: {file.name}</p>}
+        <button className="upload-btn">Choose File</button>
       </div>
 
       {/* Buttons */}

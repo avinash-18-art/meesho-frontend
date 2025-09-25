@@ -553,3 +553,16 @@ h1 {
   stroke: #ccc;
   stroke-dasharray: 0; /* solid lines */
 }
+
+.upload-btn {
+  /* For gradient background */
+  background: linear-gradient(90deg, #B00087, #E8AED9);
+  
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px; /* lowercase 'r' in CSS */
+  cursor: pointer;
+  font-size: 14px;    /* use hyphenated CSS property */
+}
+
