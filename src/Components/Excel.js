@@ -443,13 +443,15 @@ function Dashboard() {
 
    
 
-        <div>
-          <Link to="/login">
-            <div className="navbar-login">
-             <h1 className="heading1"><img src="/Ellipse 2.png" alt="cart" className="logo" /> Shivayom</h1> 
-            </div>
-          </Link>
-        </div>
+      <div>
+     <Link to="/login">
+    <div className="logo-heading">
+      <img src="/Ellipse 2.png" className="shivay" alt="logo" />
+      <h1 className="heading1">Shivayom</h1>
+     </div>
+     </Link>
+      </div>
+
         </nav>
 
 
@@ -465,7 +467,7 @@ function Dashboard() {
     <span>{data.all}</span>
   </div>
   <div className="background-logo">
-    <img src="/Vector.png" className="box-logo" alt="cart" />
+    <img src="/Vector.png" className="box-symbol" alt="cart" />
   </div>
 </div>
 
@@ -475,7 +477,7 @@ function Dashboard() {
             <span>{data.rto}</span>
             </div>
             <div className="background-logo">
-           <img src="/Group.png" className="box-logo" alt="cart" />
+           <img src="/Group.png" className="box-symbol" alt="cart" />
            </div>
           </div>
 
@@ -490,7 +492,7 @@ function Dashboard() {
             </small>
             </div>
             <div className="background-logo">
-           <img src="/gir.png" className="box-logo" alt="cart" />
+           <img src="/gir.png" className="box-symbol" alt="cart" />
            </div>
           </div>
 
@@ -504,7 +506,7 @@ function Dashboard() {
             </small>
             </div>
             <div className="background-logo">
-           <img src="/Vector (2).png" className="box-logo" alt="cart" />
+           <img src="/Vector (2).png" className="box-symbol" alt="cart" />
            </div>
           </div>
 
@@ -514,7 +516,7 @@ function Dashboard() {
             <span>{data.cancelled}</span>
             </div>
             <div className="background-logo">
-           <img src="/Group (1).png" className="box-logo" alt="cart" />
+           <img src="/Group (1).png" className="box-symbol" alt="cart" />
            </div>
           </div>
 
@@ -524,7 +526,7 @@ function Dashboard() {
             <span>{data.ready_to_ship}</span>
             </div>
            <div className="background-logo">
-           <img src="/pending.png" className="box-logo" alt="cart" />
+           <img src="/pending.png" className="box-symbol" alt="cart" />
            </div>
           </div>
 
@@ -534,7 +536,7 @@ function Dashboard() {
             <span>{data.shipped}</span>
             </div>
            <div className="background-logo">
-           <img src="/Group (2).png" className="box-logo" alt="cart" />
+           <img src="/Group (2).png" className="box-symbol" alt="cart" />
            </div>
           </div>
 
@@ -544,7 +546,7 @@ function Dashboard() {
             <span>{data.other}</span>
             </div>
             <div className="background-logo">
-           <img src="/other.png" className="box-logo" alt="cart" />
+           <img src="/other.png" className="box-symbol" alt="cart" />
            </div>
           </div>
 
@@ -554,7 +556,7 @@ function Dashboard() {
             <span>{data.totalSupplierListedPrice.toLocaleString()}</span>
           </div>
            <div className="background-logo">
-           <img src="/Group (3).png" className="box-logo" alt="cart" />
+           <img src="/Group (3).png" className="box-symbol" alt="cart" />
            </div>
           </div>
 
@@ -564,7 +566,7 @@ function Dashboard() {
             <span>{data.totalSupplierDiscountedPrice.toLocaleString()}</span>
             </div>
             <div className="background-logo">
-           <img src="/Group (4).png" className="box-logo" alt="cart" />
+           <img src="/Group (4).png" className="box-symbol" alt="cart" />
            </div>
           </div>
 
@@ -574,7 +576,7 @@ function Dashboard() {
             <span>{data.totalProfit.toLocaleString()}</span>
             </div>
             <div className="background-logo">
-           <img src="/total profit.png" className="box-logo" alt="cart" />
+           <img src="/total profit.png" className="box-img" alt="cart" />
            </div>
           </div>
 
@@ -584,7 +586,7 @@ function Dashboard() {
             <span>{profitPercent}%</span>
           </div>
             <div className="background-logo">
-           <img src="/Group (5).png" className="box-logo" alt="cart" />
+           <img src="/Group (5).png" className="box-img" alt="cart" />
            </div>
           </div>
         </div>
