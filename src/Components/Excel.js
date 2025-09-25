@@ -619,7 +619,7 @@ function Dashboard() {
   <button
     onClick={() => setShowGraph(!showGraph)}
     style={{
-      backgroundColor: "#B00087",
+      backgroundColor: "#17a2b8",
       color: "#fff",
       padding: "10px 20px",
       border: "none",
@@ -632,16 +632,12 @@ function Dashboard() {
   </button>
 </div>
 
-{showGraph && (
-  <div style={{ width: "100%", height: "400px" }}>
-    <h2>📈 Profit Trend (Per Date)</h2>
+{showGraph && graphData.length > 0 && (
+  <div className="graph-container" style={{ width: "100%", height: 400 }}>
+    <h2 className="graph-title">📈 Profit Trend (Per Date)</h2>
     <ResponsiveContainer width="100%" height="100%">
       <LineChart
-        data={[
-          { date: "2025-09-01", profit: 1200 },
-          { date: "2025-09-02", profit: 1800 },
-          { date: "2025-09-03", profit: 900 },
-        ]} // ← Test data
+        data={graphData}
         margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
       >
         <CartesianGrid strokeDasharray="5 5" stroke="#ddd" />
@@ -658,16 +654,15 @@ function Dashboard() {
         <Line
           type="monotone"
           dataKey="profit"
-          stroke="#E8AED9"
+          stroke="#007bff"
           strokeWidth={3}
-          dot={{ r: 5, stroke: "#B00087", strokeWidth: 2, fill: "#fff" }}
+          dot={{ r: 5, stroke: "#007bff", strokeWidth: 2, fill: "#fff" }}
           activeDot={{ r: 8 }}
         />
       </LineChart>
     </ResponsiveContainer>
   </div>
 )}
-
 
 
       {/* File Upload */}
