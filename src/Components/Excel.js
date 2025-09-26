@@ -46,13 +46,15 @@ function Login() {
           return;
         }
         const payload = {
-          fullname: formData.firstName + " " + formData.lastName,
+          firstName: formData.firstName ,
+          lastName: formData.lastName,
           email: formData.email,
-          phoneNumber: formData.phone,
-          gst: formData.gst,
+          mobileNumber: formData.phone,
+          gstNumber: formData.gst,
           city: formData.city,
           country: formData.country,
-          password: formData.password,
+          createPassword: formData.createPassword,
+          confirmPassword: formData.confirmPassword
         };
         const res = await axios.post("https://product-backend-2-6atb.onrender.com/signup", payload);
         if (res.data.success) {
