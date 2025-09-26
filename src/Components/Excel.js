@@ -662,6 +662,8 @@ function Dashboard() {
 
 
       {/* File Upload */}
+      <div className="square-box">
+         <h1 className="head">Upload File</h1>
       <div
         className={`upload-section ${dragActive ? "drag-active" : ""}`}
         onDrop={handleDrop}
@@ -669,7 +671,7 @@ function Dashboard() {
         onDragLeave={handleDragLeave}
         
       >
-        <h1 className="head">Upload File</h1>
+       
         <input
           type="file"
           accept=".csv, .xlsx, .xls"
@@ -680,6 +682,8 @@ function Dashboard() {
         <p className="drop">Or Browser</p>
         {file && <p className="filename">Selected File: {file.name}</p>}
         <button className="upload-btn">Upload</button>
+      </div>
+      
       </div>
 
       {/* Buttons */}
@@ -731,4 +735,3 @@ function App() {
 }
 
 export default App;
-

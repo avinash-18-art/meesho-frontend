@@ -4,7 +4,7 @@
   text-align: center;
   padding: 20px;
   font-family: "Arial", sans-serif;
-  height: 140px;
+  height: 140px !important;
   
 }
 
@@ -53,7 +53,7 @@
 
 .footer-btn {
   padding: 8px 16px;
-  background-color: #EFCCE7;
+  background-color: #EFCCE7 !important;
   border: none;
   border-radius: 6px;
   font-weight: bold;
@@ -61,12 +61,13 @@
   transition: 0.3s ease;
   width: 100px;
   height: 40px;
-  margin-right: -10px;;
+  margin-right: -10px;
+  color: #b00087 !important;
 }
 
 .footer-btn:hover {
   background: #fff;
-  color: #b00087;
+  color: #fff !important;
 }
 
 .footer-divider {
