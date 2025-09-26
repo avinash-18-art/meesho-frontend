@@ -1,7 +1,8 @@
 import React, { useState } from "react";
+import axios from "axios";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { IoSearch } from "react-icons/io5";
-import axios from "axios";
+
 import {
   LineChart,
   Line,
@@ -16,167 +17,329 @@ import "./Excel.css";
 
 // ---------------------- LOGIN COMPONENT ----------------------
 function Login() {
-  const [mode, setMode] = useState("login"); // login | signup | otp | profile
+  const [mode, setMode] = useState("login"); // "login" | "signup" | "otp"
   const [formData, setFormData] = useState({
-    fullName: "",
+    firstName: "",
+    lastName: "",
     email: "",
     phone: "",
+    gst: "",
+    city: "",
+    country: "",
     password: "",
+    confirmPassword: ""
   });
   const [otp, setOtp] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
+  // signup / login
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (mode === "signup") {
-      try {
-        const res = await fetch(
-          "https://product-backend-2-6atb.onrender.com/signup",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              fullname: formData.fullName,
-              email: formData.email,
-              phoneNumber: formData.phone,
-              password: formData.password,
-            }),
-          }
-        );
-
-        const data = await res.json();
-        console.log("Signup Response:", data); // debug
-        alert(data.message);
-
-        // ✅ If OTP is generated, switch to OTP screen
-        if (
-          data.message?.toLowerCase().includes("otp") ||
-          data.success === true
-        ) {
+    try {
+      if (mode === "signup") {
+        if (formData.password !== formData.confirmPassword) {
+          alert("Passwords do not match");
+          return;
+        }
+        const payload = {
+          fullname: formData.firstName + " " + formData.lastName,
+          email: formData.email,
+          phoneNumber: formData.phone,
+          gst: formData.gst,
+          city: formData.city,
+          country: formData.country,
+          password: formData.password,
+        };
+        const res = await axios.post("https://product-backend-2-6atb.onrender.com/signup", payload);
+        if (res.data.success) {
+          alert("Signup successful, OTP sent to your email/phone");
           setMode("otp");
-        }
-      } catch {
-        alert("Signup failed.");
-      }
-    } else if (mode === "login") {
-      try {
-        const res = await fetch(
-          "https://product-backend-2-6atb.onrender.com/login",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              email: formData.email,
-              password: formData.password,
-            }),
-          }
-        );
-
-        const data = await res.json();
-        console.log("Login Response:", data); // debug
-        if (data.token) {
-          localStorage.setItem("token", data.token);
-          alert("Login successful");
-          setMode("profile");
         } else {
-          alert(data.message || "Login failed");
+          alert(res.data.message || "Signup failed");
         }
-      } catch {
-        alert("Login failed.");
+      } else {
+        const res = await axios.post("https://product-backend-2-6atb.onrender.com/login", {
+          email: formData.email,
+          password: formData.password,
+        });
+        if (res.data.success) {
+          alert("Login successful");
+        } else {
+          alert(res.data.message || "Login failed");
+        }
       }
+    } catch (err) {
+      console.error(err);
+      alert("Server error");
     }
   };
 
+  // verify OTP
   const handleOtpSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(
-        "https://product-backend-2-6atb.onrender.com/verify-otp",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: formData.email, otp }),
-        }
-      );
-
-      const data = await res.json();
-      console.log("OTP Verify Response:", data); // debug
-      alert(data.message);
-
-      if (data.success) {
+      const res = await axios.post("https://product-backend-2-6atb.onrender.com/verify-otp", {
+        email: formData.email,
+        otp,
+      });
+      if (res.data.success) {
+        alert("OTP verified, account created!");
         setMode("login");
-        setFormData({ fullName: "", email: "", phone: "", password: "" });
-        setOtp("");
+      } else {
+        alert(res.data.message || "Invalid OTP");
       }
-    } catch {
-      alert("OTP verification failed.");
+    } catch (err) {
+      console.error(err);
+      alert("Server error");
     }
   };
 
   return (
     <div className="loginpage-container">
       <div className="loginpage-box">
-        {mode === "profile" ? (
-          <div className="loginpage-profile">
-            <h2>Welcome, {formData.email}!</h2>
-            <p>You are now logged in to your profile.</p>
-            <button onClick={() => setMode("login")}>Logout</button>
-          </div>
-        ) : (
-          <>
-            <h2>
-              {mode === "login"
-                ? "Login"
-                : mode === "signup"
-                ? "Signup"
-                : "Verify OTP"}
-            </h2>
+        {/* Left branding side */}
+        <div className="loginpage-left">Meesho</div>
 
-            {mode !== "otp" ? (
-              <form onSubmit={handleSubmit} className="loginpage-form">
-                {mode === "signup" && (
-                  <>
+        {/* Right form side */}
+        <div className="loginpage-right">
+          <h2>
+            {mode === "login"
+              ? "Login"
+              : mode === "signup"
+              ? "Sign up"
+              : "Verify OTP"}
+          </h2>
+          <div className="underline" />
+
+          {mode !== "otp" ? (
+            <form onSubmit={handleSubmit} className="loginpage-form">
+              {mode === "signup" && (
+                <>
+                  <div className="field half">
+                    <label className="field-label">
+                      First name <span style={{ color: "#d23" }}>*</span>
+                    </label>
+                    <div className="input-wrap">
+                      <input
+                      className="input-design"
+                        name="firstName"
+                        placeholder="First name"
+                        value={formData.firstName}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="field half">
+                    <label className="field-label">
+                      Last name <span style={{ color: "#d23" }}>*</span>
+                    </label>
+                    <div className="input-wrap">
+                      <input
+                      className="input-design"
+                        name="lastName"
+                        placeholder="Last name"
+                        value={formData.lastName}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="field full">
+                    <label className="field-label">E-mail ID</label>
                     <input
-                      name="fullName"
-                      placeholder="Full Name"
-                      value={formData.fullName}
+                    className="input-design"
+                      name="email"
+                      type="email"
+                      placeholder="Email"
+                      value={formData.email}
                       onChange={handleChange}
                       required
                     />
+                  </div>
+
+                  <div className="field half">
+                    <label className="field-label">Mobile number</label>
                     <input
+                    className="input-design"
                       name="phone"
-                      placeholder="Phone Number"
+                      type="tel"
+                      placeholder="Mobile number"
                       value={formData.phone}
                       onChange={handleChange}
                       required
                     />
+                  </div>
+
+                  <div className="field half">
+                    <label className="field-label">GST number</label>
+                    <input
+                      name="gst"
+                      placeholder="GST number"
+                      value={formData.gst}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="field half">
+                    <label className="field-label">City</label>
+                    <input
+                    className="input-design"
+                      name="city"
+                      placeholder="City"
+                      value={formData.city}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="field half">
+                    <label className="field-label">Country</label>
+                    <input
+                    className="input-design"
+                      name="country"
+                      placeholder="Country"
+                      value={formData.country}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="field half">
+                    <label className="field-label">Create Password</label>
+                    <div className="input-wrap">
+                      <input
+                      className="input-design"
+                        name="password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Create password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        required
+                      />
+                      <button
+                        type="button"
+                        className="eye-btn"
+                        onClick={() => setShowPassword((s) => !s)}
+                      >
+                        {showPassword ? "🙈" : "👁️"}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="field half">
+                    <label className="field-label">Confirm Password</label>
+                    <div className="input-wrap">
+                      <input
+                      className="input-design"
+                        name="confirmPassword"
+                        type={showConfirm ? "text" : "password"}
+                        placeholder="Confirm password"
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                        required
+                      />
+                      <button
+                        type="button"
+                        className="eye-btn"
+                        onClick={() => setShowConfirm((s) => !s)}
+                      >
+                        {showConfirm ? "🙈" : "👁️"}
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {mode === "login" && (
+                <>
+                  <div className="field full">
+                    <label className="field-label">E-mail ID</label>
+                    <input
+                      name="email"
+                      type="email"
+                      placeholder="Email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+
+                  <div className="field full">
+                    <label className="field-label">Password</label>
+                    <div className="input-wrap">
+                      <input
+                      className="input-design"
+                        name="password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        required
+                      />
+                      <button
+                        type="button"
+                        className="eye-btn"
+                        onClick={() => setShowPassword((s) => !s)}
+                      >
+                        {showPassword ? "🙈" : "👁️"}
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {mode === "signup" && (
+                <label className="checkbox-row">
+                  <input type="checkbox" required /> i agree the terms and
+                  conditions
+                </label>
+              )}
+
+              <div className="field full">
+                <button type="submit" className="btn-primary">
+                  {mode === "signup" ? "Sign up" : "Sign in"}
+                </button>
+              </div>
+
+              <div className="field full login-footer">
+                {mode === "signup" ? (
+                  <>
+                    Already Have an account?{" "}
+                    <a
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setMode("login");
+                      }}
+                    >
+                      Log in
+                    </a>
+                  </>
+                ) : (
+                  <>
+                    Don't have an account?{" "}
+                    <a
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setMode("signup");
+                      }}
+                    >
+                      Sign up
+                    </a>
                   </>
                 )}
-                <input
-                  name="email"
-                  type="email"
-                  placeholder="Email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                />
-                <input
-                  name="password"
-                  type="password"
-                  placeholder="Password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                />
-                <button type="submit">
-                  {mode === "signup" ? "Signup" : "Login"}
-                </button>
-              </form>
-            ) : (
-              <form onSubmit={handleOtpSubmit} className="loginpage-form">
+              </div>
+            </form>
+          ) : (
+            <form onSubmit={handleOtpSubmit} className="loginpage-form">
+              <div className="field full">
+                <label className="field-label">Enter OTP</label>
                 <input
                   type="text"
                   placeholder="Enter OTP"
@@ -184,31 +347,19 @@ function Login() {
                   onChange={(e) => setOtp(e.target.value)}
                   required
                 />
-                <button type="submit">Verify OTP</button>
-              </form>
-            )}
-
-            {mode !== "otp" && (
-              <p className="loginpage-toggle">
-                {mode === "signup"
-                  ? "Already have an account?"
-                  : "Don't have an account?"}{" "}
-                <button
-                  className="loginpage-link-button"
-                  onClick={() => {
-                    setMode(mode === "signup" ? "login" : "signup");
-                  }}
-                >
-                  {mode === "signup" ? "Login" : "Signup"}
+              </div>
+              <div className="field full">
+                <button type="submit" className="btn-primary">
+                  Verify OTP
                 </button>
-              </p>
-            )}
-          </>
-        )}
+              </div>
+            </form>
+          )}
+        </div>
       </div>
     </div>
   );
-}
+};
 
 
 // ---------------------- DASHBOARD COMPONENT ----------------------
@@ -669,8 +820,7 @@ function Dashboard() {
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        
-      >
+        >
        
         <input
           type="file"
@@ -683,7 +833,6 @@ function Dashboard() {
         {file && <p className="filename">Selected File: {file.name}</p>}
         <button className="upload-btn">Upload</button>
       </div>
-      
       </div>
 
       {/* Buttons */}
