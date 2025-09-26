@@ -45,17 +45,19 @@ function Login() {
           alert("Passwords do not match");
           return;
         }
-        const payload = {
-          firstName: formData.firstName ,
+      
+          const payload = {
+          firstName: formData.firstName,
           lastName: formData.lastName,
           email: formData.email,
           mobileNumber: formData.phone,
           gstNumber: formData.gst,
           city: formData.city,
           country: formData.country,
-          createPassword: formData.createPassword,
+          createPassword: formData.password,     // <--- map password -> createPassword
           confirmPassword: formData.confirmPassword
-        };
+          };
+        
         const res = await axios.post("https://product-backend-2-6atb.onrender.com/signup", payload);
         if (res.data.success) {
           alert("Signup successful, OTP sent to your email/phone");
