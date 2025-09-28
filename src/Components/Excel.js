@@ -79,15 +79,23 @@ function Login() {
   };
 
   // ====== STEP 0: REQUEST OTP ======
- const handleForgotPassword = async () => {
+// ====== STEP 0: REQUEST OTP ======
+const handleForgotPassword = async () => {
+  // ✅ Frontend validation
+  if (!forgotValue || forgotValue.trim() === "") {
+    alert("Please enter your email or mobile number");
+    return;
+  }
+
   try {
     let payload = {};
-
     if (forgotValue.includes("@")) {
       payload = { email: forgotValue };
     } else {
       payload = { mobileNumber: forgotValue };
     }
+
+    console.log("Payload sent:", payload); // ✅ Debug log
 
     const res = await axios.post(
       "https://product-backend-2-6atb.onrender.com/forgot-password",
@@ -95,8 +103,10 @@ function Login() {
       { headers: { "Content-Type": "application/json" } }
     );
 
+    console.log("Response:", res.data); // ✅ Debug log
+
     if (res.data.success) {
-      alert(`OTP generated: ${res.data.otp}`); // ✅ For now show OTP directly
+      alert(`OTP generated: ${res.data.otp}`); // For testing
       setShowForgot(false);
       setShowOtpModal(true);
     } else {
@@ -107,6 +117,7 @@ function Login() {
     alert("Server error");
   }
 };
+
 
 
 
