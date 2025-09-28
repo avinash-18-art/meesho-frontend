@@ -85,7 +85,8 @@ function Login() {
     try {
       const res = await axios.post(
         "https://product-backend-2-6atb.onrender.com/forgot-password",
-        { email: forgotValue, mobileNumber: forgotValue } // backend checks both
+        { email: forgotValue, mobileNumber: forgotValue } ,
+        { withCredentials: true }// backend checks both
       );
       if (res.data.success) {
         alert("OTP sent to your email/phone");
