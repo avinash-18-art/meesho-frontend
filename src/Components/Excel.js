@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, {  useState, useRef, useEffect } from "react";
 import axios from "axios";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { IoSearch } from "react-icons/io5";
 
 import {
@@ -16,355 +16,8 @@ import "./Excel.css";
  
 
 // ---------------------- LOGIN COMPONENT ----------------------
-function Login() {
-  const [mode, setMode] = useState("login"); // "login" | "signup" | "otp"
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    gst: "",
-    city: "",
-    country: "",
-    password: "",
-    confirmPassword: ""
-  });
-  const [otp, setOtp] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
 
-  const handleChange = (e) =>
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-
-  // signup / login
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (mode === "signup") {
-        if (formData.password !== formData.confirmPassword) {
-          alert("Passwords do not match");
-          return;
-        }
-      
-          const payload = {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          mobileNumber: formData.phone,
-          gstNumber: formData.gst,
-          city: formData.city,
-          country: formData.country,
-          createPassword: formData.password,     // <--- map password -> createPassword
-          confirmPassword: formData.confirmPassword
-          };
-        
-        const res = await axios.post("https://product-backend-2-6atb.onrender.com/signup", payload);
-        if (res.data.success) {
-          alert("Signup successful, OTP sent to your email/phone");
-          setMode("otp");
-        } else {
-          alert(res.data.message || "Signup failed");
-        }
-      } else {
-        const res = await axios.post("https://product-backend-2-6atb.onrender.com/login", {
-          email: formData.email,
-          password: formData.password,
-        });
-        if (res.data.success) {
-          alert("Login successful");
-        } else {
-          alert(res.data.message || "Login failed");
-        }
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Server error");
-    }
-  };
-
-  // verify OTP
-  const handleOtpSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await axios.post("https://product-backend-2-6atb.onrender.com/verify-otp", {
-        email: formData.email,
-        otp,
-      });
-      if (res.data.success) {
-        alert("OTP verified, account created!");
-        setMode("login");
-      } else {
-        alert(res.data.message || "Invalid OTP");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Server error");
-    }
-  };
-
-  return (
-    <div className="loginpage-container">
-      <div className="loginpage-box">
-        {/* Left branding side */}
-        <div className="loginpage-left">Meesho</div>
-
-        {/* Right form side */}
-        <div className="loginpage-right">
-          <h2>
-            {mode === "login"
-              ? "Login"
-              : mode === "signup"
-              ? "Sign up"
-              : "Verify OTP"}
-          </h2>
-          <div className="underline" />
-
-          {mode !== "otp" ? (
-            <form onSubmit={handleSubmit} className="loginpage-form">
-              {mode === "signup" && (
-                <>
-                  <div className="field half">
-                    <label className="field-label">
-                      First name <span style={{ color: "#d23" }}>*</span>
-                    </label>
-                    <div className="input-wrap">
-                      <input
-                      className="input-design"
-                        name="firstName"
-                        placeholder="First name"
-                        value={formData.firstName}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="field half">
-                    <label className="field-label">
-                      Last name <span style={{ color: "#d23" }}>*</span>
-                    </label>
-                    <div className="input-wrap">
-                      <input
-                      className="input-design"
-                        name="lastName"
-                        placeholder="Last name"
-                        value={formData.lastName}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="field full">
-                    <label className="field-label">E-mail ID</label>
-                    <input
-                    className="input-design"
-                      name="email"
-                      type="email"
-                      placeholder="Email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-
-                  <div className="field half">
-                    <label className="field-label">Mobile number</label>
-                    <input
-                    className="input-design"
-                      name="phone"
-                      type="tel"
-                      placeholder="Mobile number"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-
-                  <div className="field half">
-                    <label className="field-label">GST number</label>
-                    <input
-                      name="gst"
-                      placeholder="GST number"
-                      value={formData.gst}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="field half">
-                    <label className="field-label">City</label>
-                    <input
-                    className="input-design"
-                      name="city"
-                      placeholder="City"
-                      value={formData.city}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="field half">
-                    <label className="field-label">Country</label>
-                    <input
-                    className="input-design"
-                      name="country"
-                      placeholder="Country"
-                      value={formData.country}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="field half">
-                    <label className="field-label">Create Password</label>
-                    <div className="input-wrap">
-                      <input
-                      className="input-design"
-                        name="password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Create password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        required
-                      />
-                      <button
-                        type="button"
-                        className="eye-btn"
-                        onClick={() => setShowPassword((s) => !s)}
-                      >
-                        {showPassword ? "🙈" : "👁️"}
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="field half">
-                    <label className="field-label">Confirm Password</label>
-                    <div className="input-wrap">
-                      <input
-                      className="input-design"
-                        name="confirmPassword"
-                        type={showConfirm ? "text" : "password"}
-                        placeholder="Confirm password"
-                        value={formData.confirmPassword}
-                        onChange={handleChange}
-                        required
-                      />
-                      <button
-                        type="button"
-                        className="eye-btn"
-                        onClick={() => setShowConfirm((s) => !s)}
-                      >
-                        {showConfirm ? "🙈" : "👁️"}
-                      </button>
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {mode === "login" && (
-                <>
-                  <div className="field full">
-                    <label className="field-label">E-mail ID</label>
-                    <input
-                      name="email"
-                      type="email"
-                      placeholder="Email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-
-                  <div className="field full">
-                    <label className="field-label">Password</label>
-                    <div className="input-wrap">
-                      <input
-                      className="input-design"
-                        name="password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        required
-                      />
-                      <button
-                        type="button"
-                        className="eye-btn"
-                        onClick={() => setShowPassword((s) => !s)}
-                      >
-                        {showPassword ? "🙈" : "👁️"}
-                      </button>
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {mode === "signup" && (
-                <label className="checkbox-row">
-                  <input type="checkbox" required /> i agree the terms and
-                  conditions
-                </label>
-              )}
-
-              <div className="field full">
-                <button type="submit" className="btn-primary">
-                  {mode === "signup" ? "Sign up" : "Sign in"}
-                </button>
-              </div>
-
-              <div className="field full login-footer">
-                {mode === "signup" ? (
-                  <>
-                    Already Have an account?{" "}
-                    <a
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setMode("login");
-                      }}
-                    >
-                      Log in
-                    </a>
-                  </>
-                ) : (
-                  <>
-                    Don't have an account?{" "}
-                    <a
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setMode("signup");
-                      }}
-                    >
-                      Sign up
-                    </a>
-                  </>
-                )}
-              </div>
-            </form>
-          ) : (
-            <form onSubmit={handleOtpSubmit} className="loginpage-form">
-              <div className="field full">
-                <label className="field-label">Enter OTP</label>
-                <input
-                  type="text"
-                  placeholder="Enter OTP"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="field full">
-                <button type="submit" className="btn-primary">
-                  Verify OTP
-                </button>
-              </div>
-            </form>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
-
+ 
 
 // ---------------------- DASHBOARD COMPONENT ----------------------
 function Dashboard() {
@@ -392,6 +45,28 @@ function Dashboard() {
   const [profitPercent, setProfitPercent] = useState(0);
   const [dragActive, setDragActive] = useState(false);
   const [showFilteredView, setShowFilteredView] = useState(false);
+  
+
+  const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef(null);
+
+  // Toggle menu when clicking Shivayom
+  const handleToggle = () => {
+    setShowMenu(!showMenu);
+  };
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleDownload = () => {
     fetch("https://product-backend-2-6atb.onrender.com/download-pdf", {
@@ -598,15 +273,23 @@ function Dashboard() {
 
    
 
-      <div>
-     <Link to="/login">
-    <div className="logo-heading">
-      <img src="/Ellipse 2.png" className="shivay" alt="logo" />
-      <h1 className="heading1">Shivayom</h1>
-     </div>
-     </Link>
+     <div className="logo-heading" ref={menuRef}>
+      <div onClick={handleToggle} className="logo-container">
+        <img src="/Ellipse 2.png" className="shivay" alt="logo" />
+        <h1 className="heading1">Shivayom</h1>
       </div>
 
+      {showMenu && (
+        <div className="dropdown">
+          <Link to="/signup" className="dropdown-item">
+            Signup
+          </Link>
+          <Link to="/login" className="dropdown-item">
+            Login
+          </Link>
+        </div>
+      )}
+    </div>
         </nav>
 
 
@@ -876,15 +559,4 @@ function Dashboard() {
     </div>
   );
 }
-function App() {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/login" element={<Login />} />
-      </Routes>
-    </Router>
-  );
-}
-
-export default App;
+export default Dashboard;
