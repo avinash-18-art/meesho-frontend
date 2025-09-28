@@ -20,8 +20,6 @@ import "./Signup.css";
 
 // ---------------------- LOGIN COMPONENT ----------------------
 
-import React, { useState } from "react";
-import axios from "axios";
 
 function Login() {
   const [mode, setMode] = useState("login"); // login | signup
@@ -81,25 +79,41 @@ function Login() {
   };
 
   // ====== STEP 0: REQUEST OTP ======
-  const handleForgotPassword = async () => {
-    try {
-      const res = await axios.post(
-        "https://product-backend-2-6atb.onrender.com/forgot-password",
-        { email: forgotValue, mobileNumber: forgotValue } ,
-        { withCredentials: true }// backend checks both
-      );
-      if (res.data.success) {
-        alert("OTP sent to your email/phone");
-        setShowForgot(false);
-        setShowOtpModal(true);
-      } else {
-        alert(res.data.message || "Reset failed");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Server error");
+ const handleForgotPassword = async () => {
+  try {
+    let payload = {};
+
+    // check if input looks like an email
+    if (forgotValue.includes("@")) {
+      payload = { email: forgotValue };
+    } else {
+      payload = { mobileNumber: forgotValue };
     }
-  };
+
+    console.log("Forgot password payload:", payload);
+
+    const res = await axios.post(
+      "https://product-backend-2-6atb.onrender.com/forgot-password",
+      payload,
+      {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
+      }
+    );
+
+    if (res.data.success) {
+      alert("OTP sent to your email/phone");
+      setShowForgot(false);
+      setShowOtpModal(true);
+    } else {
+      alert(res.data.message || "Reset failed");
+    }
+  } catch (err) {
+    console.error("Forgot password error:", err.response?.data || err.message);
+    alert("Server error");
+  }
+};
+
 
   // ====== STEP 1: VERIFY OTP ======
   const handleVerifyOtp = async () => {
