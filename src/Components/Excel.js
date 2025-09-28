@@ -20,59 +20,101 @@ import "./Signup.css";
 
 // ---------------------- LOGIN COMPONENT ----------------------
 
+import React, { useState } from "react";
+import axios from "axios";
 
 function Login() {
-  const [mode, setMode] = useState("login"); // login | signup | otp
+  const [mode, setMode] = useState("login"); // login | signup
   const [formData, setFormData] = useState({
+    email: "",
+    password: "",
     firstName: "",
     lastName: "",
-    email: "",
     phone: "",
     gst: "",
     city: "",
     country: "",
-    password: "",
     confirmPassword: "",
   });
 
-  const [otp, setOtp] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   // Forgot password states
   const [showForgot, setShowForgot] = useState(false);
   const [forgotValue, setForgotValue] = useState("");
-  const [showOtpModal, setShowOtpModal] = useState(false); // Step 1 OTP
+  const [showOtpModal, setShowOtpModal] = useState(false);
   const [resetOtp, setResetOtp] = useState("");
-  const [showNewPassModal, setShowNewPassModal] = useState(false); // Step 2 new password
+  const [showNewPassModal, setShowNewPassModal] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
-  const [showSuccessModal, setShowSuccessModal] = useState(false); // Step 3 success
-  const [showNewPassword, setShowNewPassword] = useState(false); // toggle eye
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // toggle eye
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  // Signup / login
+  // ====== LOGIN ======
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // ... existing signup/login logic
+    try {
+      const res = await axios.post(
+        "https://product-backend-2-6atb.onrender.com/login",
+        {
+          email: formData.email,
+          password: formData.password,
+        }
+      );
+
+      if (res.data.success) {
+        alert("Login successful!");
+        // redirect to your project/dashboard
+        window.location.href = "/dashboard";
+      } else {
+        alert(res.data.message || "Invalid credentials");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Server error");
+    }
   };
 
-  // OTP verification (Step 1)
+  // ====== STEP 0: REQUEST OTP ======
+  const handleForgotPassword = async () => {
+    try {
+      const res = await axios.post(
+        "https://product-backend-2-6atb.onrender.com/forgot-password",
+        { email: forgotValue, mobileNumber: forgotValue } // backend checks both
+      );
+      if (res.data.success) {
+        alert("OTP sent to your email/phone");
+        setShowForgot(false);
+        setShowOtpModal(true);
+      } else {
+        alert(res.data.message || "Reset failed");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Server error");
+    }
+  };
+
+  // ====== STEP 1: VERIFY OTP ======
   const handleVerifyOtp = async () => {
     try {
       const res = await axios.post(
         "https://product-backend-2-6atb.onrender.com/reset-password",
         {
-          value: forgotValue,
+          email: forgotValue,
+          mobileNumber: forgotValue,
           otp: resetOtp,
-          newPassword: "temp", // temporary, we just validate OTP first
+          newPassword: "temp", // just to verify OTP
         }
       );
-      if (res.data.success || res.data.message.includes("Invalid or expired OTP") === false) {
+      if (res.data.success) {
         setShowOtpModal(false);
-        setShowNewPassModal(true); // open new password modal
+        setShowNewPassModal(true);
       } else {
         alert(res.data.message || "Invalid OTP");
       }
@@ -82,7 +124,7 @@ function Login() {
     }
   };
 
-  // Update new password (Step 2)
+  // ====== STEP 2: RESET PASSWORD ======
   const handleUpdatePassword = async () => {
     if (newPassword !== confirmNewPassword) {
       alert("Passwords do not match");
@@ -92,7 +134,8 @@ function Login() {
       const res = await axios.post(
         "https://product-backend-2-6atb.onrender.com/reset-password",
         {
-          value: forgotValue,
+          email: forgotValue,
+          mobileNumber: forgotValue,
           otp: resetOtp,
           newPassword,
         }
@@ -109,32 +152,12 @@ function Login() {
     }
   };
 
-  // Step 0: Request OTP
-  const handleForgotPassword = async () => {
-    try {
-      const res = await axios.post(
-        "https://product-backend-2-6atb.onrender.com/forgot-password",
-        { value: forgotValue }
-      );
-      if (res.data.success) {
-        alert("OTP sent to your email/phone");
-        setShowForgot(false);
-        setShowOtpModal(true); // Step 1
-      } else {
-        alert(res.data.message || "Reset failed");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Server error");
-    }
-  };
-
-  // Resend OTP
+  // ====== STEP RESEND OTP ======
   const handleResend = async () => {
     try {
       const res = await axios.post(
         "https://product-backend-2-6atb.onrender.com/resend-otp",
-        { value: forgotValue }
+        { email: forgotValue, mobileNumber: forgotValue }
       );
       if (res.data.success) {
         alert("OTP resent successfully");
@@ -152,56 +175,57 @@ function Login() {
       <div className="loginpage-box">
         <div className="loginpage-left">Meesho</div>
         <div className="loginpage-right">
-          <h2>{mode === "login" ? "Login" : mode === "signup" ? "Sign up" : "Verify OTP"}</h2>
+          <h2>{mode === "login" ? "Login" : "Sign up"}</h2>
           <div className="underline" />
 
-          {mode !== "otp" && (
+          {mode === "login" && (
             <form onSubmit={handleSubmit} className="loginpage-form">
-              {mode === "login" && (
-                <>
-                  <div className="field full">
-                    <label className="field-label">E-mail ID</label>
-                    <input
-                      name="email"
-                      type="email"
-                      placeholder="Email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div className="field full">
-                    <label className="field-label">Password</label>
-                    <div className="input-wrap">
-                      <input
-                        className="input-design"
-                        name="password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        required
-                      />
-                      <button
-                        type="button"
-                        className="eye-btn"
-                        onClick={() => setShowPassword((s) => !s)}
-                      >
-                        {showPassword ? "🙈" : "👁️"}
-                      </button>
-                    </div>
-                  </div>
-                  <p className="forgot-link">
-                    <a href="#" onClick={(e) => { e.preventDefault(); setShowForgot(true); }}>
-                      Forgot Password?
-                    </a>
-                  </p>
-                </>
-              )}
-
+              <div className="field full">
+                <label className="field-label">E-mail ID</label>
+                <input
+                  name="email"
+                  type="email"
+                  placeholder="Email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="field full">
+                <label className="field-label">Password</label>
+                <div className="input-wrap">
+                  <input
+                    className="input-design"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="eye-btn"
+                    onClick={() => setShowPassword((s) => !s)}
+                  >
+                    {showPassword ? "🙈" : "👁️"}
+                  </button>
+                </div>
+              </div>
+              <p className="forgot-link">
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowForgot(true);
+                  }}
+                >
+                  Forgot Password?
+                </a>
+              </p>
               <div className="field full">
                 <button type="submit" className="btn-primary">
-                  {mode === "signup" ? "Sign up" : "Sign in"}
+                  Sign in
                 </button>
               </div>
             </form>
@@ -209,7 +233,7 @@ function Login() {
         </div>
       </div>
 
-      {/* Step 0: Forgot Password Modal */}
+      {/* STEP 0: Forgot Password Modal */}
       {showForgot && (
         <div className="modal-overlay">
           <div className="modal-box">
@@ -231,7 +255,7 @@ function Login() {
         </div>
       )}
 
-      {/* Step 1: Enter OTP Modal */}
+      {/* STEP 1: Enter OTP Modal */}
       {showOtpModal && (
         <div className="modal-overlay">
           <div className="modal-box">
@@ -247,7 +271,13 @@ function Login() {
             </button>
             <p className="resend-text">
               Didn't get OTP?{" "}
-              <a href="#" onClick={(e) => { e.preventDefault(); handleResend(); }}>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleResend();
+                }}
+              >
                 Resend
               </a>
             </p>
@@ -255,7 +285,7 @@ function Login() {
         </div>
       )}
 
-      {/* Step 2: New Password Modal */}
+      {/* STEP 2: Reset Password Modal */}
       {showNewPassModal && (
         <div className="modal-overlay">
           <div className="modal-box">
@@ -301,13 +331,16 @@ function Login() {
         </div>
       )}
 
-      {/* Step 3: Success Modal */}
+      {/* STEP 3: Success Modal */}
       {showSuccessModal && (
         <div className="modal-overlay">
           <div className="modal-box">
             <h3>Success!</h3>
             <p>Congratulations! You have been successfully authenticated.</p>
-            <button className="btn-primary" onClick={() => setShowSuccessModal(false)}>
+            <button
+              className="btn-primary"
+              onClick={() => setShowSuccessModal(false)}
+            >
               Close
             </button>
           </div>
@@ -316,6 +349,8 @@ function Login() {
     </div>
   );
 }
+
+
 
 //-------------------------signup component--------------------------
 
