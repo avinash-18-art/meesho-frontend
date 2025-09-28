@@ -83,26 +83,20 @@ function Login() {
   try {
     let payload = {};
 
-    // check if input looks like an email
     if (forgotValue.includes("@")) {
       payload = { email: forgotValue };
     } else {
       payload = { mobileNumber: forgotValue };
     }
 
-    console.log("Forgot password payload:", payload);
-
     const res = await axios.post(
       "https://product-backend-2-6atb.onrender.com/forgot-password",
       payload,
-      {
-        headers: { "Content-Type": "application/json" },
-        withCredentials: true,
-      }
+      { headers: { "Content-Type": "application/json" } }
     );
 
     if (res.data.success) {
-      alert("OTP sent to your email/phone");
+      alert(`OTP generated: ${res.data.otp}`); // ✅ For now show OTP directly
       setShowForgot(false);
       setShowOtpModal(true);
     } else {
@@ -113,6 +107,7 @@ function Login() {
     alert("Server error");
   }
 };
+
 
 
   // ====== STEP 1: VERIFY OTP ======
