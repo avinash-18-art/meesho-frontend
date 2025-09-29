@@ -119,21 +119,30 @@ const handleForgotPassword = async () => {
   }
 };
 
-
 // ====== STEP 1: VERIFY OTP ======
-  const handleVerifyOtp = async () => {
+const handleVerifyOtp = async () => {
   try {
+    // Build payload dynamically (no null fields)
+    const payload = {
+      otp: resetOtp,
+      newPassword: "Temp@1234",       // Stronger temp password
+      confirmPassword: "Temp@1234",   // Must match newPassword
+    };
+
+    if (forgotValue.includes("@")) {
+      payload.email = forgotValue.trim().toLowerCase();
+    } else {
+      payload.mobileNumber = forgotValue.trim();
+    }
+
+    // Send request
     const res = await axios.post(
       "https://product-backend-2-6atb.onrender.com/reset-password",
-      {
-        email: forgotValue.includes("@") ? forgotValue : null,
-        mobileNumber: !forgotValue.includes("@") ? forgotValue : null,
-        otp: resetOtp,
-        newPassword: "temp123",
-        confirmPassword: "temp123", // backend requires confirmPassword
-      }
+      payload,
+      { headers: { "Content-Type": "application/json" } }
     );
 
+    // Handle response
     if (res.data.success) {
       setShowOtpModal(false);
       setShowNewPassModal(true);
@@ -141,8 +150,8 @@ const handleForgotPassword = async () => {
       alert(res.data.message || "Invalid OTP");
     }
   } catch (err) {
-    console.error(err);
-    alert("Server error");
+    console.error("Reset password error:", err.response?.data || err.message);
+    alert(err.response?.data?.message || "Server error. Please try again.");
   }
 };
 
