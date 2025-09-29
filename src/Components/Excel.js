@@ -79,6 +79,7 @@ function Login() {
   };
 
   
+  //===forgot password===//
 const handleForgotPassword = async () => {
   if (!forgotValue || forgotValue.trim() === "") {
     alert("Please enter your email or mobile number");
@@ -86,10 +87,14 @@ const handleForgotPassword = async () => {
   }
 
   try {
-    const payload = {
-      email: forgotValue.includes("@") ? forgotValue : "",
-      mobileNumber: !forgotValue.includes("@") ? forgotValue : ""
-    };
+    let payload = {};
+
+    // If value contains "@" assume it's email
+    if (forgotValue.includes("@")) {
+      payload = { email: forgotValue };
+    } else {
+      payload = { mobileNumber: forgotValue };
+    }
 
     console.log("Payload sent:", payload);
 
@@ -102,7 +107,7 @@ const handleForgotPassword = async () => {
     console.log("Response:", res.data);
 
     if (res.data.success) {
-      alert(`OTP generated: ${res.data.otp}`); // for testing
+      alert("OTP sent successfully!");
       setShowForgot(false);
       setShowOtpModal(true);
     } else {
@@ -110,15 +115,12 @@ const handleForgotPassword = async () => {
     }
   } catch (err) {
     console.error("Forgot password error:", err.response?.data || err.message);
-    alert("Server error");
+    alert(err.response?.data?.message || "Server error");
   }
 };
 
 
-
-
-
-  // ====== STEP 1: VERIFY OTP ======
+// ====== STEP 1: VERIFY OTP ======
   const handleVerifyOtp = async () => {
     try {
       const res = await axios.post(
