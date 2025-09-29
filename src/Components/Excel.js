@@ -122,73 +122,78 @@ const handleForgotPassword = async () => {
 
 // ====== STEP 1: VERIFY OTP ======
   const handleVerifyOtp = async () => {
-    try {
-      const res = await axios.post(
-        "https://product-backend-2-6atb.onrender.com/reset-password",
-        {
-          email: forgotValue,
-          mobileNumber: forgotValue,
-          otp: resetOtp,
-          newPassword: "temp", // just to verify OTP
-        }
-      );
-      if (res.data.success) {
-        setShowOtpModal(false);
-        setShowNewPassModal(true);
-      } else {
-        alert(res.data.message || "Invalid OTP");
+  try {
+    const res = await axios.post(
+      "https://product-backend-2-6atb.onrender.com/verify-otp",
+      {
+        email: forgotValue,
+        mobileNumber: forgotValue,
+        otp: resetOtp,
       }
-    } catch (err) {
-      console.error(err);
-      alert("Server error");
+    );
+
+    if (res.data.success) {
+      setShowOtpModal(false);
+      setShowNewPassModal(true);
+    } else {
+      alert(res.data.message || "Invalid OTP");
     }
-  };
+  } catch (err) {
+    console.error(err);
+    alert("Server error while verifying OTP");
+  }
+};
+
 
   // ====== STEP 2: RESET PASSWORD ======
-  const handleUpdatePassword = async () => {
-    if (newPassword !== confirmNewPassword) {
-      alert("Passwords do not match");
-      return;
-    }
-    try {
-      const res = await axios.post(
-        "https://product-backend-2-6atb.onrender.com/reset-password",
-        {
-          email: forgotValue,
-          mobileNumber: forgotValue,
-          otp: resetOtp,
-          newPassword,
-        }
-      );
-      if (res.data.success) {
-        setShowNewPassModal(false);
-        setShowSuccessModal(true);
-      } else {
-        alert(res.data.message || "Failed to reset password");
+ const handleUpdatePassword = async () => {
+  if (newPassword !== confirmNewPassword) {
+    alert("Passwords do not match");
+    return;
+  }
+  try {
+    const res = await axios.post(
+      "https://product-backend-2-6atb.onrender.com/reset-password",
+      {
+        email: forgotValue,
+        mobileNumber: forgotValue,
+        otp: resetOtp,
+        newPassword,
+        confirmPassword: confirmNewPassword, // MUST include this
       }
-    } catch (err) {
-      console.error(err);
-      alert("Server error");
+    );
+
+    if (res.data.success) {
+      setShowNewPassModal(false);
+      setShowSuccessModal(true);
+    } else {
+      alert(res.data.message || "Failed to reset password");
     }
-  };
+  } catch (err) {
+    console.error(err);
+    alert("Server error while resetting password");
+  }
+};
+
 
   // ====== STEP RESEND OTP ======
-  const handleResend = async () => {
-    try {
-      const res = await axios.post(
-        "https://product-backend-2-6atb.onrender.com/resend-otp",
-        { email: forgotValue, mobileNumber: forgotValue }
-      );
-      if (res.data.success) {
-        alert("OTP resent successfully");
-      } else {
-        alert(res.data.message || "Failed to resend OTP");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Server error");
+const handleResend = async () => {
+  try {
+    const res = await axios.post(
+      "https://product-backend-2-6atb.onrender.com/resend-otp",
+      { email: forgotValue, mobileNumber: forgotValue }
+    );
+    if (res.data.success) {
+      alert("OTP resent successfully");
+    } else {
+      alert(res.data.message || "Failed to resend OTP");
     }
-  };
+  } catch (err) {
+    console.error(err);
+    alert("Server error while resending OTP");
+  }
+};
+
 
   return (
     <div className="loginpage-container">
