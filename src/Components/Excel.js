@@ -122,75 +122,82 @@ const handleForgotPassword = async () => {
 
 // ====== STEP 1: VERIFY OTP ======
   const handleVerifyOtp = async () => {
-    try {
-      const res = await axios.post(
-        "https://product-backend-2-6atb.onrender.com/verify-otp",
-        {
-          email: forgotValue,
-          mobileNumber: forgotValue,
-          otp: resetOtp,
-        }
-      );
-
-      if (res.data.success) {
-        setShowOtpModal(false);
-        setShowNewPassModal(true);
-      } else {
-        alert(res.data.message || "Invalid OTP");
+  try {
+    const res = await axios.post(
+      "https://product-backend-2-6atb.onrender.com/reset-password",
+      {
+        email: forgotValue.includes("@") ? forgotValue : null,
+        mobileNumber: !forgotValue.includes("@") ? forgotValue : null,
+        otp: resetOtp,
+        newPassword: "temp123",
+        confirmPassword: "temp123", // backend requires confirmPassword
       }
-    } catch (err) {
-      console.error(err);
-      alert("Server error while verifying OTP");
-    }
-  };
+    );
 
-  // ====== STEP 2: RESET PASSWORD ======
- const handleUpdatePassword = async () => {
-    if (newPassword !== confirmNewPassword) {
-      alert("Passwords do not match");
-      return;
+    if (res.data.success) {
+      setShowOtpModal(false);
+      setShowNewPassModal(true);
+    } else {
+      alert(res.data.message || "Invalid OTP");
     }
-    try {
-      const res = await axios.post(
-        "https://product-backend-2-6atb.onrender.com/reset-password",
-        {
-          email: forgotValue.includes("@") ? forgotValue : undefined,
-          mobileNumber: !forgotValue.includes("@") ? forgotValue : undefined,
-          otp: resetOtp,
-          newPassword,
-          confirmPassword: confirmNewPassword,
-        }
-      );
-      if (res.data.success) {
-        setShowNewPassModal(false);
-        setShowSuccessModal(true);
-      } else {
-        alert(res.data.message || "Failed to reset password");
+  } catch (err) {
+    console.error(err);
+    alert("Server error");
+  }
+};
+
+  
+
+// ====== STEP 2: RESET PASSWORD ======
+const handleUpdatePassword = async () => {
+  if (newPassword !== confirmNewPassword) {
+    alert("Passwords do not match");
+    return;
+  }
+
+  try {
+    const res = await axios.post(
+      "https://product-backend-2-6atb.onrender.com/reset-password",
+      {
+        email: forgotValue.includes("@") ? forgotValue : null,
+        mobileNumber: !forgotValue.includes("@") ? forgotValue : null,
+        otp: resetOtp,
+        newPassword,
+        confirmPassword: confirmNewPassword, // required by backend
       }
-    } catch (err) {
-      console.error(err);
-      alert("Server error while resetting password");
+    );
+
+    if (res.data.success) {
+      setShowNewPassModal(false);
+      setShowSuccessModal(true);
+    } else {
+      alert(res.data.message || "Failed to reset password");
     }
-  };
+  } catch (err) {
+    console.error(err);
+    alert("Server error");
+  }
+};
 
 
-  // ====== STEP RESEND OTP ======
-  const handleResend = async () => {
-    try {
-      const res = await axios.post(
-        "https://product-backend-2-6atb.onrender.com/resend-otp",
-        { value: forgotValue }
-      );
-      if (res.data.success) {
-        alert("OTP resent successfully");
-      } else {
-        alert(res.data.message || "Failed to resend OTP");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Server error while resending OTP");
+// ====== STEP 3: RESEND OTP ======
+const handleResend = async () => {
+  try {
+    const res = await axios.post(
+      "https://product-backend-2-6atb.onrender.com/resend-otp",
+      { value: forgotValue } // backend expects { value }
+    );
+
+    if (res.data.success) {
+      alert("OTP resent successfully");
+    } else {
+      alert(res.data.message || "Failed to resend OTP");
     }
-  };
+  } catch (err) {
+    console.error(err);
+    alert("Server error");
+  }
+};
 
 
   return (
