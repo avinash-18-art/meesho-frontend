@@ -389,7 +389,6 @@ function Signup() {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [showPopup, setShowPopup] = useState(false); // popup state
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -421,7 +420,7 @@ function Signup() {
       );
 
       if (res.data.success) {
-        setShowPopup(true); // show popup
+        alert("Signup successful!");
         setFormData({
           firstName: "",
           lastName: "",
@@ -447,17 +446,143 @@ function Signup() {
       <div className="signup-box">
         <h2>Sign Up</h2>
         <div className="signup-left">Meesho</div>
+        
         <div className="underline" />
 
         <form onSubmit={handleSignup} className="signup-form">
-          {/* --- all your input fields here --- */}
-          {/* ...same as your code */}
+          <div className="field half">
+            <label>First Name *</label>
+            <input
+              type="text"
+              name="firstName"
+              value={formData.firstName}
+              onChange={handleChange}
+              placeholder="First Name"
+              required
+            />
+          </div>
+
+          <div className="field half">
+            <label>Last Name *</label>
+            <input
+              type="text"
+              name="lastName"
+              value={formData.lastName}
+              onChange={handleChange}
+              placeholder="Last Name"
+              required
+            />
+          </div>
+
+          <div className="field full">
+            <label>Email</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Email"
+              required
+            />
+          </div>
+
+          <div className="field half">
+            <label>Mobile Number</label>
+            <input
+              type="tel"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              placeholder="Mobile Number"
+              required
+            />
+          </div>
+
+          <div className="field half">
+            <label className="label-de">GST Number</label>
+            <input
+              type="text"
+              name="gst"
+              value={formData.gst}
+              onChange={handleChange}
+              placeholder="GST Number"
+            />
+          </div>
+
+          <div className="field half">
+            <label>City</label>
+            <input
+              type="text"
+              name="city"
+              value={formData.city}
+              onChange={handleChange}
+              placeholder="City"
+            />
+          </div>
+
+          <div className="field half">
+            <label>Country</label>
+            <input
+              type="text"
+              name="country"
+              value={formData.country}
+              onChange={handleChange}
+              placeholder="Country"
+            />
+          </div>
+
+          <div className="field half">
+            <label>Create Password </label>
+            <div className="input-wrap">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Create Password"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((s) => !s)}
+              >
+                {showPassword ? "🙈" : "👁️"}
+              </button>
+            </div>
+          </div>
+
+          <div className="field half">
+            <label>Confirm Password </label>
+            <div className="input-wrap">
+              <input
+                type={showConfirm ? "text" : "password"}
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                placeholder="Confirm Password"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirm((s) => !s)}
+              >
+                {showConfirm ? "🙈" : "👁️"}
+              </button>
+            </div>
+          </div>
+
+          <label className="checkbox-row">
+            <input type="checkbox" required /> I agree to the terms and
+            conditions
+          </label>
+
           <div className="field full">
             <button type="submit" className="btn-primary">
               Sign Up
             </button>
           </div>
 
+          {/* Bottom login link */}
           <p style={{ marginTop: "15px", textAlign: "center" }}>
             Already have an account?{" "}
             <Link to="/login" style={{ color: "#007bff", textDecoration: "none" }}>
@@ -466,19 +591,6 @@ function Signup() {
           </p>
         </form>
       </div>
-
-      {/* ✅ Popup */}
-      {showPopup && (
-        <div className="popup-overlay">
-          <div className="popup-box">
-            <h3>🎉 Congratulations!</h3>
-            <p>
-              You have successfully completed the signup process. Now you can work on projects.
-            </p>
-            <button onClick={() => setShowPopup(false)}>OK</button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
