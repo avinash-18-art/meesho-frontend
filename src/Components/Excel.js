@@ -134,22 +134,32 @@ const handleForgotPassword = async () => {
   
 
 // ====== STEP 2: RESET PASSWORD ======
-   const handleResetPassword = async () => {
-    try {
-      const res = await axios.post("https://product-backend-2-6atb.onrender.com/reset-password", {
-        otp: resetOtp.toString(),
+ const handleResetPassword = async () => {
+  try {
+    const res = await axios.post(
+      "https://product-backend-2-6atb.onrender.com/reset-password",
+      {
         newPassword,
         confirmPassword
-      });
-      if (res.data.success) {
-        alert("Password reset successful!");
-        setStep(1);
-        setEmail(""); setResetOtp(""); setNewPassword(""); setConfirmPassword("");
-      } else alert(res.data.message);
-    } catch (error) {
-      console.error(error.response?.data || error.message);
+      }
+    );
+
+    if (res.data.success) {
+      alert("Password reset successful!");
+      // Reset all fields
+      setStep(1);
+      setNewPassword("");
+      setConfirmPassword("");
+      setResetOtp(""); // no longer needed but can clear
+      setEmail("");    // optional, clear if you had an email field
+    } else {
+      alert(res.data.message);
     }
-  };
+  } catch (error) {
+    console.error(error.response?.data || error.message);
+  }
+};
+
 
 
 // ====== STEP 3: RESEND OTP ======
