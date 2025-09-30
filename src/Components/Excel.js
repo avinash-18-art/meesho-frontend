@@ -44,6 +44,7 @@ function Login() {
   const [resetOtp, setResetOtp] = useState("");
   const [showNewPassModal, setShowNewPassModal] = useState(false);
   const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -359,9 +360,9 @@ const handleResend = async () => {
               </button>
             </div>
 
-            <button className="btn-primary" onClick={handleUpdatePassword}>
-              Update Password
-            </button>
+           <button className="btn-primary" onClick={handleResetPassword}>
+          Update Password
+           </button>
           </div>
         </div>
       )}
