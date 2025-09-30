@@ -377,7 +377,7 @@ function Login() {
         <div className="modal-overlay">
           <div className="modal-box">
             <h3 className="forgot">Success!</h3>
-            <p className="forgot">Your password has been reset successfully.</p>
+            <p className="forgot">Congratulations! You have been successfully authenticated</p>
             <button
               className="btn-primary"
               onClick={() => setShowSuccessModal(false)}
