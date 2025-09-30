@@ -120,62 +120,36 @@ const handleForgotPassword = async () => {
 };
 
 // ====== STEP 1: VERIFY OTP ======
-const handleVerifyOtp = async () => {
-  try {
-    const payload = { otp: resetOtp }; // ✅ only OTP
-
-    const res = await axios.post(
-      "https://product-backend-2-6atb.onrender.com/verify-otp",
-      payload,
-      { headers: { "Content-Type": "application/json" } }
-    );
-
-    if (res.data.success) {
-      // ✅ Open new password popup
-      setShowOtpModal(false);
-      setShowPasswordResetModal(true);
-    } else {
-      alert(res.data.message);
+  const handleVerifyOtp = async () => {
+    try {
+      const res = await axios.post("https://product-backend-2-6atb.onrender.com/verify-otp", { otp: resetOtp.toString() });
+      if (res.data.success) setStep(3);
+      else alert(res.data.message);
+    } catch (error) {
+      console.error(error.response?.data || error.message);
     }
-  } catch (error) {
-    console.error(error.response?.data || error.message);
-  }
-};
+  };
 
 
   
 
 // ====== STEP 2: RESET PASSWORD ======
-const handleResetPassword = async () => {
-  try {
-    if (newPassword !== confirmPassword) {
-      return alert("Passwords do not match");
+   const handleResetPassword = async () => {
+    try {
+      const res = await axios.post("https://product-backend-2-6atb.onrender.com/reset-password", {
+        otp: resetOtp.toString(),
+        newPassword,
+        confirmPassword
+      });
+      if (res.data.success) {
+        alert("Password reset successful!");
+        setStep(1);
+        setEmail(""); setResetOtp(""); setNewPassword(""); setConfirmPassword("");
+      } else alert(res.data.message);
+    } catch (error) {
+      console.error(error.response?.data || error.message);
     }
-
-    const payload = {
-      otp: resetOtp,       // ✅ keep OTP for security
-      newPassword,
-      confirmPassword
-    };
-
-    const res = await axios.post(
-      "https://product-backend-2-6atb.onrender.com/reset-password",
-      payload,
-      { headers: { "Content-Type": "application/json" } }
-    );
-
-    if (res.data.success) {
-      // ✅ Success modal
-      setShowPasswordResetModal(false);
-      setShowSuccessModal(true);
-    } else {
-      alert(res.data.message);
-    }
-  } catch (error) {
-    console.error(error.response?.data || error.message);
-  }
-};
-
+  };
 
 
 // ====== STEP 3: RESEND OTP ======
