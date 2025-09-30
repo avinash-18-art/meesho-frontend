@@ -812,8 +812,134 @@ h1 {
   to { opacity: 1; transform: translateY(0); }
 }
 
+.forgot-link{
+  color:#B00087 !important;
+}
+
+.forgot{
+  color:#B00087 !important;
+
+}
 
 
- 
+/* Overlay with blur effect */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+/* Modal box with glassmorphism */
+.modal-box {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 30px 35px;
+  border-radius: 16px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  text-align: center;
+  position: relative;
+  animation: slideIn 0.35s ease-out;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+/* Title */
+.modal-box .forgot {
+  margin-bottom: 18px;
+  font-size: 24px;
+  font-weight: 700;
+  color: #222;
+  letter-spacing: 0.5px;
+}
+
+/* Label */
+.modal-box label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #444;
+  text-align: left;
+}
+
+/* Input field */
+.modal-box input {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 15px;
+  border: 1.5px solid #ddd;
+  border-radius: 10px;
+  outline: none;
+  margin-bottom: 20px;
+  background: #f9f9f9;
+  transition: all 0.25s ease-in-out;
+}
+
+.modal-box input:focus {
+  border-color: #6a11cb;
+  box-shadow: 0 0 8px rgba(106, 17, 203, 0.3);
+  background: #fff;
+}
+
+/* Primary gradient button */
+.btn-primary {
+  width: 100%;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  margin-bottom: 12px;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(37, 117, 252, 0.4);
+}
+
+/* Close button styled */
+.close-btn {
+  width: 100%;
+  padding: 10px 16px;
+  background: #f3f3f3;
+  color: #333;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.25s, color 0.25s;
+}
+
+.close-btn:hover {
+  background: #e5e5e5;
+  color: #111;
+}
+
+/* Slide animation */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-25px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+
 
 

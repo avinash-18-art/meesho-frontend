@@ -132,7 +132,7 @@ const handleVerifyOtp = async () => {
     if (forgotValue.includes("@")) {
       payload.email = forgotValue.trim().toLowerCase();
     } else {
-      payload.mobileNumber = forgotValue.trim();
+      payload.mobileNumber = forgotValue.trim(); 
     }
 
     // Send request
@@ -276,7 +276,7 @@ const handleResend = async () => {
       {showForgot && (
         <div className="modal-overlay">
           <div className="modal-box">
-            <h3>Forgot Password</h3>
+            <h3 className="forgot">Forgot Password</h3>
             <label>Email or Mobile Number</label>
             <input
               type="text"
