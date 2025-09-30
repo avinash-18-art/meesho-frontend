@@ -38,18 +38,16 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
 
   // Forgot password states
-  const [showForgot, setShowForgot] = useState(false);
   const [forgotValue, setForgotValue] = useState("");
-  const [showOtpModal, setShowOtpModal] = useState(false);
   const [resetOtp, setResetOtp] = useState("");
-  const [showNewPassModal, setShowNewPassModal] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [step, setStep] = useState(1); // 1: enter OTP, 2: reset password
+
+  const [step, setStep] = useState(null); 
+  // null: no modal, 0: forgot form, 1: otp, 2: reset password
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -68,7 +66,6 @@ function Login() {
 
       if (res.data.success) {
         alert("Login successful!");
-        // redirect to your project/dashboard
         window.location.href = "/dashboard";
       } else {
         alert(res.data.message || "Invalid credentials");
@@ -79,63 +76,53 @@ function Login() {
     }
   };
 
-  
-  //===forgot password===//
-const handleForgotPassword = async () => {
-  if (!forgotValue || forgotValue.trim() === "") {
-    alert("Please enter your email or mobile number");
-    return;
-  }
-
-  try {
-    let payload = {};
-
-    // If value contains "@" assume it's email
-    if (forgotValue.includes("@")) {
-      payload = { email: forgotValue };
-    } else {
-      payload = { mobileNumber: forgotValue };
+  // === Forgot password ===
+  const handleForgotPassword = async () => {
+    if (!forgotValue || forgotValue.trim() === "") {
+      alert("Please enter your email or mobile number");
+      return;
     }
 
-    console.log("Payload sent:", payload);
+    try {
+      let payload = {};
+      if (forgotValue.includes("@")) {
+        payload = { email: forgotValue };
+      } else {
+        payload = { mobileNumber: forgotValue };
+      }
 
-    const res = await axios.post(
-      "https://product-backend-2-6atb.onrender.com/forgot-password",
-      payload,
-      { headers: { "Content-Type": "application/json" } }
-    );
+      const res = await axios.post(
+        "https://product-backend-2-6atb.onrender.com/forgot-password",
+        payload,
+        { headers: { "Content-Type": "application/json" } }
+      );
 
-    console.log("Response:", res.data);
-
-    if (res.data.success) {
-      alert("OTP sent successfully!");
-      setShowForgot(false);
-      setShowOtpModal(true);
-    } else {
-      alert(res.data.message || "Reset failed");
+      if (res.data.success) {
+        alert("OTP sent successfully!");
+        setStep(1); // move to OTP modal
+      } else {
+        alert(res.data.message || "Reset failed");
+      }
+    } catch (err) {
+      console.error("Forgot password error:", err.response?.data || err.message);
+      alert(err.response?.data?.message || "Server error");
     }
-  } catch (err) {
-    console.error("Forgot password error:", err.response?.data || err.message);
-    alert(err.response?.data?.message || "Server error");
-  }
-};
+  };
 
-// ====== STEP 1: VERIFY OTP ======
- const handleVerifyOtp = async () => {
+  // ====== Verify OTP ======
+  const handleVerifyOtp = async () => {
     try {
       if (!resetOtp) return alert("Please enter OTP");
 
-      console.log("Sending OTP to backend:", resetOtp.toString());
-
       const res = await axios.post(
         "https://product-backend-2-6atb.onrender.com/verify-otp",
-        { otp: resetOtp.toString() }, // ⚡ Must be string
+        { otp: resetOtp.toString() },
         { headers: { "Content-Type": "application/json" } }
       );
 
       if (res.data.success) {
         alert("OTP verified successfully!");
-        setStep(2); // Move to password reset
+        setStep(2); // Move to reset password modal
       } else {
         alert(res.data.message);
       }
@@ -145,66 +132,58 @@ const handleForgotPassword = async () => {
     }
   };
 
-  
+  // ====== Reset Password ======
+  const handleResetPassword = async () => {
+    try {
+      if (!newPassword || !confirmPassword)
+        return alert("Please fill both password fields");
+      if (newPassword !== confirmPassword)
+        return alert("Passwords do not match");
 
-// ====== STEP 2: RESET PASSWORD ======
-const handleResetPassword = async () => {
-  try {
-    // ✅ Validation
-    if (!newPassword || !confirmPassword)
-      return alert("Please fill both password fields");
-    if (newPassword !== confirmPassword)
-      return alert("Passwords do not match");
+      const res = await axios.post(
+        "https://product-backend-2-6atb.onrender.com/reset-password",
+        {
+          newPassword,
+          confirmPassword,
+        },
+        { headers: { "Content-Type": "application/json" } }
+      );
 
-    // ✅ Send only passwords
-    const res = await axios.post(
-      "https://product-backend-2-6atb.onrender.com/reset-password",
-      {
-        newPassword,
-        confirmPassword
-      },
-      { headers: { "Content-Type": "application/json" } }
-    );
-
-    // ✅ Handle response
-    if (res.data.success) {
-      alert("Password reset successful!");
-      // Clear all fields
-      setStep(1);
-      setNewPassword("");
-      setConfirmPassword("");
-      setResetOtp(""); // optional, clear field if present
-    } else {
-      alert(res.data.message);
+      if (res.data.success) {
+        alert("Password reset successful!");
+        // reset state
+        setStep(null);
+        setNewPassword("");
+        setConfirmPassword("");
+        setResetOtp("");
+        setShowSuccessModal(true);
+      } else {
+        alert(res.data.message);
+      }
+    } catch (error) {
+      console.error(error.response?.data || error.message);
+      alert("Error resetting password");
     }
-  } catch (error) {
-    console.error(error.response?.data || error.message);
-    alert("Error resetting password");
-  }
-};
+  };
 
+  // ====== Resend OTP ======
+  const handleResend = async () => {
+    try {
+      const res = await axios.post(
+        "https://product-backend-2-6atb.onrender.com/resend-otp",
+        { value: forgotValue }
+      );
 
-
-
-// ====== STEP 3: RESEND OTP ======
-const handleResend = async () => {
-  try {
-    const res = await axios.post(
-      "https://product-backend-2-6atb.onrender.com/resend-otp",
-      { value: forgotValue } // backend expects { value }
-    );
-
-    if (res.data.success) {
-      alert("OTP resent successfully");
-    } else {
-      alert(res.data.message || "Failed to resend OTP");
+      if (res.data.success) {
+        alert("OTP resent successfully");
+      } else {
+        alert(res.data.message || "Failed to resend OTP");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Server error");
     }
-  } catch (err) {
-    console.error(err);
-    alert("Server error");
-  }
-};
-
+  };
 
   return (
     <div className="loginpage-container">
@@ -253,7 +232,7 @@ const handleResend = async () => {
                   href="#"
                   onClick={(e) => {
                     e.preventDefault();
-                    setShowForgot(true);
+                    setStep(0); // open forgot modal
                   }}
                 >
                   Forgot Password?
@@ -270,7 +249,7 @@ const handleResend = async () => {
       </div>
 
       {/* STEP 0: Forgot Password Modal */}
-      {showForgot && (
+      {step === 0 && (
         <div className="modal-overlay">
           <div className="modal-box">
             <h3 className="forgot">Forgot Password</h3>
@@ -284,7 +263,7 @@ const handleResend = async () => {
             <button className="btn-primary" onClick={handleForgotPassword}>
               Send OTP
             </button>
-            <button className="close-btn" onClick={() => setShowForgot(false)}>
+            <button className="close-btn" onClick={() => setStep(null)}>
               ✖ Close
             </button>
           </div>
@@ -292,7 +271,7 @@ const handleResend = async () => {
       )}
 
       {/* STEP 1: Enter OTP Modal */}
-      {showOtpModal && (
+      {step === 1 && (
         <div className="modal-overlay">
           <div className="modal-box">
             <h3>Enter OTP</h3>
@@ -321,58 +300,59 @@ const handleResend = async () => {
         </div>
       )}
 
-    {/* STEP 2: Reset Password Modal */}
-    {showNewPassModal && (
-    <div className="modal-overlay">
-    <div className="modal-box">
-      <h3>Reset Password</h3>
+      {/* STEP 2: Reset Password Modal */}
+      {step === 2 && (
+        <div className="modal-overlay">
+          <div className="modal-box">
+            <h3>Reset Password</h3>
 
-      <label>New Password</label>
-      <div className="input-wrap">
-        <input
-          type={showNewPassword ? "text" : "password"}
-          placeholder="Enter new password"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-        />
-        <button
-          type="button"
-          className="eye-btn"
-          onClick={() => setShowNewPassword((s) => !s)}
-        >
-          {showNewPassword ? "🙈" : "👁️"}
-        </button>
-      </div>
+            <label>New Password</label>
+            <div className="input-wrap">
+              <input
+                type={showNewPassword ? "text" : "password"}
+                placeholder="Enter new password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                className="eye-btn"
+                onClick={() => setShowNewPassword((s) => !s)}
+              >
+                {showNewPassword ? "🙈" : "👁️"}
+              </button>
+            </div>
 
-      <label>Confirm Password</label>
-      <div className="input-wrap">
-        <input
-          type={showConfirmPassword ? "text" : "password"}
-          placeholder="Confirm new password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-        />
-        <button
-          type="button"
-          className="eye-btn"
-          onClick={() => setShowConfirmPassword((s) => !s)}
-        >
-          {showConfirmPassword ? "🙈" : "👁️"}
-        </button>
-      </div>
+            <label>Confirm Password</label>
+            <div className="input-wrap">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="Confirm new password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                className="eye-btn"
+                onClick={() => setShowConfirmPassword((s) => !s)}
+              >
+                {showConfirmPassword ? "🙈" : "👁️"}
+              </button>
+            </div>
 
-      <button className="btn-primary" onClick={handleResetPassword}>
-        Update Password
-      </button>
-    </div>
-  </div>
-)}
-      {/* STEP 3: Success Modal */}
+            <button className="btn-primary" onClick={handleResetPassword}>
+              Update Password
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Success Modal */}
       {showSuccessModal && (
         <div className="modal-overlay">
           <div className="modal-box">
             <h3>Success!</h3>
-            <p>Congratulations! You have been successfully authenticated.</p>
+            <p>Your password has been reset successfully.</p>
             <button
               className="btn-primary"
               onClick={() => setShowSuccessModal(false)}
