@@ -45,6 +45,7 @@ function Login() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
 
   const [step, setStep] = useState(null); 
   // null: no modal, 0: forgot form, 1: otp, 2: reset password
@@ -133,6 +134,7 @@ function Login() {
   };
 
   // ====== Reset Password ======
+  
   const handleResetPassword = async () => {
     try {
       if (!newPassword || !confirmPassword)
@@ -274,7 +276,7 @@ function Login() {
       {step === 1 && (
         <div className="modal-overlay">
           <div className="modal-box">
-            <h3>Enter OTP</h3>
+            <h3 className="forgot">Enter OTP</h3>
             <input
               type="text"
               placeholder="Enter OTP"
@@ -304,7 +306,7 @@ function Login() {
       {step === 2 && (
         <div className="modal-overlay">
           <div className="modal-box">
-            <h3>Reset Password</h3>
+            <h3  className="forgot">Reset Password</h3>
 
             <label>New Password</label>
             <div className="input-wrap">
@@ -351,8 +353,8 @@ function Login() {
       {showSuccessModal && (
         <div className="modal-overlay">
           <div className="modal-box">
-            <h3>Success!</h3>
-            <p>Your password has been reset successfully.</p>
+            <h3 className="forgot">Success!</h3>
+            <p className="forgot">Your password has been reset successfully.</p>
             <button
               className="btn-primary"
               onClick={() => setShowSuccessModal(false)}
