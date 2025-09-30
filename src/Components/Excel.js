@@ -147,32 +147,41 @@ const handleForgotPassword = async () => {
   
 
 // ====== STEP 2: RESET PASSWORD ======
-  const handleResetPassword = async () => {
-    try {
-      if (!newPassword || !confirmPassword) return alert("Please fill both password fields");
-      if (newPassword !== confirmPassword) return alert("Passwords do not match");
+const handleResetPassword = async () => {
+  try {
+    // ✅ Validation
+    if (!newPassword || !confirmPassword)
+      return alert("Please fill both password fields");
+    if (newPassword !== confirmPassword)
+      return alert("Passwords do not match");
 
-      const res = await axios.post(
-        "https://product-backend-2-6atb.onrender.com/reset-password",
-        { newPassword, confirmPassword }, // ⚡ OTP/email not required in your backend
-        { headers: { "Content-Type": "application/json" } }
-      );
+    // ✅ Send only passwords
+    const res = await axios.post(
+      "https://product-backend-2-6atb.onrender.com/reset-password",
+      {
+        newPassword,
+        confirmPassword
+      },
+      { headers: { "Content-Type": "application/json" } }
+    );
 
-      if (res.data.success) {
-        alert("Password reset successful!");
-        // Clear all fields
-        setStep(1);
-        setResetOtp("");
-        setNewPassword("");
-        setConfirmPassword("");
-      } else {
-        alert(res.data.message);
-      }
-    } catch (error) {
-      console.error(error.response?.data || error.message);
-      alert("Error resetting password");
+    // ✅ Handle response
+    if (res.data.success) {
+      alert("Password reset successful!");
+      // Clear all fields
+      setStep(1);
+      setNewPassword("");
+      setConfirmPassword("");
+      setResetOtp(""); // optional, clear field if present
+    } else {
+      alert(res.data.message);
     }
-  };
+  } catch (error) {
+    console.error(error.response?.data || error.message);
+    alert("Error resetting password");
+  }
+};
+
 
 
 
