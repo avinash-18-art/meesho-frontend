@@ -321,52 +321,52 @@ const handleResend = async () => {
         </div>
       )}
 
-      {/* STEP 2: Reset Password Modal */}
-      {showNewPassModal && (
-        <div className="modal-overlay">
-          <div className="modal-box">
-            <h3>Reset Password</h3>
-            <label>New Password</label>
-            <div className="input-wrap">
-              <input
-                type={showNewPassword ? "text" : "password"}
-                placeholder="Enter new password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-              />
-              <button
-                type="button"
-                className="eye-btn"
-                onClick={() => setShowNewPassword((s) => !s)}
-              >
-                {showNewPassword ? "🙈" : "👁️"}
-              </button>
-            </div>
+    {/* STEP 2: Reset Password Modal */}
+    {showNewPassModal && (
+    <div className="modal-overlay">
+    <div className="modal-box">
+      <h3>Reset Password</h3>
 
-            <label>Confirm Password</label>
-            <div className="input-wrap">
-              <input
-                type={showConfirmPassword ? "text" : "password"}
-                placeholder="Confirm new password"
-                value={confirmNewPassword}
-                onChange={(e) => setConfirmNewPassword(e.target.value)}
-              />
-              <button
-                type="button"
-                className="eye-btn"
-                onClick={() => setShowConfirmPassword((s) => !s)}
-              >
-                {showConfirmPassword ? "🙈" : "👁️"}
-              </button>
-            </div>
+      <label>New Password</label>
+      <div className="input-wrap">
+        <input
+          type={showNewPassword ? "text" : "password"}
+          placeholder="Enter new password"
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+        />
+        <button
+          type="button"
+          className="eye-btn"
+          onClick={() => setShowNewPassword((s) => !s)}
+        >
+          {showNewPassword ? "🙈" : "👁️"}
+        </button>
+      </div>
 
-           <button className="btn-primary" onClick={handleResetPassword}>
-          Update Password
-           </button>
-          </div>
-        </div>
-      )}
+      <label>Confirm Password</label>
+      <div className="input-wrap">
+        <input
+          type={showConfirmPassword ? "text" : "password"}
+          placeholder="Confirm new password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+        />
+        <button
+          type="button"
+          className="eye-btn"
+          onClick={() => setShowConfirmPassword((s) => !s)}
+        >
+          {showConfirmPassword ? "🙈" : "👁️"}
+        </button>
+      </div>
 
+      <button className="btn-primary" onClick={handleResetPassword}>
+        Update Password
+      </button>
+    </div>
+  </div>
+)}
       {/* STEP 3: Success Modal */}
       {showSuccessModal && (
         <div className="modal-overlay">
