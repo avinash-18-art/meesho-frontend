@@ -45,8 +45,7 @@ function Login() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
-
+  const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(null); 
   // null: no modal, 0: forgot form, 1: otp, 2: reset password
 
@@ -135,36 +134,60 @@ function Login() {
 
   // ====== Reset Password ======
   
-  const handleResetPassword = async () => {
+    const handleResetPassword = async (e) => {
+    if (e) e.preventDefault();
+
     try {
+      // ✅ Validation
       if (!newPassword || !confirmPassword)
         return alert("Please fill both password fields");
       if (newPassword !== confirmPassword)
         return alert("Passwords do not match");
 
+      setLoading(true);
+
+      // Build payload dynamically (only include fields that exist)
+      const payload = { newPassword, confirmPassword };
+
+      // include otp if we have one (some backends expect it)
+      if (resetOtp) payload.otp = resetOtp;
+
+      // include identifier if provided (some backends require email/mobile in reset)
+      if (forgotValue) {
+        if (forgotValue.includes("@")) payload.email = forgotValue.trim().toLowerCase();
+        else payload.mobileNumber = forgotValue.trim();
+      }
+
       const res = await axios.post(
         "https://product-backend-2-6atb.onrender.com/reset-password",
-        {
-          newPassword,
-          confirmPassword,
-        },
+        payload,
         { headers: { "Content-Type": "application/json" } }
       );
 
-      if (res.data.success) {
-        alert("Password reset successful!");
+      if (res.data?.success) {
+        alert(res.data.message || "Password reset successful!");
         // reset state
         setStep(null);
         setNewPassword("");
         setConfirmPassword("");
         setResetOtp("");
+        setForgotValue("");
         setShowSuccessModal(true);
       } else {
-        alert(res.data.message);
+        // backend returned success:false
+        alert(res.data?.message || "Unable to reset password.");
       }
     } catch (error) {
-      console.error(error.response?.data || error.message);
-      alert("Error resetting password");
+      // show server-provided error message when available
+      console.error("Reset error:", error.response?.data || error.message);
+      const serverMessage =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        "Error resetting password";
+      alert("Error resetting password: " + serverMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
