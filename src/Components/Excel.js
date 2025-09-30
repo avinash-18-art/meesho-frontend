@@ -46,9 +46,9 @@ function Login() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [step, setStep] = useState(1); // 1: enter OTP, 2: reset password
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -120,45 +120,59 @@ const handleForgotPassword = async () => {
 };
 
 // ====== STEP 1: VERIFY OTP ======
-  const handleVerifyOtp = async () => {
+ const handleVerifyOtp = async () => {
     try {
-      const res = await axios.post("https://product-backend-2-6atb.onrender.com/verify-otp", { otp: resetOtp.toString() });
-      if (res.data.success) setStep(3);
-      else alert(res.data.message);
+      if (!resetOtp) return alert("Please enter OTP");
+
+      console.log("Sending OTP to backend:", resetOtp.toString());
+
+      const res = await axios.post(
+        "https://product-backend-2-6atb.onrender.com/verify-otp",
+        { otp: resetOtp.toString() }, // ⚡ Must be string
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      if (res.data.success) {
+        alert("OTP verified successfully!");
+        setStep(2); // Move to password reset
+      } else {
+        alert(res.data.message);
+      }
     } catch (error) {
       console.error(error.response?.data || error.message);
+      alert("Error verifying OTP");
     }
   };
-
 
   
 
 // ====== STEP 2: RESET PASSWORD ======
- const handleResetPassword = async () => {
-  try {
-    const res = await axios.post(
-      "https://product-backend-2-6atb.onrender.com/reset-password",
-      {
-        newPassword,
-        confirmPassword
-      }
-    );
+  const handleResetPassword = async () => {
+    try {
+      if (!newPassword || !confirmPassword) return alert("Please fill both password fields");
+      if (newPassword !== confirmPassword) return alert("Passwords do not match");
 
-    if (res.data.success) {
-      alert("Password reset successful!");
-      // Reset all fields
-      setStep(1);
-      setNewPassword("");
-      setConfirmPassword("");
-      setResetOtp(""); // no longer needed but can clear
-      setEmail("");    // optional, clear if you had an email field
-    } else {
-      alert(res.data.message);
+      const res = await axios.post(
+        "https://product-backend-2-6atb.onrender.com/reset-password",
+        { newPassword, confirmPassword }, // ⚡ OTP/email not required in your backend
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      if (res.data.success) {
+        alert("Password reset successful!");
+        // Clear all fields
+        setStep(1);
+        setResetOtp("");
+        setNewPassword("");
+        setConfirmPassword("");
+      } else {
+        alert(res.data.message);
+      }
+    } catch (error) {
+      console.error(error.response?.data || error.message);
+      alert("Error resetting password");
     }
-  } catch (error) {
-    console.error(error.response?.data || error.message);
-  }
-};
+  };
 
 
 
