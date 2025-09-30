@@ -387,7 +387,6 @@ const handleResend = async () => {
 }
 
 
-
 //-------------------------signup component--------------------------
 
  
