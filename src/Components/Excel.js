@@ -2,7 +2,7 @@ import React, {  useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { IoSearch } from "react-icons/io5";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom"
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -22,9 +22,8 @@ import "./Signup.css";
 // ---------------------- LOGIN COMPONENT ----------------------
 
 
-function Login({ setIsAuthenticated }) {
-  // ===== FORM STATES =====
-  const [mode, setMode] = useState("login"); // "login" or "signup"
+function Login() {
+  const [mode, setMode] = useState("login"); // login | signup
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -38,23 +37,24 @@ function Login({ setIsAuthenticated }) {
   });
 
   const [showPassword, setShowPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // ===== FORGOT PASSWORD STATES =====
-  const [step, setStep] = useState(null); // null: no modal, 0: forgot, 1: OTP, 2: reset
+  // Forgot password states
   const [forgotValue, setForgotValue] = useState("");
   const [resetOtp, setResetOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState(null); 
+  
+  // null: no modal, 0: forgot form, 1: otp, 2: reset password
 
-  // ===== HANDLE FORM CHANGE =====
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  // ===== LOGIN HANDLER =====
+  // ====== LOGIN ======
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -67,9 +67,8 @@ function Login({ setIsAuthenticated }) {
       );
 
       if (res.data.success) {
-        localStorage.setItem("token", res.data.token);
-        setIsAuthenticated(true);
         alert("Login successful!");
+        window.location.href = "/dashboard";
       } else {
         alert(res.data.message || "Invalid credentials");
       }
@@ -79,83 +78,97 @@ function Login({ setIsAuthenticated }) {
     }
   };
 
-  // ===== FORGOT PASSWORD =====
+  // === Forgot password ===
   const handleForgotPassword = async () => {
-    if (!forgotValue.trim()) return alert("Please enter your email or mobile");
+    if (!forgotValue || forgotValue.trim() === "") {
+      alert("Please enter your email or mobile number");
+      return;
+    }
 
     try {
-      const payload = forgotValue.includes("@")
-        ? { email: forgotValue.trim() }
-        : { mobileNumber: forgotValue.trim() };
+      let payload = {};
+      if (forgotValue.includes("@")) {
+        payload = { email: forgotValue };
+      } else {
+        payload = { mobileNumber: forgotValue };
+      }
 
       const res = await axios.post(
         "https://product-backend-2-6atb.onrender.com/forgot-password",
-        payload
+        payload,
+        { headers: { "Content-Type": "application/json" } }
       );
 
       if (res.data.success) {
         alert("OTP sent successfully!");
-        setStep(1);
+        setStep(1); // move to OTP modal
       } else {
         alert(res.data.message || "Reset failed");
       }
     } catch (err) {
-      console.error(err.response?.data || err.message);
+      console.error("Forgot password error:", err.response?.data || err.message);
       alert(err.response?.data?.message || "Server error");
     }
   };
 
-  // ===== VERIFY OTP =====
+  // ====== Verify OTP ======
   const handleVerifyOtp = async () => {
-    if (!resetOtp.trim()) return alert("Please enter OTP");
-
     try {
+      if (!resetOtp) return alert("Please enter OTP");
+
       const res = await axios.post(
         "https://product-backend-2-6atb.onrender.com/verify-otp",
-        { otp: resetOtp.toString() }
+        { otp: resetOtp.toString() },
+        { headers: { "Content-Type": "application/json" } }
       );
 
       if (res.data.success) {
         alert("OTP verified successfully!");
-        setStep(2);
+        setStep(2); // Move to reset password modal
       } else {
         alert(res.data.message);
       }
-    } catch (err) {
-      console.error(err.response?.data || err.message);
+    } catch (error) {
+      console.error(error.response?.data || error.message);
       alert("Error verifying OTP");
     }
   };
 
-  // ===== RESET PASSWORD =====
-  const handleResetPassword = async (e) => {
+  // ====== Reset Password ======
+  
+    const handleResetPassword = async (e) => {
     if (e) e.preventDefault();
-    if (!newPassword || !confirmPassword)
-      return alert("Please fill both password fields");
-    if (newPassword !== confirmPassword)
-      return alert("Passwords do not match");
-
-    setLoading(true);
 
     try {
-      const payload = {
-        newPassword,
-        confirmPassword,
-        otp: resetOtp,
-      };
+      // ✅ Validation
+      if (!newPassword || !confirmPassword)
+        return alert("Please fill both password fields");
+      if (newPassword !== confirmPassword)
+        return alert("Passwords do not match");
 
+      setLoading(true);
+
+      // Build payload dynamically (only include fields that exist)
+      const payload = { newPassword, confirmPassword };
+
+      // include otp if we have one (some backends expect it)
+      if (resetOtp) payload.otp = resetOtp;
+
+      // include identifier if provided (some backends require email/mobile in reset)
       if (forgotValue) {
-        if (forgotValue.includes("@")) payload.email = forgotValue.trim();
+        if (forgotValue.includes("@")) payload.email = forgotValue.trim().toLowerCase();
         else payload.mobileNumber = forgotValue.trim();
       }
 
       const res = await axios.post(
         "https://product-backend-2-6atb.onrender.com/reset-password",
-        payload
+        payload,
+        { headers: { "Content-Type": "application/json" } }
       );
 
       if (res.data?.success) {
         alert(res.data.message || "Password reset successful!");
+        // reset state
         setStep(null);
         setNewPassword("");
         setConfirmPassword("");
@@ -163,25 +176,36 @@ function Login({ setIsAuthenticated }) {
         setForgotValue("");
         setShowSuccessModal(true);
       } else {
-        alert(res.data?.message || "Unable to reset password");
+        // backend returned success:false
+        alert(res.data?.message || "Unable to reset password.");
       }
-    } catch (err) {
-      console.error(err.response?.data || err.message);
-      alert(err.response?.data?.message || "Error resetting password");
+    } catch (error) {
+      // show server-provided error message when available
+      console.error("Reset error:", error.response?.data || error.message);
+      const serverMessage =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        "Error resetting password";
+      alert("Error resetting password: " + serverMessage);
     } finally {
       setLoading(false);
     }
   };
 
-  // ===== RESEND OTP =====
+  // ====== Resend OTP ======
   const handleResend = async () => {
     try {
       const res = await axios.post(
         "https://product-backend-2-6atb.onrender.com/resend-otp",
         { value: forgotValue }
       );
-      if (res.data.success) alert("OTP resent successfully");
-      else alert(res.data.message || "Failed to resend OTP");
+
+      if (res.data.success) {
+        alert("OTP resent successfully");
+      } else {
+        alert(res.data.message || "Failed to resend OTP");
+      }
     } catch (err) {
       console.error(err);
       alert("Server error");
@@ -199,7 +223,7 @@ function Login({ setIsAuthenticated }) {
           {mode === "login" && (
             <form onSubmit={handleSubmit} className="loginpage-form">
               <div className="field full">
-                <label>E-mail ID</label>
+                <label className="field-label">E-mail ID</label>
                 <input
                   name="email"
                   type="email"
@@ -209,11 +233,11 @@ function Login({ setIsAuthenticated }) {
                   required
                 />
               </div>
-
               <div className="field full">
-                <label>Password</label>
+                <label className="field-label">Password</label>
                 <div className="input-wrap">
                   <input
+                    className="input-design"
                     name="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Password"
@@ -226,40 +250,41 @@ function Login({ setIsAuthenticated }) {
                     className="eye-btn"
                     onClick={() => setShowPassword((s) => !s)}
                   >
+                    
                     {showPassword ? "🙈" : "👁️"}
                   </button>
                 </div>
               </div>
-
               <p className="forgot-link">
                 <a
                   href="#"
                   onClick={(e) => {
                     e.preventDefault();
-                    setStep(0);
+                    setStep(0); // open forgot modal
                   }}
                 >
                   Forgot Password?
                 </a>
               </p>
-
-              <button type="submit" className="btn-primary">
-                Login
-              </button>
+              <div className="field full">
+                <button type="submit" className="btn-primary">
+                  Next
+                </button>
+              </div>
             </form>
           )}
         </div>
       </div>
 
-      {/* ===== MODALS ===== */}
-      {/* Forgot Password */}
+      {/* STEP 0: Forgot Password Modal */}
       {step === 0 && (
         <div className="modal-overlay">
           <div className="modal-box">
-            <h3>Forgot Password</h3>
+            <h3 className="forgot">Forgot Password</h3>
+            <label>Email or Mobile Number</label>
             <input
               type="text"
-              placeholder="Email or Mobile"
+              placeholder="Enter email or mobile"
               value={forgotValue}
               onChange={(e) => setForgotValue(e.target.value)}
             />
@@ -273,11 +298,11 @@ function Login({ setIsAuthenticated }) {
         </div>
       )}
 
-      {/* OTP */}
+      {/* STEP 1: Enter OTP Modal */}
       {step === 1 && (
         <div className="modal-overlay">
           <div className="modal-box">
-            <h3>Enter OTP</h3>
+            <h3 className="forgot">Enter OTP</h3>
             <input
               type="text"
               placeholder="Enter OTP"
@@ -287,7 +312,7 @@ function Login({ setIsAuthenticated }) {
             <button className="btn-primary" onClick={handleVerifyOtp}>
               Verify OTP
             </button>
-            <p>
+            <p className="resend-text">
               Didn't get OTP?{" "}
               <a
                 href="#"
@@ -303,11 +328,11 @@ function Login({ setIsAuthenticated }) {
         </div>
       )}
 
-      {/* Reset Password */}
+      {/* STEP 2: Reset Password Modal */}
       {step === 2 && (
         <div className="modal-overlay">
           <div className="modal-box">
-            <h3>Reset Password</h3>
+            <h3  className="forgot">Reset Password</h3>
 
             <label>New Password</label>
             <div className="input-wrap">
@@ -354,8 +379,8 @@ function Login({ setIsAuthenticated }) {
       {showSuccessModal && (
         <div className="modal-overlay">
           <div className="modal-box">
-            <h3>Success!</h3>
-            <p>You have successfully authenticated.</p>
+            <h3 className="forgot">Success!</h3>
+            <p className="forgot">Congratulations! You have been successfully authenticated</p>
             <button
               className="btn-primary"
               onClick={() => setShowSuccessModal(false)}
@@ -373,7 +398,7 @@ function Login({ setIsAuthenticated }) {
 //-------------------------signup component--------------------------
 
  
-function Signup({ setIsAuthenticated }) {
+function Signup() {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -389,16 +414,13 @@ function Signup({ setIsAuthenticated }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
-  // ===== HANDLE FORM CHANGE =====
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // ===== HANDLE SIGNUP =====
   const handleSignup = async (e) => {
     e.preventDefault();
 
@@ -408,8 +430,6 @@ function Signup({ setIsAuthenticated }) {
     }
 
     try {
-      setLoading(true);
-
       const payload = {
         firstName: formData.firstName,
         lastName: formData.lastName,
@@ -429,6 +449,7 @@ function Signup({ setIsAuthenticated }) {
 
       console.log("Signup response:", res.data);
 
+      // ✅ Flexible success check (works with different backend formats)
       if (
         res.data.success === true ||
         res.data.status === "ok" ||
@@ -438,21 +459,17 @@ function Signup({ setIsAuthenticated }) {
       ) {
         if (res.data.token) {
           localStorage.setItem("token", res.data.token);
-          setIsAuthenticated(true); // show dashboard after signup
         }
-        setShowSuccessModal(true); // show success popup
+        setShowSuccessModal(true); // show popup
       } else {
         alert(res.data.message || "Signup failed");
       }
     } catch (err) {
       console.error(err);
       alert("Server error");
-    } finally {
-      setLoading(false);
     }
   };
 
-  // ===== SUCCESS MODAL CLOSE =====
   const handleModalClose = () => {
     setShowSuccessModal(false);
     navigate("/dashboard");
@@ -461,159 +478,156 @@ function Signup({ setIsAuthenticated }) {
   return (
     <div className="signup-container">
       <div className="signup-box">
+        <h2>Sign Up</h2>
         <div className="signup-left">Meesho</div>
+        <div className="underline" />
 
-        <div className="signup-right">
-          <h2>Sign Up</h2>
-          <div className="underline" />
+        <form onSubmit={handleSignup} className="signup-form">
+          <div className="field half">
+            <label>First Name *</label>
+            <input
+              type="text"
+              name="firstName"
+              value={formData.firstName}
+              onChange={handleChange}
+              placeholder="First Name"
+              required
+            />
+          </div>
 
-          <form onSubmit={handleSignup} className="signup-form">
-            <div className="field half">
-              <label>First Name *</label>
+          <div className="field half">
+            <label>Last Name *</label>
+            <input
+              type="text"
+              name="lastName"
+              value={formData.lastName}
+              onChange={handleChange}
+              placeholder="Last Name"
+              required
+            />
+          </div>
+
+          <div className="field full">
+            <label>Email</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Email"
+              required
+            />
+          </div>
+
+          <div className="field half">
+            <label>Mobile Number</label>
+            <input
+              type="tel"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              placeholder="Mobile Number"
+              required
+            />
+          </div>
+
+          <div className="field half">
+            <label>GST Number</label>
+            <input
+              type="text"
+              name="gst"
+              value={formData.gst}
+              onChange={handleChange}
+              placeholder="GST Number"
+            />
+          </div>
+
+          <div className="field half">
+            <label>City</label>
+            <input
+              type="text"
+              name="city"
+              value={formData.city}
+              onChange={handleChange}
+              placeholder="City"
+            />
+          </div>
+
+          <div className="field half">
+            <label>Country</label>
+            <input
+              type="text"
+              name="country"
+              value={formData.country}
+              onChange={handleChange}
+              placeholder="Country"
+            />
+          </div>
+
+          <div className="field half">
+            <label>Create Password</label>
+            <div className="input-wrap">
               <input
-                type="text"
-                name="firstName"
-                value={formData.firstName}
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={formData.password}
                 onChange={handleChange}
-                placeholder="First Name"
+                placeholder="Create Password"
                 required
               />
-            </div>
-
-            <div className="field half">
-              <label>Last Name *</label>
-              <input
-                type="text"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-                placeholder="Last Name"
-                required
-              />
-            </div>
-
-            <div className="field full">
-              <label>Email *</label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="Email"
-                required
-              />
-            </div>
-
-            <div className="field half">
-              <label>Mobile Number *</label>
-              <input
-                type="tel"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                placeholder="Mobile Number"
-                required
-              />
-            </div>
-
-            <div className="field half">
-              <label>GST Number</label>
-              <input
-                type="text"
-                name="gst"
-                value={formData.gst}
-                onChange={handleChange}
-                placeholder="GST Number"
-              />
-            </div>
-
-            <div className="field half">
-              <label>City</label>
-              <input
-                type="text"
-                name="city"
-                value={formData.city}
-                onChange={handleChange}
-                placeholder="City"
-              />
-            </div>
-
-            <div className="field half">
-              <label>Country</label>
-              <input
-                type="text"
-                name="country"
-                value={formData.country}
-                onChange={handleChange}
-                placeholder="Country"
-              />
-            </div>
-
-            <div className="field half">
-              <label>Create Password *</label>
-              <div className="input-wrap">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="Create Password"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((s) => !s)}
-                >
-                  {showPassword ? "🙈" : "👁️"}
-                </button>
-              </div>
-            </div>
-
-            <div className="field half">
-              <label>Confirm Password *</label>
-              <div className="input-wrap">
-                <input
-                  type={showConfirm ? "text" : "password"}
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  placeholder="Confirm Password"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirm((s) => !s)}
-                >
-                  {showConfirm ? "🙈" : "👁️"}
-                </button>
-              </div>
-            </div>
-
-            <label className="checkbox-row">
-              <input type="checkbox" required /> I agree to the terms and
-              conditions
-            </label>
-
-            <div className="field full">
-              <button type="submit" className="btn-primary" disabled={loading}>
-                {loading ? "Signing up..." : "Sign Up"}
+              <button
+                type="button"
+                onClick={() => setShowPassword((s) => !s)}
+              >
+                {showPassword ? "🙈" : "👁️"}
               </button>
             </div>
+          </div>
 
-            <p style={{ marginTop: "15px", textAlign: "center" }}>
-              Already have an account?{" "}
-              <Link
-                to="/login"
-                style={{ color: "#007bff", textDecoration: "none" }}
+          <div className="field half">
+            <label>Confirm Password</label>
+            <div className="input-wrap">
+              <input
+                type={showConfirm ? "text" : "password"}
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                placeholder="Confirm Password"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirm((s) => !s)}
               >
-                Login
-              </Link>
-            </p>
-          </form>
-        </div>
+                {showConfirm ? "🙈" : "👁️"}
+              </button>
+            </div>
+          </div>
+
+          <label className="checkbox-row">
+            <input type="checkbox" required /> I agree to the terms and
+            conditions
+          </label>
+
+          <div className="field full">
+            <button type="submit" className="btn-primary">
+              Sign Up
+            </button>
+          </div>
+
+          <p style={{ marginTop: "15px", textAlign: "center" }}>
+            Already have an account?{" "}
+            <Link
+              to="/login"
+              style={{ color: "#007bff", textDecoration: "none" }}
+            >
+              Login
+            </Link>
+          </p>
+        </form>
       </div>
 
-      {/* SUCCESS MODAL */}
+      {/* ✅ Success Modal */}
       {showSuccessModal && (
         <div className="modal-overlay">
           <div className="modal-box">
@@ -628,6 +642,7 @@ function Signup({ setIsAuthenticated }) {
     </div>
   );
 }
+
 
 
  
@@ -1175,55 +1190,12 @@ function Dashboard() {
 }
 
 function App() {
-const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) setIsAuthenticated(true);
-  }, []);
-
   return (
     <Router>
       <Routes>
-        {/* Dashboard: only accessible if logged in */}
-        <Route
-          path="/dashboard"
-          element={
-            isAuthenticated ? <Dashboard /> : <Navigate to="/login" />
-          }
-        />
-
-        {/* Login page */}
-        <Route
-          path="/login"
-          element={
-            !isAuthenticated ? (
-              <Login setIsAuthenticated={setIsAuthenticated} />
-            ) : (
-              <Navigate to="/dashboard" />
-            )
-          }
-        />
-
-        {/* Signup page */}
-        <Route
-          path="/signup"
-          element={
-            !isAuthenticated ? (
-              <Signup setIsAuthenticated={setIsAuthenticated} />
-            ) : (
-              <Navigate to="/dashboard" />
-            )
-          }
-        />
-
-        {/* Default route */}
-        <Route
-          path="/"
-          element={
-            isAuthenticated ? <Navigate to="/dashboard" /> : <Navigate to="/login" />
-          }
-        />
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
       </Routes>
     </Router>
   );
