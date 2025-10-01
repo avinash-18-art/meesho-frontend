@@ -56,32 +56,27 @@ function Login() {
 
   // ====== LOGIN ======
 const handleSubmit = async (e) => {
-  e.preventDefault();
+e.preventDefault();
 
   try {
-    // ✅ Convert email to lowercase and trim spaces
     const res = await axios.post(
       "https://product-backend-2-6atb.onrender.com/login",
       {
-        email: formData.email.trim().toLowerCase(),
+        email: formData.email.trim().toLowerCase(), // match backend
         password: formData.password,
       }
     );
 
-    // ✅ Backend responds with 200 for success
-    if (res.status === 200) {
-      alert(res.data.message || "Login successful!");
-      
-      // ✅ Save token if you want to use it later
-      localStorage.setItem("token", res.data.token);
-
-      // Navigate to dashboard
-      window.location.href = "/dashboard";
+    if (res.data.success) {
+      alert("Login successful!");
+      localStorage.setItem("token", res.data.token); // optional: save JWT
+      // Navigation handled elsewhere (e.g., react-router's navigate)
+    } else {
+      alert(res.data.message || "Invalid credentials");
     }
   } catch (err) {
     console.error("Full error:", err);
 
-    // ✅ Show backend error message
     if (err.response && err.response.data) {
       alert(err.response.data.message || "Server responded with an error");
     } else {
@@ -89,6 +84,7 @@ const handleSubmit = async (e) => {
     }
   }
 };
+
 
 
 
