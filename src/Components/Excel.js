@@ -456,7 +456,7 @@ function Signup() {
 
       console.log("Signup response:", res.data);
 
-      // ✅ Flexible success check (works with different backend formats)
+      // ✅ Check for success response
       if (
         res.data.success === true ||
         res.data.status === "ok" ||
@@ -479,7 +479,7 @@ function Signup() {
 
   const handleModalClose = () => {
     setShowSuccessModal(false);
-    navigate("/dashboard");
+    navigate("/dashboard"); // Redirect after closing modal
   };
 
   return (
