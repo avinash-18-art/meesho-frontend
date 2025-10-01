@@ -55,7 +55,7 @@ function Login() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
   // ====== LOGIN ======
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     try {
       const res = await axios.post(
@@ -67,14 +67,16 @@ function Login() {
       );
 
       if (res.data.success) {
+        localStorage.setItem("token", res.data.token);
+        setIsAuthenticated(true);
         alert("Login successful!");
-        window.location.href = "/dashboard";
+        navigate("/dashboard");
       } else {
         alert(res.data.message || "Invalid credentials");
       }
     } catch (err) {
-      console.error(err);
-      alert("Server error");
+      console.error("Login error:", err.response?.data || err.message);
+      alert(err.response?.data?.message || "Server error");
     }
   };
 
