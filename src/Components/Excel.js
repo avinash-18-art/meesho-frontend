@@ -447,12 +447,18 @@ function Signup() {
 
       console.log("Signup response:", res.data);
 
-      // ✅ Adjust condition according to backend response
-      if (res.data.success || res.data.status === "ok") {
+      // ✅ Flexible success check (works with different backend formats)
+      if (
+        res.data.success === true ||
+        res.data.status === "ok" ||
+        res.data.status === true ||
+        (res.data.message &&
+          res.data.message.toLowerCase().includes("success"))
+      ) {
         if (res.data.token) {
           localStorage.setItem("token", res.data.token);
         }
-        setShowSuccessModal(true); // show modal
+        setShowSuccessModal(true); // show popup
       } else {
         alert(res.data.message || "Signup failed");
       }
@@ -464,7 +470,7 @@ function Signup() {
 
   const handleModalClose = () => {
     setShowSuccessModal(false);
-    navigate("/dashboard"); // redirect after closing modal
+    navigate("/dashboard");
   };
 
   return (
@@ -634,6 +640,8 @@ function Signup() {
     </div>
   );
 }
+
+
 
  
  
