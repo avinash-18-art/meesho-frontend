@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { IoSearch } from "react-icons/io5";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import {
   LineChart,
@@ -396,6 +397,7 @@ function Login() {
 
  
 function Signup() {
+  
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -409,6 +411,9 @@ function Signup() {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -440,18 +445,13 @@ function Signup() {
       );
 
       if (res.data.success) {
-        alert("Signup successful!");
-        setFormData({
-          firstName: "",
-          lastName: "",
-          email: "",
-          phone: "",
-          gst: "",
-          city: "",
-          country: "",
-          password: "",
-          confirmPassword: ""
-        });
+        // ✅ Store token (if backend sends one)
+        if (res.data.token) {
+          localStorage.setItem("token", res.data.token);
+        }
+
+        // ✅ Show success modal
+        setShowSuccessModal(true);
       } else {
         alert(res.data.message || "Signup failed");
       }
@@ -461,15 +461,21 @@ function Signup() {
     }
   };
 
+  const handleModalClose = () => {
+    setShowSuccessModal(false);
+    // ✅ Redirect to dashboard after signup
+    navigate("/dashboard");
+  };
+
   return (
     <div className="signup-container">
       <div className="signup-box">
         <h2>Sign Up</h2>
         <div className="signup-left">Meesho</div>
-        
         <div className="underline" />
 
         <form onSubmit={handleSignup} className="signup-form">
+          {/* All form fields remain same */}
           <div className="field half">
             <label>First Name *</label>
             <input
@@ -519,7 +525,7 @@ function Signup() {
           </div>
 
           <div className="field half">
-            <label className="label-de">GST Number</label>
+            <label>GST Number</label>
             <input
               type="text"
               name="gst"
@@ -562,10 +568,7 @@ function Signup() {
                 placeholder="Create Password"
                 required
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword((s) => !s)}
-              >
+              <button type="button" onClick={() => setShowPassword((s) => !s)}>
                 {showPassword ? "🙈" : "👁️"}
               </button>
             </div>
@@ -582,18 +585,14 @@ function Signup() {
                 placeholder="Confirm Password"
                 required
               />
-              <button
-                type="button"
-                onClick={() => setShowConfirm((s) => !s)}
-              >
+              <button type="button" onClick={() => setShowConfirm((s) => !s)}>
                 {showConfirm ? "🙈" : "👁️"}
               </button>
             </div>
           </div>
 
           <label className="checkbox-row">
-            <input type="checkbox" required /> I agree to the terms and
-            conditions
+            <input type="checkbox" required /> I agree to the terms and conditions
           </label>
 
           <div className="field full">
@@ -602,7 +601,6 @@ function Signup() {
             </button>
           </div>
 
-          {/* Bottom login link */}
           <p style={{ marginTop: "15px", textAlign: "center" }}>
             Already have an account?{" "}
             <Link to="/login" style={{ color: "#007bff", textDecoration: "none" }}>
@@ -611,10 +609,22 @@ function Signup() {
           </p>
         </form>
       </div>
+
+      {/* Success modal */}
+      {showSuccessModal && (
+        <div className="modal-overlay">
+          <div className="modal-box">
+            <h3>Success!</h3>
+            <p>Congratulations! You have been successfully Signup 🎉</p>
+            <button className="btn-primary" onClick={handleModalClose}>
+              Go to Dashboard
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
- 
  
  
 
