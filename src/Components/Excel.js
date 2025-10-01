@@ -56,27 +56,34 @@ function Login() {
 
   // ====== LOGIN ======
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await axios.post(
-        "https://product-backend-2-6atb.onrender.com/login",
-        {
-          email: formData.email,
-          password: formData.password,
-        }
-      );
-
-      if (res.data.success) {
-        alert("Login successful!");
-        window.location.href = "/dashboard";
-      } else {
-        alert(res.data.message || "Invalid credentials");
+  e.preventDefault();
+  try {
+    const res = await axios.post(
+      "https://product-backend-2-6atb.onrender.com/login",
+      {
+        email: formData.email,
+        password: formData.password,
       }
-    } catch (err) {
-      console.error(err);
-      alert("Server error");
+    );
+
+    if (res.data.success) {
+      alert("Login successful!");
+      window.location.href = "/dashboard";
+    } else {
+      alert(res.data.message || "Invalid credentials");
     }
-  };
+  } catch (err) {
+    console.error("Full error:", err);
+
+    // ✅ If backend sends error message
+    if (err.response && err.response.data) {
+      alert(err.response.data.message || "Server responded with an error");
+    } else {
+      alert("Network/server error. Please try again later.");
+    }
+  }
+};
+
 
   // === Forgot password ===
   const handleForgotPassword = async () => {
