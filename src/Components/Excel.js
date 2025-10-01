@@ -397,7 +397,6 @@ function Login() {
 
  
 function Signup() {
-  
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -407,8 +406,9 @@ function Signup() {
     city: "",
     country: "",
     password: "",
-    confirmPassword: ""
+    confirmPassword: "",
   });
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -421,6 +421,7 @@ function Signup() {
 
   const handleSignup = async (e) => {
     e.preventDefault();
+
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match");
       return;
@@ -436,7 +437,7 @@ function Signup() {
         city: formData.city,
         country: formData.country,
         createPassword: formData.password,
-        confirmPassword: formData.confirmPassword
+        confirmPassword: formData.confirmPassword,
       };
 
       const res = await axios.post(
@@ -444,14 +445,14 @@ function Signup() {
         payload
       );
 
-      if (res.data.success) {
-        // ✅ Store token (if backend sends one)
+      console.log("Signup response:", res.data);
+
+      // ✅ Adjust condition according to backend response
+      if (res.data.success || res.data.status === "ok") {
         if (res.data.token) {
           localStorage.setItem("token", res.data.token);
         }
-
-        // ✅ Show success modal
-        setShowSuccessModal(true);
+        setShowSuccessModal(true); // show modal
       } else {
         alert(res.data.message || "Signup failed");
       }
@@ -463,8 +464,7 @@ function Signup() {
 
   const handleModalClose = () => {
     setShowSuccessModal(false);
-    // ✅ Redirect to dashboard after signup
-    navigate("/dashboard");
+    navigate("/dashboard"); // redirect after closing modal
   };
 
   return (
@@ -475,7 +475,6 @@ function Signup() {
         <div className="underline" />
 
         <form onSubmit={handleSignup} className="signup-form">
-          {/* All form fields remain same */}
           <div className="field half">
             <label>First Name *</label>
             <input
@@ -558,7 +557,7 @@ function Signup() {
           </div>
 
           <div className="field half">
-            <label>Create Password </label>
+            <label>Create Password</label>
             <div className="input-wrap">
               <input
                 type={showPassword ? "text" : "password"}
@@ -568,14 +567,17 @@ function Signup() {
                 placeholder="Create Password"
                 required
               />
-              <button type="button" onClick={() => setShowPassword((s) => !s)}>
+              <button
+                type="button"
+                onClick={() => setShowPassword((s) => !s)}
+              >
                 {showPassword ? "🙈" : "👁️"}
               </button>
             </div>
           </div>
 
           <div className="field half">
-            <label>Confirm Password </label>
+            <label>Confirm Password</label>
             <div className="input-wrap">
               <input
                 type={showConfirm ? "text" : "password"}
@@ -585,14 +587,18 @@ function Signup() {
                 placeholder="Confirm Password"
                 required
               />
-              <button type="button" onClick={() => setShowConfirm((s) => !s)}>
+              <button
+                type="button"
+                onClick={() => setShowConfirm((s) => !s)}
+              >
                 {showConfirm ? "🙈" : "👁️"}
               </button>
             </div>
           </div>
 
           <label className="checkbox-row">
-            <input type="checkbox" required /> I agree to the terms and conditions
+            <input type="checkbox" required /> I agree to the terms and
+            conditions
           </label>
 
           <div className="field full">
@@ -603,19 +609,22 @@ function Signup() {
 
           <p style={{ marginTop: "15px", textAlign: "center" }}>
             Already have an account?{" "}
-            <Link to="/login" style={{ color: "#007bff", textDecoration: "none" }}>
+            <Link
+              to="/login"
+              style={{ color: "#007bff", textDecoration: "none" }}
+            >
               Login
             </Link>
           </p>
         </form>
       </div>
 
-      {/* Success modal */}
+      {/* ✅ Success Modal */}
       {showSuccessModal && (
         <div className="modal-overlay">
           <div className="modal-box">
             <h3>Success!</h3>
-            <p>Congratulations! You have been successfully Signup 🎉</p>
+            <p>Congratulations! You have successfully signed up 🎉</p>
             <button className="btn-primary" onClick={handleModalClose}>
               Go to Dashboard
             </button>
@@ -625,6 +634,7 @@ function Signup() {
     </div>
   );
 }
+
  
  
 
