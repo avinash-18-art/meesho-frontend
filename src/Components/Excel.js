@@ -55,27 +55,33 @@ function Login() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
   // ====== LOGIN ======
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault();
+
   try {
+    // ✅ Convert email to lowercase and trim spaces
     const res = await axios.post(
       "https://product-backend-2-6atb.onrender.com/login",
       {
-        email: formData.email,
+        email: formData.email.trim().toLowerCase(),
         password: formData.password,
       }
     );
 
-    if (res.data.success) {
-      alert("Login successful!");
+    // ✅ Backend responds with 200 for success
+    if (res.status === 200) {
+      alert(res.data.message || "Login successful!");
+      
+      // ✅ Save token if you want to use it later
+      localStorage.setItem("token", res.data.token);
+
+      // Navigate to dashboard
       window.location.href = "/dashboard";
-    } else {
-      alert(res.data.message || "Invalid credentials");
     }
   } catch (err) {
     console.error("Full error:", err);
 
-    // ✅ If backend sends error message
+    // ✅ Show backend error message
     if (err.response && err.response.data) {
       alert(err.response.data.message || "Server responded with an error");
     } else {
@@ -83,6 +89,7 @@ function Login() {
     }
   }
 };
+
 
 
   // === Forgot password ===
