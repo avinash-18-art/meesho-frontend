@@ -1200,15 +1200,9 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Default redirect to Signup */}
-        <Route path="/" element={<Navigate to="/signup" />} />
-
-        {/* Signup page */}
-        <Route path="/signup" element={<Signup />} />
-
-        {/* Other routes */}
+        <Route path="/" element={<Dashboard />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/home" element={<Home />} />
+        <Route path="/signup" element={<Signup />} />
       </Routes>
     </Router>
   );
