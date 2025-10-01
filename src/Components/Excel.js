@@ -401,6 +401,8 @@ function Login() {
 
  
 function Signup() {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -415,9 +417,6 @@ function Signup() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-
-  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -426,9 +425,13 @@ function Signup() {
   const handleSignup = async (e) => {
     e.preventDefault();
 
+    // Basic validation
+    if (!formData.firstName || !formData.email || !formData.password) {
+      return alert("Please fill all required fields");
+    }
+
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match");
-      return;
+      return alert("Passwords do not match");
     }
 
     try {
@@ -451,7 +454,6 @@ function Signup() {
 
       console.log("Signup response:", res.data);
 
-      // ✅ Flexible success check (works with different backend formats)
       if (
         res.data.success === true ||
         res.data.status === "ok" ||
@@ -462,185 +464,101 @@ function Signup() {
         if (res.data.token) {
           localStorage.setItem("token", res.data.token);
         }
-        setShowSuccessModal(true); // show popup
+
+        alert("Signup successful! Redirecting to Dashboard...");
+        navigate("/"); // Redirect to dashboard or home
       } else {
         alert(res.data.message || "Signup failed");
       }
     } catch (err) {
       console.error(err);
-      alert("Server error");
+      alert("Server error. Please try again later.");
     }
   };
 
-  const handleModalClose = () => {
-    setShowSuccessModal(false);
-    navigate("/dashboard");
-  };
-
   return (
-    <div className="signup-container">
-      <div className="signup-box">
-        <h2>Sign Up</h2>
-        <div className="signup-left">Meesho</div>
-        <div className="underline" />
-
-        <form onSubmit={handleSignup} className="signup-form">
-          <div className="field half">
-            <label>First Name *</label>
-            <input
-              type="text"
-              name="firstName"
-              value={formData.firstName}
-              onChange={handleChange}
-              placeholder="First Name"
-              required
-            />
-          </div>
-
-          <div className="field half">
-            <label>Last Name *</label>
-            <input
-              type="text"
-              name="lastName"
-              value={formData.lastName}
-              onChange={handleChange}
-              placeholder="Last Name"
-              required
-            />
-          </div>
-
-          <div className="field full">
-            <label>Email</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Email"
-              required
-            />
-          </div>
-
-          <div className="field half">
-            <label>Mobile Number</label>
-            <input
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              placeholder="Mobile Number"
-              required
-            />
-          </div>
-
-          <div className="field half">
-            <label>GST Number</label>
-            <input
-              type="text"
-              name="gst"
-              value={formData.gst}
-              onChange={handleChange}
-              placeholder="GST Number"
-            />
-          </div>
-
-          <div className="field half">
-            <label>City</label>
-            <input
-              type="text"
-              name="city"
-              value={formData.city}
-              onChange={handleChange}
-              placeholder="City"
-            />
-          </div>
-
-          <div className="field half">
-            <label>Country</label>
-            <input
-              type="text"
-              name="country"
-              value={formData.country}
-              onChange={handleChange}
-              placeholder="Country"
-            />
-          </div>
-
-          <div className="field half">
-            <label>Create Password</label>
-            <div className="input-wrap">
-              <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Create Password"
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword((s) => !s)}
-              >
-                {showPassword ? "🙈" : "👁️"}
-              </button>
-            </div>
-          </div>
-
-          <div className="field half">
-            <label>Confirm Password</label>
-            <div className="input-wrap">
-              <input
-                type={showConfirm ? "text" : "password"}
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                placeholder="Confirm Password"
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirm((s) => !s)}
-              >
-                {showConfirm ? "🙈" : "👁️"}
-              </button>
-            </div>
-          </div>
-
-          <label className="checkbox-row">
-            <input type="checkbox" required /> I agree to the terms and
-            conditions
-          </label>
-
-          <div className="field full">
-            <button type="submit" className="btn-primary">
-              Sign Up
-            </button>
-          </div>
-
-          <p style={{ marginTop: "15px", textAlign: "center" }}>
-            Already have an account?{" "}
-            <Link
-              to="/login"
-              style={{ color: "#007bff", textDecoration: "none" }}
-            >
-              Login
-            </Link>
-          </p>
-        </form>
-      </div>
-
-      {/* ✅ Success Modal */}
-      {showSuccessModal && (
-        <div className="modal-overlay">
-          <div className="modal-box">
-            <h3>Success!</h3>
-            <p>Congratulations! You have successfully signed up 🎉</p>
-            <button className="btn-primary" onClick={handleModalClose}>
-              Go to Dashboard
-            </button>
-          </div>
+    <div className="signup-container" style={{ maxWidth: "400px", margin: "50px auto" }}>
+      <h2>Signup</h2>
+      <form onSubmit={handleSignup}>
+        <input
+          type="text"
+          name="firstName"
+          placeholder="First Name"
+          value={formData.firstName}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="text"
+          name="lastName"
+          placeholder="Last Name"
+          value={formData.lastName}
+          onChange={handleChange}
+        />
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          value={formData.email}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="text"
+          name="phone"
+          placeholder="Phone"
+          value={formData.phone}
+          onChange={handleChange}
+        />
+        <input
+          type="text"
+          name="gst"
+          placeholder="GST Number"
+          value={formData.gst}
+          onChange={handleChange}
+        />
+        <input
+          type="text"
+          name="city"
+          placeholder="City"
+          value={formData.city}
+          onChange={handleChange}
+        />
+        <input
+          type="text"
+          name="country"
+          placeholder="Country"
+          value={formData.country}
+          onChange={handleChange}
+        />
+        <div>
+          <input
+            type={showPassword ? "text" : "password"}
+            name="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
+          <button type="button" onClick={() => setShowPassword(!showPassword)}>
+            {showPassword ? "Hide" : "Show"}
+          </button>
         </div>
-      )}
+        <div>
+          <input
+            type={showConfirm ? "text" : "password"}
+            name="confirmPassword"
+            placeholder="Confirm Password"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            required
+          />
+          <button type="button" onClick={() => setShowConfirm(!showConfirm)}>
+            {showConfirm ? "Hide" : "Show"}
+          </button>
+        </div>
+        <button type="submit" style={{ marginTop: "20px" }}>Signup</button>
+      </form>
     </div>
   );
 }
