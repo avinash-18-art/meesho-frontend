@@ -1178,25 +1178,51 @@ function App() {
 const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("token"); // check if user is already logged in
+    const token = localStorage.getItem("token");
     if (token) setIsAuthenticated(true);
   }, []);
 
   return (
     <Router>
       <Routes>
-        {/* If not logged in, redirect to login */}
+        {/* Dashboard: only accessible if logged in */}
         <Route
-          path="/"
-          element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
+          path="/dashboard"
+          element={
+            isAuthenticated ? <Dashboard /> : <Navigate to="/login" />
+          }
         />
+
+        {/* Login page */}
         <Route
           path="/login"
-          element={<Login setIsAuthenticated={setIsAuthenticated} />}
+          element={
+            !isAuthenticated ? (
+              <Login setIsAuthenticated={setIsAuthenticated} />
+            ) : (
+              <Navigate to="/dashboard" />
+            )
+          }
         />
+
+        {/* Signup page */}
         <Route
           path="/signup"
-          element={<Signup setIsAuthenticated={setIsAuthenticated} />}
+          element={
+            !isAuthenticated ? (
+              <Signup setIsAuthenticated={setIsAuthenticated} />
+            ) : (
+              <Navigate to="/dashboard" />
+            )
+          }
+        />
+
+        {/* Default route */}
+        <Route
+          path="/"
+          element={
+            isAuthenticated ? <Navigate to="/dashboard" /> : <Navigate to="/login" />
+          }
         />
       </Routes>
     </Router>
