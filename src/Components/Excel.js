@@ -506,7 +506,7 @@ function Signup() {
         {!showOtpBox ? (
           // Signup Form
           <form onSubmit={handleSignup} className="signup-form">
-            {/* all your input fields here... */}
+            
             <div className="field half">
               <label>First Name *</label>
               <input
@@ -517,7 +517,100 @@ function Signup() {
                 required
               />
             </div>
-            {/* ... rest of your form fields (lastName, email, phone, gst, etc.) */}
+
+            <div className="field half">
+              <label>Last Name *</label>
+              <input
+                type="text"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="field full">
+              <label>Email *</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="field full">
+              <label>Phone *</label>
+              <input
+                type="text"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="field full">
+              <label>GST Number</label>
+              <input
+                type="text"
+                name="gst"
+                value={formData.gst}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="field half">
+              <label>City *</label>
+              <input
+                type="text"
+                name="city"
+                value={formData.city}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="field half">
+              <label>Country *</label>
+              <input
+                type="text"
+                name="country"
+                value={formData.country}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="field full">
+              <label>Password *</label>
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+              <button type="button" onClick={() => setShowPassword(!showPassword)}>
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
+
+            <div className="field full">
+              <label>Confirm Password *</label>
+              <input
+                type={showConfirm ? "text" : "password"}
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+              />
+              <button type="button" onClick={() => setShowConfirm(!showConfirm)}>
+                {showConfirm ? "Hide" : "Show"}
+              </button>
+            </div>
+
             <div className="field full">
               <button type="submit" className="btn-primary">
                 Sign Up
