@@ -411,6 +411,7 @@ e.preventDefault();
  
 
 
+
 function Signup() {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -426,14 +427,18 @@ function Signup() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [showOtpBox, setShowOtpBox] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [email, setEmail] = useState("");
 
   const navigate = useNavigate();
 
+  // Handle form input change
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // ✅ Signup request
+  // Handle signup request
   const handleSignup = async (e) => {
     e.preventDefault();
 
@@ -462,23 +467,46 @@ function Signup() {
 
       console.log("Signup response:", res.data);
 
-      // ✅ Case 1: If backend already verified OTP and returns token
-      if (res.data.token) {
-        localStorage.setItem("token", res.data.token);
-        alert("Signup successful! Redirecting to dashboard...");
-        navigate("/dashboard");
-        return;
-      }
-
-      // ✅ Case 2: If backend just says OTP sent (no token yet)
       if (res.data.success || res.data.status === "ok" || res.data.status === true) {
-        alert("OTP sent to your email/phone. Please verify.");
+        setEmail(formData.email); // Save email for OTP verification
+        setShowOtpBox(true); // Show OTP box
+        alert("Signup successful. Please check your email/phone for OTP.");
       } else {
         alert(res.data.message || "Signup failed");
       }
     } catch (err) {
       console.error(err);
-      alert("Server error");
+      alert("Server error during signup.");
+    }
+  };
+
+  // Handle OTP verification
+  const handleVerifyOtp = async () => {
+    if (!otp) {
+      alert("Please enter the OTP.");
+      return;
+    }
+
+    try {
+      const res = await axios.post(
+        "https://product-backend-2-6atb.onrender.com/verify-otp",
+        { email, otp }
+      );
+
+      console.log("OTP verify response:", res.data);
+
+      if (res.data.success || res.data.status === "ok") {
+        if (res.data.token) {
+          localStorage.setItem("token", res.data.token);
+        }
+        alert("OTP Verified! Redirecting to dashboard...");
+        navigate("/dashboard"); // Redirect
+      } else {
+        alert(res.data.message || "Invalid OTP. Try again.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("OTP verification failed.");
     }
   };
 
@@ -487,134 +515,151 @@ function Signup() {
       <div className="signup-box">
         <h2>Sign Up</h2>
 
-        <form onSubmit={handleSignup} className="signup-form">
-          <div className="field half">
-            <label>First Name *</label>
-            <input
-              type="text"
-              name="firstName"
-              value={formData.firstName}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="field half">
-            <label>Last Name *</label>
-            <input
-              type="text"
-              name="lastName"
-              value={formData.lastName}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="field full">
-            <label>Email *</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="field full">
-            <label>Phone *</label>
-            <input
-              type="text"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="field full">
-            <label>GST Number</label>
-            <input
-              type="text"
-              name="gst"
-              value={formData.gst}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="field half">
-            <label>City *</label>
-            <input
-              type="text"
-              name="city"
-              value={formData.city}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="field half">
-            <label>Country *</label>
-            <input
-              type="text"
-              name="country"
-              value={formData.country}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          {/* Password with Eye Icon */}
-          <div className="field full password-field">
-            <label>Password *</label>
-            <div className="password-wrapper">
+        {!showOtpBox ? (
+          // Signup Form
+          <form onSubmit={handleSignup} className="signup-form">
+            <div className="field half">
+              <label>First Name *</label>
               <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                value={formData.password}
+                type="text"
+                name="firstName"
+                value={formData.firstName}
                 onChange={handleChange}
                 required
               />
-              <span
-                className="eye-icon"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
-              </span>
             </div>
-          </div>
 
-          {/* Confirm Password with Eye Icon */}
-          <div className="field full password-field">
-            <label>Confirm Password *</label>
-            <div className="password-wrapper">
+            <div className="field half">
+              <label>Last Name *</label>
               <input
-                type={showConfirm ? "text" : "password"}
-                name="confirmPassword"
-                value={formData.confirmPassword}
+                type="text"
+                name="lastName"
+                value={formData.lastName}
                 onChange={handleChange}
                 required
               />
-              <span
-                className="eye-icon"
-                onClick={() => setShowConfirm(!showConfirm)}
-              >
-                {showConfirm ? <FaEyeSlash /> : <FaEye />}
-              </span>
             </div>
-          </div>
 
-          <div className="field full">
-            <button type="submit" className="btn-primary">
-              Sign Up
+            <div className="field full">
+              <label>Email *</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="field full">
+              <label>Phone *</label>
+              <input
+                type="text"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="field full">
+              <label>GST Number</label>
+              <input
+                type="text"
+                name="gst"
+                value={formData.gst}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="field half">
+              <label>City *</label>
+              <input
+                type="text"
+                name="city"
+                value={formData.city}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="field half">
+              <label>Country *</label>
+              <input
+                type="text"
+                name="country"
+                value={formData.country}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            {/* Password with Eye Icon */}
+            <div className="field full password-field">
+              <label>Password *</label>
+              <div className="password-wrapper">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                />
+                <span
+                  className="eye-icon"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </span>
+              </div>
+            </div>
+
+            {/* Confirm Password with Eye Icon */}
+            <div className="field full password-field">
+              <label>Confirm Password *</label>
+              <div className="password-wrapper">
+                <input
+                  type={showConfirm ? "text" : "password"}
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required
+                />
+                <span
+                  className="eye-icon"
+                  onClick={() => setShowConfirm(!showConfirm)}
+                >
+                  {showConfirm ? <FaEyeSlash /> : <FaEye />}
+                </span>
+              </div>
+            </div>
+
+            <div className="field full">
+              <button type="submit" className="btn-primary">
+                Sign Up
+              </button>
+            </div>
+
+            <p className="login-link">
+              Already have an account? <Link to="/login">Login here</Link>
+            </p>
+          </form>
+        ) : (
+          // OTP Box
+          <div className="otp-box">
+            <h3>Enter OTP sent to {email}</h3>
+            <input
+              type="text"
+              placeholder="Enter OTP"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+              required
+            />
+            <button className="btn-primary" onClick={handleVerifyOtp}>
+              Verify OTP
             </button>
           </div>
-
-          {/* ✅ Add login link */}
-          <p className="login-link">
-            Already have an account? <Link to="/login">Login here</Link>
-          </p>
-        </form>
+        )}
       </div>
     </div>
   );
