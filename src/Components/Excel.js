@@ -410,6 +410,7 @@ e.preventDefault();
 
  
 
+
 function Signup() {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -461,12 +462,17 @@ function Signup() {
 
       console.log("Signup response:", res.data);
 
-      if (res.data.success || res.data.status === "ok" || res.data.status === true) {
-        if (res.data.token) {
-          localStorage.setItem("token", res.data.token);
-        }
+      // ✅ Case 1: If backend already verified OTP and returns token
+      if (res.data.token) {
+        localStorage.setItem("token", res.data.token);
         alert("Signup successful! Redirecting to dashboard...");
-        navigate("/dashboard"); // ✅ direct redirect after signup
+        navigate("/dashboard");
+        return;
+      }
+
+      // ✅ Case 2: If backend just says OTP sent (no token yet)
+      if (res.data.success || res.data.status === "ok" || res.data.status === true) {
+        alert("OTP sent to your email/phone. Please verify.");
       } else {
         alert(res.data.message || "Signup failed");
       }
@@ -613,6 +619,7 @@ function Signup() {
     </div>
   );
 }
+
 
 
  
