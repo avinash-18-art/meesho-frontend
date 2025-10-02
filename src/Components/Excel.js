@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { IoSearch } from "react-icons/io5";
 import { BrowserRouter as Router, Route, Routes ,Navigate} from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa"
 
 import {
   LineChart,
@@ -483,14 +484,16 @@ function Signup() {
         { email, otp }
       );
 
+      console.log("OTP verify response:", res.data);
+
       if (res.data.success) {
         if (res.data.token) {
           localStorage.setItem("token", res.data.token);
         }
         alert("OTP Verified! Redirecting to dashboard...");
-        navigate("/dashboard");
+        navigate("/dashboard"); // ✅ Redirect only after OTP verified
       } else {
-        alert("Invalid OTP. Try again.");
+        alert(res.data.message || "Invalid OTP. Try again.");
       }
     } catch (err) {
       console.error(err);
@@ -506,7 +509,6 @@ function Signup() {
         {!showOtpBox ? (
           // Signup Form
           <form onSubmit={handleSignup} className="signup-form">
-            
             <div className="field half">
               <label>First Name *</label>
               <input
@@ -583,32 +585,44 @@ function Signup() {
               />
             </div>
 
-            <div className="field full">
+            {/* Password with Eye Icon */}
+            <div className="field full password-field">
               <label>Password *</label>
-              <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
-              <button type="button" onClick={() => setShowPassword(!showPassword)}>
-                {showPassword ? "Hide" : "Show"}
-              </button>
+              <div className="password-wrapper">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                />
+                <span
+                  className="eye-icon"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </span>
+              </div>
             </div>
 
-            <div className="field full">
+            {/* Confirm Password with Eye Icon */}
+            <div className="field full password-field">
               <label>Confirm Password *</label>
-              <input
-                type={showConfirm ? "text" : "password"}
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
-              />
-              <button type="button" onClick={() => setShowConfirm(!showConfirm)}>
-                {showConfirm ? "Hide" : "Show"}
-              </button>
+              <div className="password-wrapper">
+                <input
+                  type={showConfirm ? "text" : "password"}
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required
+                />
+                <span
+                  className="eye-icon"
+                  onClick={() => setShowConfirm(!showConfirm)}
+                >
+                  {showConfirm ? <FaEyeSlash /> : <FaEye />}
+                </span>
+              </div>
             </div>
 
             <div className="field full">
@@ -616,6 +630,11 @@ function Signup() {
                 Sign Up
               </button>
             </div>
+
+            {/* ✅ Add login link */}
+            <p className="login-link">
+              Already have an account? <Link to="/login">Login here</Link>
+            </p>
           </form>
         ) : (
           // OTP Box
@@ -626,6 +645,7 @@ function Signup() {
               placeholder="Enter OTP"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
+              required
             />
             <button className="btn-primary" onClick={handleVerifyOtp}>
               Verify OTP
@@ -1195,6 +1215,7 @@ const isLoggedIn = localStorage.getItem("user");
         />
         <Route path="/signup" element={<Signup />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
     </Router>
   );

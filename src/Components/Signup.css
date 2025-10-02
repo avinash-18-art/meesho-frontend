@@ -210,5 +210,29 @@
   cursor: pointer;
 }
 
+/* Wraps the input and eye icon */
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Input styling */
+.password-wrapper input {
+  width: 100%;
+  padding-right: 2.5rem; /* space for the eye icon */
+  box-sizing: border-box;
+}
+
+/* Eye icon styling */
+.eye-icon {
+  position: absolute;
+  right: 0.75rem; /* distance from right edge of input */
+  cursor: pointer;
+  color: #555;
+  font-size: 1.1rem;
+}
+
+
 
 
