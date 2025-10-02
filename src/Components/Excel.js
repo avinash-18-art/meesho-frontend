@@ -433,12 +433,11 @@ function Signup() {
 
   const navigate = useNavigate();
 
-  // Handle form input change
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Handle signup request
+  // ✅ Signup request
   const handleSignup = async (e) => {
     e.preventDefault();
 
@@ -467,9 +466,10 @@ function Signup() {
 
       console.log("Signup response:", res.data);
 
+      // ✅ If signup success → show OTP input
       if (res.data.success || res.data.status === "ok" || res.data.status === true) {
-        setEmail(formData.email); // Save email for OTP verification
-        setShowOtpBox(true); // Show OTP box
+        setEmail(formData.email);
+        setShowOtpBox(true);
         alert("Signup successful. Please check your email/phone for OTP.");
       } else {
         alert(res.data.message || "Signup failed");
@@ -480,7 +480,7 @@ function Signup() {
     }
   };
 
-  // Handle OTP verification
+  // ✅ OTP verification request
   const handleVerifyOtp = async () => {
     if (!otp) {
       alert("Please enter the OTP.");
@@ -495,12 +495,18 @@ function Signup() {
 
       console.log("OTP verify response:", res.data);
 
-      if (res.data.success || res.data.status === "ok") {
+      // ✅ Flexible conditions to catch all cases
+      if (
+        res.data.success === true ||
+        res.data.status === "ok" ||
+        res.data.verified === true ||
+        res.data.message?.toLowerCase().includes("verified")
+      ) {
         if (res.data.token) {
           localStorage.setItem("token", res.data.token);
         }
         alert("OTP Verified! Redirecting to dashboard...");
-        navigate("/dashboard"); // Redirect
+        navigate("/dashboard");
       } else {
         alert(res.data.message || "Invalid OTP. Try again.");
       }
@@ -516,7 +522,6 @@ function Signup() {
         <h2>Sign Up</h2>
 
         {!showOtpBox ? (
-          // Signup Form
           <form onSubmit={handleSignup} className="signup-form">
             <div className="field half">
               <label>First Name *</label>
@@ -594,7 +599,7 @@ function Signup() {
               />
             </div>
 
-            {/* Password with Eye Icon */}
+            {/* Password */}
             <div className="field full password-field">
               <label>Password *</label>
               <div className="password-wrapper">
@@ -614,7 +619,7 @@ function Signup() {
               </div>
             </div>
 
-            {/* Confirm Password with Eye Icon */}
+            {/* Confirm Password */}
             <div className="field full password-field">
               <label>Confirm Password *</label>
               <div className="password-wrapper">
@@ -645,7 +650,6 @@ function Signup() {
             </p>
           </form>
         ) : (
-          // OTP Box
           <div className="otp-box">
             <h3>Enter OTP sent to {email}</h3>
             <input
@@ -664,9 +668,6 @@ function Signup() {
     </div>
   );
 }
-
-
-
  
  
 
