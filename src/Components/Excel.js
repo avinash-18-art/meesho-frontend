@@ -640,9 +640,9 @@ function Signup() {
             </div>
 
             <div className="field full">
-              <button type="submit" className="btn-primary">
+              <Link to="/dashboard"><button type="submit" className="btn-primary">
                 Sign Up
-              </button>
+              </button></Link>
             </div>
 
             <p className="login-link">
