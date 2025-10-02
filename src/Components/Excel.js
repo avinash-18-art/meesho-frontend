@@ -2,7 +2,7 @@ import React, {  useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { IoSearch } from "react-icons/io5";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes ,Navigate} from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -1200,12 +1200,17 @@ function Dashboard() {
 }
 
 function App() {
+const isLoggedIn = localStorage.getItem("user");
   return (
-    <Router>
+<Router>
       <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/login" element={<Login />} />
+        {/* Default page -> Signup */}
+        <Route
+          path="/"
+          element={!isLoggedIn ? <Signup /> : <Navigate to="/dashboard" />}
+        />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </Router>
   );
