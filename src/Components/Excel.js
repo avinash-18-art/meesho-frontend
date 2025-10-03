@@ -409,7 +409,6 @@ e.preventDefault();
 //-------------------------signup component--------------------------
 
  
-
 function Signup() {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -431,16 +430,17 @@ function Signup() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [otpTimer, setOtpTimer] = useState(120); // 2 minutes timer
+  const [otpVerified, setOtpVerified] = useState(false); // <-- track OTP success
 
   const navigate = useNavigate();
 
   useEffect(() => {
     let timer;
-    if (showOtpBox && otpTimer > 0) {
+    if (showOtpBox && otpTimer > 0 && !otpVerified) {
       timer = setInterval(() => setOtpTimer((prev) => prev - 1), 1000);
     }
     return () => clearInterval(timer);
-  }, [showOtpBox, otpTimer]);
+  }, [showOtpBox, otpTimer, otpVerified]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -504,6 +504,7 @@ function Signup() {
         setShowOtpBox(true);
         setEmail(formData.email);
         setOtpTimer(120); // reset timer
+        setOtpVerified(false); // reset
         alert("Signup successful! OTP sent to your email/phone.");
       } else {
         setErrorMsg(body.message || "Signup failed. Check your details.");
@@ -528,6 +529,12 @@ function Signup() {
       return;
     }
 
+    if (otpVerified) {
+      // Already verified, prevent double click
+      navigate("/dashboard");
+      return;
+    }
+
     setLoading(true);
     setErrorMsg("");
     const payload = { email, mobileNumber: formData.phone, otp };
@@ -549,10 +556,17 @@ function Signup() {
 
       if (successDetected) {
         if (body.token) localStorage.setItem("token", body.token);
+        setOtpVerified(true); // mark OTP verified
         alert("OTP Verified! Redirecting to dashboard...");
         navigate("/dashboard");
       } else {
-        setErrorMsg(body.message || "Invalid OTP. Try again.");
+        // Check if backend says already verified
+        if (msg.includes("already verified")) {
+          setOtpVerified(true);
+          navigate("/dashboard");
+        } else {
+          setErrorMsg(body.message || "Invalid OTP. Try again.");
+        }
       }
     } catch (err) {
       setErrorMsg(
@@ -579,6 +593,7 @@ function Signup() {
 
       if (successDetected) {
         setOtpTimer(120); // reset timer
+        setOtpVerified(false); // reset
         alert("OTP resent successfully!");
       } else {
         setErrorMsg(body.message || "Failed to resend OTP.");
@@ -603,6 +618,7 @@ function Signup() {
 
         {!showOtpBox ? (
           <form onSubmit={handleSignup} className="signup-form">
+            {/* Form fields */}
             <div className="field half">
               <label>First Name *</label>
               <input
@@ -612,7 +628,6 @@ function Signup() {
                 onChange={handleChange}
               />
             </div>
-
             <div className="field half">
               <label>Last Name *</label>
               <input
@@ -622,7 +637,6 @@ function Signup() {
                 onChange={handleChange}
               />
             </div>
-
             <div className="field full">
               <label>Email *</label>
               <input
@@ -632,7 +646,6 @@ function Signup() {
                 onChange={handleChange}
               />
             </div>
-
             <div className="field full">
               <label>Phone *</label>
               <input
@@ -642,7 +655,6 @@ function Signup() {
                 onChange={handleChange}
               />
             </div>
-
             <div className="field full">
               <label>GST Number</label>
               <input
@@ -652,7 +664,6 @@ function Signup() {
                 onChange={handleChange}
               />
             </div>
-
             <div className="field half">
               <label>City *</label>
               <input
@@ -662,7 +673,6 @@ function Signup() {
                 onChange={handleChange}
               />
             </div>
-
             <div className="field half">
               <label>Country *</label>
               <input
@@ -672,7 +682,6 @@ function Signup() {
                 onChange={handleChange}
               />
             </div>
-
             <div className="field full password-field">
               <label>Password *</label>
               <div className="password-wrapper">
@@ -690,7 +699,6 @@ function Signup() {
                 </span>
               </div>
             </div>
-
             <div className="field full password-field">
               <label>Confirm Password *</label>
               <div className="password-wrapper">
@@ -708,13 +716,11 @@ function Signup() {
                 </span>
               </div>
             </div>
-
             <div className="field full">
               <button type="submit" className="btn-primary" disabled={loading}>
                 {loading ? "Please wait..." : "Sign Up"}
               </button>
             </div>
-
             <p className="login-link">
               Already have an account? <Link to="/login">Login here</Link>
             </p>
@@ -732,7 +738,7 @@ function Signup() {
               <button
                 className="btn-primary"
                 onClick={handleVerifyOtp}
-                disabled={loading || otpTimer <= 0}
+                disabled={loading || otpTimer <= 0 || otpVerified}
               >
                 {loading ? "Verifying..." : "Verify OTP"}
               </button>
