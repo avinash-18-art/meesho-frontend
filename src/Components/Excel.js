@@ -464,8 +464,8 @@ function Signup() {
     }
 
     setLoading(true);
-    setShowOtpBox(true); // <-- Show OTP box immediately
-    setEmail(formData.email); // keep email for verify
+    setShowOtpBox(true); // show OTP box immediately
+    setEmail(formData.email); // keep email for verification
 
     const payload = {
       firstName: formData.firstName,
@@ -480,13 +480,10 @@ function Signup() {
     };
 
     try {
-      console.log("Signup request payload:", payload);
       const res = await axios.post(
         "https://product-backend-2-6atb.onrender.com/signup",
         payload
       );
-
-      console.log("Signup response:", res.data);
 
       const body = res.data || {};
       const successDetected =
@@ -500,10 +497,10 @@ function Signup() {
         const message = body.message || "Signup failed. Check console/network.";
         setErrorMsg(message);
       } else {
-        alert("Signup request successful. Enter OTP sent to your email/phone.");
+        // Do NOT use alert here, it can block navigate
+        console.log("OTP sent successfully. Please verify.");
       }
     } catch (err) {
-      console.error("Signup error:", err);
       const details = err.response?.data?.message || err.message || "Server/network error";
       setErrorMsg(details);
     } finally {
@@ -522,13 +519,10 @@ function Signup() {
     const payload = { email, mobileNumber: formData.phone, otp };
 
     try {
-      console.log("Verify OTP payload:", payload);
       const res = await axios.post(
         "https://product-backend-2-6atb.onrender.com/verify-otp",
         payload
       );
-
-      console.log("OTP verify response:", res.data);
 
       const body = res.data || {};
       const msg = (body.message || "").toString().toLowerCase();
@@ -541,13 +535,15 @@ function Signup() {
 
       if (successDetected) {
         if (body.token) localStorage.setItem("token", body.token);
-        alert("OTP Verified! Redirecting to dashboard...");
-        navigate("/dashboard");
+
+        // Use setTimeout to allow any pending state updates before navigating
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 100); 
       } else {
         setErrorMsg(body.message || "Invalid OTP. Try again.");
       }
     } catch (err) {
-      console.error("OTP verification error:", err);
       const details = err.response?.data?.message || err.message || "OTP verification failed";
       setErrorMsg(details);
     } finally {
@@ -647,7 +643,6 @@ function Signup() {
     </div>
   );
 }
-
 // ---------------------- DASHBOARD COMPONENT ----------------------
 function Dashboard() {
   const [file, setFile] = useState(null);
