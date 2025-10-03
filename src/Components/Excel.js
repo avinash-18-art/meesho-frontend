@@ -411,7 +411,6 @@ e.preventDefault();
  
 
 
-
 function Signup() {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -434,10 +433,6 @@ function Signup() {
   const [errorMsg, setErrorMsg] = useState("");
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    console.log("showOtpBox changed:", showOtpBox);
-  }, [showOtpBox]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -469,6 +464,9 @@ function Signup() {
     }
 
     setLoading(true);
+    setShowOtpBox(true); // <-- Show OTP box immediately
+    setEmail(formData.email); // keep email for verify
+
     const payload = {
       firstName: formData.firstName,
       lastName: formData.lastName,
@@ -488,33 +486,24 @@ function Signup() {
         payload
       );
 
-      console.log("Signup HTTP status:", res.status);
-      console.log("Signup response body:", res.data);
+      console.log("Signup response:", res.data);
 
-      // Flexible success detection:
       const body = res.data || {};
       const successDetected =
         body.success === true ||
         body.status === true ||
-        body.status === "ok" ||
         body.otpSent === true ||
         body.verified === true ||
-        (typeof body.message === "string" && (body.message.toLowerCase().includes("otp") || body.message.toLowerCase().includes("sent") || body.message.toLowerCase().includes("success"))) ||
-        res.status === 200 ||
-        res.status === 201;
+        (typeof body.message === "string" && (body.message.toLowerCase().includes("otp") || body.message.toLowerCase().includes("sent")));
 
-      if (successDetected) {
-        setEmail(formData.email); // keep email for verify
-        setShowOtpBox(true); // <-- OTP box should appear
-        setErrorMsg("");
-        alert("Signup successful — OTP sent. Please enter OTP.");
-      } else {
+      if (!successDetected) {
         const message = body.message || "Signup failed. Check console/network.";
         setErrorMsg(message);
-        console.warn("Signup not treated as success:", res.data);
+      } else {
+        alert("Signup request successful. Enter OTP sent to your email/phone.");
       }
     } catch (err) {
-      console.error("Signup request error:", err);
+      console.error("Signup error:", err);
       const details = err.response?.data?.message || err.message || "Server/network error";
       setErrorMsg(details);
     } finally {
@@ -539,21 +528,16 @@ function Signup() {
         payload
       );
 
-      console.log("OTP verify HTTP status:", res.status);
-      console.log("OTP verify response body:", res.data);
+      console.log("OTP verify response:", res.data);
 
       const body = res.data || {};
       const msg = (body.message || "").toString().toLowerCase();
-
       const successDetected =
         body.success === true ||
         body.status === true ||
-        body.status === "ok" ||
         body.verified === true ||
         msg.includes("verified") ||
-        msg.includes("success") ||
-        res.status === 200 ||
-        res.status === 201;
+        msg.includes("success");
 
       if (successDetected) {
         if (body.token) localStorage.setItem("token", body.token);
@@ -561,19 +545,15 @@ function Signup() {
         navigate("/dashboard");
       } else {
         setErrorMsg(body.message || "Invalid OTP. Try again.");
-        console.warn("OTP verification not treated as success:", res.data);
       }
     } catch (err) {
-      console.error("OTP verify request error:", err);
+      console.error("OTP verification error:", err);
       const details = err.response?.data?.message || err.message || "OTP verification failed";
       setErrorMsg(details);
     } finally {
       setLoading(false);
     }
   };
-
-  // QUICK TEST helper: uncomment to force show OTP and check UI
-  // const forceShowOtpBox = () => setShowOtpBox(true);
 
   return (
     <div className="signup-container">
