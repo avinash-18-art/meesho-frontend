@@ -430,14 +430,20 @@ function Signup() {
   const [showOtpBox, setShowOtpBox] = useState(false);
   const [otp, setOtp] = useState("");
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+    console.log("showOtpBox changed:", showOtpBox);
+  }, [showOtpBox]);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setErrorMsg("");
   };
 
-  // ✅ validate fields before signup
   const validateForm = () => {
     if (!formData.firstName) return "First Name is required";
     if (!formData.lastName) return "Last Name is required";
@@ -447,220 +453,195 @@ function Signup() {
     if (!formData.country) return "Country is required";
     if (!formData.password) return "Password is required";
     if (!formData.confirmPassword) return "Confirm Password is required";
-    if (formData.password !== formData.confirmPassword)
-      return "Passwords do not match";
+    if (formData.password !== formData.confirmPassword) return "Passwords do not match";
     return null;
   };
 
-  // ✅ Signup request
   const handleSignup = async (e) => {
     e.preventDefault();
+    setErrorMsg("");
 
-    const error = validateForm();
-    if (error) {
-      alert(error);
+    const err = validateForm();
+    if (err) {
+      setErrorMsg(err);
+      window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
 
-    try {
-      const payload = {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        mobileNumber: formData.phone,
-        gstNumber: formData.gst,
-        city: formData.city,
-        country: formData.country,
-        createPassword: formData.password,
-        confirmPassword: formData.confirmPassword,
-      };
+    setLoading(true);
+    const payload = {
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email,
+      mobileNumber: formData.phone,
+      gstNumber: formData.gst,
+      city: formData.city,
+      country: formData.country,
+      createPassword: formData.password,
+      confirmPassword: formData.confirmPassword,
+    };
 
+    try {
+      console.log("Signup request payload:", payload);
       const res = await axios.post(
         "https://product-backend-2-6atb.onrender.com/signup",
         payload
       );
 
-      console.log("Signup response:", res.data);
+      console.log("Signup HTTP status:", res.status);
+      console.log("Signup response body:", res.data);
 
-      if (res.data.success || res.data.status === "ok" || res.data.status === true) {
-        setEmail(formData.email);
-        setShowOtpBox(true);
-        alert("Signup successful. Please check your email/phone for OTP.");
+      // Flexible success detection:
+      const body = res.data || {};
+      const successDetected =
+        body.success === true ||
+        body.status === true ||
+        body.status === "ok" ||
+        body.otpSent === true ||
+        body.verified === true ||
+        (typeof body.message === "string" && (body.message.toLowerCase().includes("otp") || body.message.toLowerCase().includes("sent") || body.message.toLowerCase().includes("success"))) ||
+        res.status === 200 ||
+        res.status === 201;
+
+      if (successDetected) {
+        setEmail(formData.email); // keep email for verify
+        setShowOtpBox(true); // <-- OTP box should appear
+        setErrorMsg("");
+        alert("Signup successful — OTP sent. Please enter OTP.");
       } else {
-        alert(res.data.message || "Signup failed");
+        const message = body.message || "Signup failed. Check console/network.";
+        setErrorMsg(message);
+        console.warn("Signup not treated as success:", res.data);
       }
     } catch (err) {
-      console.error(err);
-      alert("Server error during signup.");
+      console.error("Signup request error:", err);
+      const details = err.response?.data?.message || err.message || "Server/network error";
+      setErrorMsg(details);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // ✅ OTP verification request
   const handleVerifyOtp = async () => {
     if (!otp) {
-      alert("Please enter the OTP.");
+      setErrorMsg("Please enter the OTP.");
       return;
     }
 
+    setLoading(true);
+    setErrorMsg("");
+    const payload = { email, mobileNumber: formData.phone, otp };
+
     try {
+      console.log("Verify OTP payload:", payload);
       const res = await axios.post(
         "https://product-backend-2-6atb.onrender.com/verify-otp",
-        { email, otp }
+        payload
       );
 
-      console.log("OTP verify response:", res.data);
+      console.log("OTP verify HTTP status:", res.status);
+      console.log("OTP verify response body:", res.data);
 
-      const msg = res.data.message?.toLowerCase() || "";
+      const body = res.data || {};
+      const msg = (body.message || "").toString().toLowerCase();
 
-      // ✅ Catch multiple success cases
-      if (
-        res.data.success === true ||
-        res.data.status === true ||
-        res.data.status === "ok" ||
-        res.data.verified === true ||
+      const successDetected =
+        body.success === true ||
+        body.status === true ||
+        body.status === "ok" ||
+        body.verified === true ||
         msg.includes("verified") ||
-        msg.includes("success")
-      ) {
-        if (res.data.token) {
-          localStorage.setItem("token", res.data.token);
-        }
-        alert("✅ OTP Verified! Redirecting to dashboard...");
+        msg.includes("success") ||
+        res.status === 200 ||
+        res.status === 201;
+
+      if (successDetected) {
+        if (body.token) localStorage.setItem("token", body.token);
+        alert("OTP Verified! Redirecting to dashboard...");
         navigate("/dashboard");
       } else {
-        alert(res.data.message || "❌ Invalid OTP. Try again.");
+        setErrorMsg(body.message || "Invalid OTP. Try again.");
+        console.warn("OTP verification not treated as success:", res.data);
       }
     } catch (err) {
-      console.error(err);
-      alert("OTP verification failed.");
+      console.error("OTP verify request error:", err);
+      const details = err.response?.data?.message || err.message || "OTP verification failed";
+      setErrorMsg(details);
+    } finally {
+      setLoading(false);
     }
   };
+
+  // QUICK TEST helper: uncomment to force show OTP and check UI
+  // const forceShowOtpBox = () => setShowOtpBox(true);
 
   return (
     <div className="signup-container">
       <div className="signup-box">
         <h2>Sign Up</h2>
 
+        {errorMsg && <div style={{ color: "red", marginBottom: 10 }}>{errorMsg}</div>}
+
         {!showOtpBox ? (
           <form onSubmit={handleSignup} className="signup-form">
             <div className="field half">
               <label>First Name *</label>
-              <input
-                type="text"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleChange}
-                required
-              />
+              <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} />
             </div>
 
             <div className="field half">
               <label>Last Name *</label>
-              <input
-                type="text"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-                required
-              />
+              <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} />
             </div>
 
             <div className="field full">
               <label>Email *</label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
+              <input type="email" name="email" value={formData.email} onChange={handleChange} />
             </div>
 
             <div className="field full">
               <label>Phone *</label>
-              <input
-                type="text"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                required
-              />
+              <input type="text" name="phone" value={formData.phone} onChange={handleChange} />
             </div>
 
             <div className="field full">
               <label>GST Number</label>
-              <input
-                type="text"
-                name="gst"
-                value={formData.gst}
-                onChange={handleChange}
-              />
+              <input type="text" name="gst" value={formData.gst} onChange={handleChange} />
             </div>
 
             <div className="field half">
               <label>City *</label>
-              <input
-                type="text"
-                name="city"
-                value={formData.city}
-                onChange={handleChange}
-                required
-              />
+              <input type="text" name="city" value={formData.city} onChange={handleChange} />
             </div>
 
             <div className="field half">
               <label>Country *</label>
-              <input
-                type="text"
-                name="country"
-                value={formData.country}
-                onChange={handleChange}
-                required
-              />
+              <input type="text" name="country" value={formData.country} onChange={handleChange} />
             </div>
 
-            {/* Password */}
             <div className="field full password-field">
               <label>Password *</label>
               <div className="password-wrapper">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                />
-                <span
-                  className="eye-icon"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
+                <input type={showPassword ? "text" : "password"} name="password" value={formData.password} onChange={handleChange} />
+                <span className="eye-icon" onClick={() => setShowPassword(!showPassword)}>
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </span>
               </div>
             </div>
 
-            {/* Confirm Password */}
             <div className="field full password-field">
               <label>Confirm Password *</label>
               <div className="password-wrapper">
-                <input
-                  type={showConfirm ? "text" : "password"}
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  required
-                />
-                <span
-                  className="eye-icon"
-                  onClick={() => setShowConfirm(!showConfirm)}
-                >
+                <input type={showConfirm ? "text" : "password"} name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} />
+                <span className="eye-icon" onClick={() => setShowConfirm(!showConfirm)}>
                   {showConfirm ? <FaEyeSlash /> : <FaEye />}
                 </span>
               </div>
             </div>
 
             <div className="field full">
-              <button type="submit" className="btn-primary">
-                Sign Up
+              <button type="submit" className="btn-primary" disabled={loading}>
+                {loading ? "Please wait..." : "Sign Up"}
               </button>
             </div>
 
@@ -671,16 +652,15 @@ function Signup() {
         ) : (
           <div className="otp-box">
             <h3>Enter OTP sent to {email}</h3>
-            <input
-              type="text"
-              placeholder="Enter OTP"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              required
-            />
-            <button className="btn-primary" onClick={handleVerifyOtp}>
-              Verify OTP
-            </button>
+            <input type="text" placeholder="Enter OTP" value={otp} onChange={(e) => setOtp(e.target.value)} />
+            <div style={{ marginTop: 10 }}>
+              <button className="btn-primary" onClick={handleVerifyOtp} disabled={loading}>
+                {loading ? "Verifying..." : "Verify OTP"}
+              </button>
+            </div>
+            <div style={{ marginTop: 8 }}>
+              Didn't receive OTP? Check your spam or try again after some time.
+            </div>
           </div>
         )}
       </div>
