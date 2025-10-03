@@ -510,11 +510,14 @@ function Signup() {
 
       console.log("OTP verify response:", res.data);
 
+      const msg = res.data.message?.toLowerCase() || "";
+
       if (
         res.data.success === true ||
         res.data.status === "ok" ||
         res.data.verified === true ||
-        res.data.message?.toLowerCase().includes("verified")
+        msg.includes("verified") ||
+        msg.includes("success")
       ) {
         if (res.data.token) {
           localStorage.setItem("token", res.data.token);
@@ -682,7 +685,6 @@ function Signup() {
     </div>
   );
 }
- 
  
 
 // ---------------------- DASHBOARD COMPONENT ----------------------
