@@ -437,7 +437,7 @@ function Signup() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // ✅ validate all fields before signup
+  // ✅ validate fields before signup
   const validateForm = () => {
     if (!formData.firstName) return "First Name is required";
     if (!formData.lastName) return "Last Name is required";
@@ -512,8 +512,10 @@ function Signup() {
 
       const msg = res.data.message?.toLowerCase() || "";
 
+      // ✅ Catch multiple success cases
       if (
         res.data.success === true ||
+        res.data.status === true ||
         res.data.status === "ok" ||
         res.data.verified === true ||
         msg.includes("verified") ||
@@ -522,10 +524,10 @@ function Signup() {
         if (res.data.token) {
           localStorage.setItem("token", res.data.token);
         }
-        alert("OTP Verified! Redirecting to dashboard...");
+        alert("✅ OTP Verified! Redirecting to dashboard...");
         navigate("/dashboard");
       } else {
-        alert(res.data.message || "Invalid OTP. Try again.");
+        alert(res.data.message || "❌ Invalid OTP. Try again.");
       }
     } catch (err) {
       console.error(err);
@@ -685,7 +687,6 @@ function Signup() {
     </div>
   );
 }
- 
 
 // ---------------------- DASHBOARD COMPONENT ----------------------
 function Dashboard() {
