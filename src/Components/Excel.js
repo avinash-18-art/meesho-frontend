@@ -448,7 +448,8 @@ function Signup() {
     if (!formData.country) return "Country is required";
     if (!formData.password) return "Password is required";
     if (!formData.confirmPassword) return "Confirm Password is required";
-    if (formData.password !== formData.confirmPassword) return "Passwords do not match";
+    if (formData.password !== formData.confirmPassword)
+      return "Passwords do not match";
     return null;
   };
 
@@ -464,8 +465,6 @@ function Signup() {
     }
 
     setLoading(true);
-    setShowOtpBox(true); // <-- Show OTP box immediately
-    setEmail(formData.email); // keep email for verify
 
     const payload = {
       firstName: formData.firstName,
@@ -489,22 +488,26 @@ function Signup() {
       console.log("Signup response:", res.data);
 
       const body = res.data || {};
+      const msg = (body.message || "").toString().toLowerCase();
       const successDetected =
         body.success === true ||
         body.status === true ||
         body.otpSent === true ||
-        body.verified === true ||
-        (typeof body.message === "string" && (body.message.toLowerCase().includes("otp") || body.message.toLowerCase().includes("sent")));
+        msg.includes("otp");
 
-      if (!successDetected) {
-        const message = body.message || "Signup failed. Check console/network.";
-        setErrorMsg(message);
+      if (successDetected) {
+        setShowOtpBox(true); // <-- show OTP box only after backend confirms
+        setEmail(formData.email);
+        alert("Signup successful! OTP sent to your email/phone.");
       } else {
-        alert("Signup request successful. Enter OTP sent to your email/phone.");
+        const message =
+          body.message || "Signup failed. Please check your details.";
+        setErrorMsg(message);
       }
     } catch (err) {
       console.error("Signup error:", err);
-      const details = err.response?.data?.message || err.message || "Server/network error";
+      const details =
+        err.response?.data?.message || err.message || "Server/network error";
       setErrorMsg(details);
     } finally {
       setLoading(false);
@@ -548,7 +551,8 @@ function Signup() {
       }
     } catch (err) {
       console.error("OTP verification error:", err);
-      const details = err.response?.data?.message || err.message || "OTP verification failed";
+      const details =
+        err.response?.data?.message || err.message || "OTP verification failed";
       setErrorMsg(details);
     } finally {
       setLoading(false);
@@ -560,50 +564,95 @@ function Signup() {
       <div className="signup-box">
         <h2>Sign Up</h2>
 
-        {errorMsg && <div style={{ color: "red", marginBottom: 10 }}>{errorMsg}</div>}
+        {errorMsg && (
+          <div style={{ color: "red", marginBottom: 10 }}>{errorMsg}</div>
+        )}
 
         {!showOtpBox ? (
           <form onSubmit={handleSignup} className="signup-form">
             <div className="field half">
               <label>First Name *</label>
-              <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} />
+              <input
+                type="text"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
+              />
             </div>
 
             <div className="field half">
               <label>Last Name *</label>
-              <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} />
+              <input
+                type="text"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
+              />
             </div>
 
             <div className="field full">
               <label>Email *</label>
-              <input type="email" name="email" value={formData.email} onChange={handleChange} />
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+              />
             </div>
 
             <div className="field full">
               <label>Phone *</label>
-              <input type="text" name="phone" value={formData.phone} onChange={handleChange} />
+              <input
+                type="text"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+              />
             </div>
 
             <div className="field full">
               <label>GST Number</label>
-              <input type="text" name="gst" value={formData.gst} onChange={handleChange} />
+              <input
+                type="text"
+                name="gst"
+                value={formData.gst}
+                onChange={handleChange}
+              />
             </div>
 
             <div className="field half">
               <label>City *</label>
-              <input type="text" name="city" value={formData.city} onChange={handleChange} />
+              <input
+                type="text"
+                name="city"
+                value={formData.city}
+                onChange={handleChange}
+              />
             </div>
 
             <div className="field half">
               <label>Country *</label>
-              <input type="text" name="country" value={formData.country} onChange={handleChange} />
+              <input
+                type="text"
+                name="country"
+                value={formData.country}
+                onChange={handleChange}
+              />
             </div>
 
             <div className="field full password-field">
               <label>Password *</label>
               <div className="password-wrapper">
-                <input type={showPassword ? "text" : "password"} name="password" value={formData.password} onChange={handleChange} />
-                <span className="eye-icon" onClick={() => setShowPassword(!showPassword)}>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                />
+                <span
+                  className="eye-icon"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </span>
               </div>
@@ -612,8 +661,16 @@ function Signup() {
             <div className="field full password-field">
               <label>Confirm Password *</label>
               <div className="password-wrapper">
-                <input type={showConfirm ? "text" : "password"} name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} />
-                <span className="eye-icon" onClick={() => setShowConfirm(!showConfirm)}>
+                <input
+                  type={showConfirm ? "text" : "password"}
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                />
+                <span
+                  className="eye-icon"
+                  onClick={() => setShowConfirm(!showConfirm)}
+                >
                   {showConfirm ? <FaEyeSlash /> : <FaEye />}
                 </span>
               </div>
@@ -632,14 +689,23 @@ function Signup() {
         ) : (
           <div className="otp-box">
             <h3>Enter OTP sent to {email}</h3>
-            <input type="text" placeholder="Enter OTP" value={otp} onChange={(e) => setOtp(e.target.value)} />
+            <input
+              type="text"
+              placeholder="Enter OTP"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+            />
             <div style={{ marginTop: 10 }}>
-              <button className="btn-primary" onClick={handleVerifyOtp} disabled={loading}>
+              <button
+                className="btn-primary"
+                onClick={handleVerifyOtp}
+                disabled={loading}
+              >
                 {loading ? "Verifying..." : "Verify OTP"}
               </button>
             </div>
             <div style={{ marginTop: 8 }}>
-              Didn't receive OTP? Check your spam or try again after some time.
+              Didn't receive OTP? Check your spam or try again later.
             </div>
           </div>
         )}
@@ -647,7 +713,6 @@ function Signup() {
     </div>
   );
 }
-
 // ---------------------- DASHBOARD COMPONENT ----------------------
 function Dashboard() {
   const [file, setFile] = useState(null);
