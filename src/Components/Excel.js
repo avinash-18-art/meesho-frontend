@@ -437,12 +437,28 @@ function Signup() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // ✅ validate all fields before signup
+  const validateForm = () => {
+    if (!formData.firstName) return "First Name is required";
+    if (!formData.lastName) return "Last Name is required";
+    if (!formData.email) return "Email is required";
+    if (!formData.phone) return "Phone number is required";
+    if (!formData.city) return "City is required";
+    if (!formData.country) return "Country is required";
+    if (!formData.password) return "Password is required";
+    if (!formData.confirmPassword) return "Confirm Password is required";
+    if (formData.password !== formData.confirmPassword)
+      return "Passwords do not match";
+    return null;
+  };
+
   // ✅ Signup request
   const handleSignup = async (e) => {
     e.preventDefault();
 
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match");
+    const error = validateForm();
+    if (error) {
+      alert(error);
       return;
     }
 
@@ -466,7 +482,6 @@ function Signup() {
 
       console.log("Signup response:", res.data);
 
-      // ✅ If signup success → show OTP input
       if (res.data.success || res.data.status === "ok" || res.data.status === true) {
         setEmail(formData.email);
         setShowOtpBox(true);
@@ -495,7 +510,6 @@ function Signup() {
 
       console.log("OTP verify response:", res.data);
 
-      // ✅ Flexible conditions to catch all cases
       if (
         res.data.success === true ||
         res.data.status === "ok" ||
@@ -640,9 +654,9 @@ function Signup() {
             </div>
 
             <div className="field full">
-              <Link to="/dashboard"><button type="submit" className="btn-primary">
+              <button type="submit" className="btn-primary">
                 Sign Up
-              </button></Link>
+              </button>
             </div>
 
             <p className="login-link">
