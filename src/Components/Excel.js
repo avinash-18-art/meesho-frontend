@@ -410,7 +410,6 @@ e.preventDefault();
 
  
 
-
 function Signup() {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -431,8 +430,17 @@ function Signup() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [otpTimer, setOtpTimer] = useState(120); // 2 minutes timer
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    let timer;
+    if (showOtpBox && otpTimer > 0) {
+      timer = setInterval(() => setOtpTimer((prev) => prev - 1), 1000);
+    }
+    return () => clearInterval(timer);
+  }, [showOtpBox, otpTimer]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -479,16 +487,13 @@ function Signup() {
     };
 
     try {
-      console.log("Signup request payload:", payload);
       const res = await axios.post(
         "https://product-backend-2-6atb.onrender.com/signup",
         payload
       );
 
-      console.log("Signup response:", res.data);
-
       const body = res.data || {};
-      const msg = (body.message || "").toString().toLowerCase();
+      const msg = (body.message || "").toLowerCase();
       const successDetected =
         body.success === true ||
         body.status === true ||
@@ -496,19 +501,17 @@ function Signup() {
         msg.includes("otp");
 
       if (successDetected) {
-        setShowOtpBox(true); // <-- show OTP box only after backend confirms
+        setShowOtpBox(true);
         setEmail(formData.email);
+        setOtpTimer(120); // reset timer
         alert("Signup successful! OTP sent to your email/phone.");
       } else {
-        const message =
-          body.message || "Signup failed. Please check your details.";
-        setErrorMsg(message);
+        setErrorMsg(body.message || "Signup failed. Check your details.");
       }
     } catch (err) {
-      console.error("Signup error:", err);
-      const details =
-        err.response?.data?.message || err.message || "Server/network error";
-      setErrorMsg(details);
+      setErrorMsg(
+        err.response?.data?.message || err.message || "Server/network error"
+      );
     } finally {
       setLoading(false);
     }
@@ -520,21 +523,23 @@ function Signup() {
       return;
     }
 
+    if (otpTimer <= 0) {
+      setErrorMsg("OTP expired! Please resend OTP.");
+      return;
+    }
+
     setLoading(true);
     setErrorMsg("");
     const payload = { email, mobileNumber: formData.phone, otp };
 
     try {
-      console.log("Verify OTP payload:", payload);
       const res = await axios.post(
         "https://product-backend-2-6atb.onrender.com/verify-otp",
         payload
       );
 
-      console.log("OTP verify response:", res.data);
-
       const body = res.data || {};
-      const msg = (body.message || "").toString().toLowerCase();
+      const msg = (body.message || "").toLowerCase();
       const successDetected =
         body.success === true ||
         body.status === true ||
@@ -550,10 +555,38 @@ function Signup() {
         setErrorMsg(body.message || "Invalid OTP. Try again.");
       }
     } catch (err) {
-      console.error("OTP verification error:", err);
-      const details =
-        err.response?.data?.message || err.message || "OTP verification failed";
-      setErrorMsg(details);
+      setErrorMsg(
+        err.response?.data?.message || err.message || "OTP verification failed"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    setLoading(true);
+    setErrorMsg("");
+
+    try {
+      const res = await axios.post(
+        "https://product-backend-2-6atb.onrender.com/resend-otp",
+        { email, mobileNumber: formData.phone }
+      );
+
+      const body = res.data || {};
+      const successDetected =
+        body.success === true || body.otpSent === true || body.status === true;
+
+      if (successDetected) {
+        setOtpTimer(120); // reset timer
+        alert("OTP resent successfully!");
+      } else {
+        setErrorMsg(body.message || "Failed to resend OTP.");
+      }
+    } catch (err) {
+      setErrorMsg(
+        err.response?.data?.message || err.message || "Failed to resend OTP."
+      );
     } finally {
       setLoading(false);
     }
@@ -699,13 +732,24 @@ function Signup() {
               <button
                 className="btn-primary"
                 onClick={handleVerifyOtp}
-                disabled={loading}
+                disabled={loading || otpTimer <= 0}
               >
                 {loading ? "Verifying..." : "Verify OTP"}
               </button>
             </div>
+            <div style={{ marginTop: 5 }}>
+              {otpTimer > 0
+                ? `OTP expires in ${otpTimer}s`
+                : "OTP expired. Please resend OTP."}
+            </div>
             <div style={{ marginTop: 8 }}>
-              Didn't receive OTP? Check your spam or try again later.
+              <button
+                className="btn-secondary"
+                onClick={handleResendOtp}
+                disabled={loading}
+              >
+                Resend OTP
+              </button>
             </div>
           </div>
         )}
