@@ -431,14 +431,12 @@ function Signup() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-  const [successMsg, setSuccessMsg] = useState("");
 
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrorMsg("");
-    setSuccessMsg("");
   };
 
   const validateForm = () => {
@@ -450,15 +448,13 @@ function Signup() {
     if (!formData.country) return "Country is required";
     if (!formData.password) return "Password is required";
     if (!formData.confirmPassword) return "Confirm Password is required";
-    if (formData.password !== formData.confirmPassword)
-      return "Passwords do not match";
+    if (formData.password !== formData.confirmPassword) return "Passwords do not match";
     return null;
   };
 
   const handleSignup = async (e) => {
     e.preventDefault();
     setErrorMsg("");
-    setSuccessMsg("");
 
     const err = validateForm();
     if (err) {
@@ -468,8 +464,8 @@ function Signup() {
     }
 
     setLoading(true);
-    setShowOtpBox(true); // show OTP box immediately
-    setEmail(formData.email); // save email for OTP verification
+    setShowOtpBox(true); // <-- Show OTP box immediately
+    setEmail(formData.email); // keep email for verify
 
     const payload = {
       firstName: formData.firstName,
@@ -484,10 +480,13 @@ function Signup() {
     };
 
     try {
+      console.log("Signup request payload:", payload);
       const res = await axios.post(
         "https://product-backend-2-6atb.onrender.com/signup",
         payload
       );
+
+      console.log("Signup response:", res.data);
 
       const body = res.data || {};
       const successDetected =
@@ -495,22 +494,17 @@ function Signup() {
         body.status === true ||
         body.otpSent === true ||
         body.verified === true ||
-        (typeof body.message === "string" &&
-          (body.message.toLowerCase().includes("otp") ||
-            body.message.toLowerCase().includes("sent")));
+        (typeof body.message === "string" && (body.message.toLowerCase().includes("otp") || body.message.toLowerCase().includes("sent")));
 
       if (!successDetected) {
         const message = body.message || "Signup failed. Check console/network.";
         setErrorMsg(message);
       } else {
-        setSuccessMsg(
-          "Signup successful. Enter OTP sent to your email/phone."
-        );
+        alert("Signup request successful. Enter OTP sent to your email/phone.");
       }
     } catch (err) {
       console.error("Signup error:", err);
-      const details =
-        err.response?.data?.message || err.message || "Server/network error";
+      const details = err.response?.data?.message || err.message || "Server/network error";
       setErrorMsg(details);
     } finally {
       setLoading(false);
@@ -525,15 +519,16 @@ function Signup() {
 
     setLoading(true);
     setErrorMsg("");
-    setSuccessMsg("");
-
     const payload = { email, mobileNumber: formData.phone, otp };
 
     try {
+      console.log("Verify OTP payload:", payload);
       const res = await axios.post(
         "https://product-backend-2-6atb.onrender.com/verify-otp",
         payload
       );
+
+      console.log("OTP verify response:", res.data);
 
       const body = res.data || {};
       const msg = (body.message || "").toString().toLowerCase();
@@ -546,17 +541,14 @@ function Signup() {
 
       if (successDetected) {
         if (body.token) localStorage.setItem("token", body.token);
-        setSuccessMsg("OTP Verified! Redirecting to dashboard...");
-        setTimeout(() => {
-          navigate("/dashboard");
-        }, 1000); // small delay to show success message
+        alert("OTP Verified! Redirecting to dashboard...");
+        navigate("/dashboard");
       } else {
         setErrorMsg(body.message || "Invalid OTP. Try again.");
       }
     } catch (err) {
       console.error("OTP verification error:", err);
-      const details =
-        err.response?.data?.message || err.message || "OTP verification failed";
+      const details = err.response?.data?.message || err.message || "OTP verification failed";
       setErrorMsg(details);
     } finally {
       setLoading(false);
@@ -569,7 +561,6 @@ function Signup() {
         <h2>Sign Up</h2>
 
         {errorMsg && <div style={{ color: "red", marginBottom: 10 }}>{errorMsg}</div>}
-        {successMsg && <div style={{ color: "green", marginBottom: 10 }}>{successMsg}</div>}
 
         {!showOtpBox ? (
           <form onSubmit={handleSignup} className="signup-form">
@@ -656,6 +647,7 @@ function Signup() {
     </div>
   );
 }
+
 // ---------------------- DASHBOARD COMPONENT ----------------------
 function Dashboard() {
   const [file, setFile] = useState(null);
