@@ -609,7 +609,9 @@ function Signup() {
 
   return (
     <div className="signup-container">
+      
       <div className="signup-box">
+      
         <h2>Sign Up</h2>
 
         {errorMsg && (
@@ -622,6 +624,7 @@ function Signup() {
             <div className="field half">
               <label>First Name *</label>
               <input
+                className="input-design"
                 type="text"
                 name="firstName"
                 value={formData.firstName}
@@ -631,6 +634,7 @@ function Signup() {
             <div className="field half">
               <label>Last Name *</label>
               <input
+                className="input-design"
                 type="text"
                 name="lastName"
                 value={formData.lastName}
@@ -638,7 +642,7 @@ function Signup() {
               />
             </div>
             <div className="field full">
-              <label>Email *</label>
+              <label>Email</label>
               <input
                 type="email"
                 name="email"
@@ -646,27 +650,34 @@ function Signup() {
                 onChange={handleChange}
               />
             </div>
-            <div className="field full">
-              <label>Phone *</label>
+
+            
+            <div className="field half">
+              <label>Phone </label>
               <input
+                className="input-design"
                 type="text"
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
               />
             </div>
-            <div className="field full">
+            <div className="field half">
               <label>GST Number</label>
               <input
+                className="input-design"
                 type="text"
                 name="gst"
                 value={formData.gst}
                 onChange={handleChange}
               />
             </div>
+          
+
             <div className="field half">
-              <label>City *</label>
+              <label>City </label>
               <input
+              className="input-design"
                 type="text"
                 name="city"
                 value={formData.city}
@@ -674,22 +685,25 @@ function Signup() {
               />
             </div>
             <div className="field half">
-              <label>Country *</label>
+              <label>Country </label>
               <input
+                className="input-design"
                 type="text"
                 name="country"
                 value={formData.country}
                 onChange={handleChange}
               />
             </div>
-            <div className="field full password-field">
-              <label>Password *</label>
-              <div className="password-wrapper">
+            <div className="field half password-field">
+              <label>Password</label>
+              <div className="password-wrapper ">
                 <input
+                 className="input-part2"
                   type={showPassword ? "text" : "password"}
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
+                  
                 />
                 <span
                   className="eye-icon"
@@ -699,17 +713,21 @@ function Signup() {
                 </span>
               </div>
             </div>
-            <div className="field full password-field">
-              <label>Confirm Password *</label>
+            
+            
+            <div className="field half password-field">
+              
+              <label>Confirm_Password</label>
               <div className="password-wrapper">
                 <input
+                 className="input-part"
                   type={showConfirm ? "text" : "password"}
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
                 />
                 <span
-                  className="eye-icon"
+                  className="eye-icon2"
                   onClick={() => setShowConfirm(!showConfirm)}
                 >
                   {showConfirm ? <FaEyeSlash /> : <FaEye />}
@@ -722,7 +740,7 @@ function Signup() {
               </button></Link>
             </div>
             <p className="login-link">
-              Already have an account? <Link to="/login">Login here</Link>
+              Already have an account? <Link to="/login">Log  in</Link>
             </p>
           </form>
         ) : (
@@ -763,6 +781,8 @@ function Signup() {
     </div>
   );
 }
+
+
 // ---------------------- DASHBOARD COMPONENT ----------------------
 function Dashboard() {
   const [file, setFile] = useState(null);
