@@ -238,7 +238,7 @@ e.preventDefault();
                 <input
                   name="email"
                   type="email"
-                  placeholder="Email"
+                  
                   value={formData.email}
                   onChange={handleChange}
                   required
@@ -251,7 +251,7 @@ e.preventDefault();
                     className="input-design"
                     name="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Password"
+                    
                     value={formData.password}
                     onChange={handleChange}
                     required
@@ -262,7 +262,7 @@ e.preventDefault();
                     onClick={() => setShowPassword((s) => !s)}
                   >
                     
-                    {showPassword ? "🙈" : "👁️"}
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
                   </button>
                 </div>
               </div>
@@ -358,7 +358,7 @@ e.preventDefault();
                 className="eye-btn"
                 onClick={() => setShowNewPassword((s) => !s)}
               >
-                {showNewPassword ? "🙈" : "👁️"}
+                {showNewPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
 
@@ -375,7 +375,7 @@ e.preventDefault();
                 className="eye-btn"
                 onClick={() => setShowConfirmPassword((s) => !s)}
               >
-                {showConfirmPassword ? "🙈" : "👁️"}
+                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
 
@@ -739,7 +739,7 @@ function Signup() {
             </div>
             <div className="field full">
               <Link to="/dashboard"><button type="submit" className="btn-primary" disabled={loading}>
-                {loading ? "Please wait..." : "Sign Up"}
+                {loading ? "Please wait..." : "SignUp"}
               </button></Link>
             </div>
             <p className="login-link">
