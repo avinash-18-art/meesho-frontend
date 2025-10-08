@@ -612,7 +612,7 @@ function Signup() {
       
       <div className="signup-box">
       
-        <h3 className="sign-up">Sign Up</h3>
+        <h2 className="sign-up">SignUp</h2>
 
         {errorMsg && (
           <div style={{ color: "red", marginBottom: 10 }}>{errorMsg}</div>
