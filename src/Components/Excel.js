@@ -622,7 +622,7 @@ function Signup() {
           <form onSubmit={handleSignup} className="signup-form">
             {/* Form fields */}
             <div className="field half">
-              <label>First Name *</label>
+              <label>First Name <span className="star">*</span></label>
               <input
                 className="input-design"
                 type="text"
@@ -632,7 +632,7 @@ function Signup() {
               />
             </div>
             <div className="field half">
-              <label>Last Name *</label>
+              <label>Last Name<span className="star">*</span></label>
               <input
                 className="input-design"
                 type="text"

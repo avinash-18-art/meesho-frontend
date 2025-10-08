@@ -941,5 +941,8 @@ h1 {
 }
 
 
-
+.star{
+  color: red !important;
+  font-size: 18px;
+}
 
