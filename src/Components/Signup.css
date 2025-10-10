@@ -194,7 +194,7 @@
 }
 
 /* ===== Responsive Design ===== */
-@media (max-width: 768px) {
+@media (max-width: 600px) {
   .signup-box {
     flex-direction: column;
     width: 100%;
@@ -221,6 +221,8 @@
   .otp-box {
     padding: 25px;
   }
+
+  
 }
 
 
