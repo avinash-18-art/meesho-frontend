@@ -4,7 +4,8 @@
   text-align: center;
   padding: 20px;
   font-family: "Arial", sans-serif;
-  height: 167px !important;
+  min-height: 167px;   /* 👈 Use min-height instead of height */
+  height: auto; 
   
 }
 
@@ -87,17 +88,6 @@
 }
 
 @media (max-width: 768px) {
-
-  .footer {
-  background-color: #b00087; /* Purple background */
-  color: #fff;
-  text-align: center;
-  padding: 20px;
-  font-family: "Arial", sans-serif;
-  height: 167px !important;
-  
-}
-
 
   .footer-top {
     flex-direction: column;
