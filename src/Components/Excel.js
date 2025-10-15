@@ -518,50 +518,64 @@ function Signup() {
     }
   };
 
- const handleVerifyOtp = async () => {
-  if (!otp.trim()) {
-    setErrorMsg("Please enter the OTP.");
-    return;
-  }
-
-  if (otpTimer < 1) {
-    setErrorMsg("OTP expired! Please resend OTP.");
-    return;
-  }
-
-  if (otpVerified) {
-    navigate("/dashboard");
-    return;
-  }
-
-  setLoading(true);
-  setErrorMsg("");
-
-  const payload = { otp: otp.trim() };  // ✅ only OTP needed now
-
-  try {
-    const res = await axios.post(
-      "https://product-backend-2-6atb.onrender.com/verify-otp",
-      payload
-    );
-
-    const body = res.data;
-    if (body.success) {
-      setOtpVerified(true);
-      alert("OTP Verified! Redirecting to dashboard...");
-      navigate("/dashboard");
-    } else {
-      setErrorMsg(body.message || "Invalid OTP");
+  const handleVerifyOtp = async () => {
+    if (!otp) {
+      setErrorMsg("Please enter the OTP.");
+      return;
     }
-  } catch (err) {
-    setErrorMsg(
-      err.response?.data?.message || err.message || "OTP verification failed"
-    );
-  } finally {
-    setLoading(false);
-  }
-};
 
+    if (otpTimer <= 0) {
+      setErrorMsg("OTP expired! Please resend OTP.");
+      return;
+    }
+
+    if (otpVerified) {
+      // Already verified, prevent double click
+      navigate("/dashboard");
+      return;
+    }
+
+    setLoading(true);
+    setErrorMsg("");
+    const payload = { email, mobileNumber: formData.phone, otp };
+
+    try {
+      const res = await axios.post(
+        "https://product-backend-2-6atb.onrender.com/verify-otp",
+        payload
+      );
+
+      const body = res.data || {};
+      const msg = (body.message || "").toLowerCase();
+      const successDetected =
+        body.success === true ||
+        body.status === true ||
+        body.verified === true ||
+        msg.includes("verified") ||
+        msg.includes("success");
+
+      if (successDetected) {
+        if (body.token) localStorage.setItem("token", body.token);
+        setOtpVerified(true); // mark OTP verified
+        alert("OTP Verified! Redirecting to dashboard...");
+        navigate("/dashboard");
+      } else {
+        // Check if backend says already verified
+        if (msg.includes("already verified")) {
+          setOtpVerified(true);
+          navigate("/dashboard");
+        } else {
+          setErrorMsg(body.message || "Invalid OTP. Try again.");
+        }
+      }
+    } catch (err) {
+      setErrorMsg(
+        err.response?.data?.message || err.message || "OTP verification failed"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleResendOtp = async () => {
     setLoading(true);
@@ -603,7 +617,8 @@ function Signup() {
         {errorMsg && (
           <div style={{ color: "red", marginBottom: 10 }}>{errorMsg}</div>
         )}
-         {!showOtpBox ? (
+
+        {!showOtpBox ? (
           <form onSubmit={handleSignup} className="signup-form">
             {/* Form fields */}
             <div className="field half">
@@ -700,7 +715,7 @@ function Signup() {
             </div>
             
             
-             <div className="field half password-field">
+            <div className="field half password-field">
               
               <label>Confirm_Password</label>
               <div className="password-wrapper">
@@ -723,9 +738,9 @@ function Signup() {
               <p><input type="checkbox"/>i agree terms and conditions</p>
             </div>
             <div className="field full">
-              <button type="submit" className="btn-primary" disabled={loading}>
+              <Link to='/dashboard'><button type="submit" className="btn-primary" disabled={loading}>
                 {loading ? "Please wait..." : "SignUp"}
-              </button>
+              </button></Link>
             </div>
             <p className="login-link">
               Already have an account? <Link to="/login">Login</Link>
