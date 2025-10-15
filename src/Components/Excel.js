@@ -518,64 +518,50 @@ function Signup() {
     }
   };
 
-  const handleVerifyOtp = async () => {
-    if (!otp) {
-      setErrorMsg("Please enter the OTP.");
-      return;
-    }
+ const handleVerifyOtp = async () => {
+  if (!otp.trim()) {
+    setErrorMsg("Please enter the OTP.");
+    return;
+  }
 
-    if (otpTimer <= 0) {
-      setErrorMsg("OTP expired! Please resend OTP.");
-      return;
-    }
+  if (otpTimer < 1) {
+    setErrorMsg("OTP expired! Please resend OTP.");
+    return;
+  }
 
-    if (otpVerified) {
-      // Already verified, prevent double click
+  if (otpVerified) {
+    navigate("/dashboard");
+    return;
+  }
+
+  setLoading(true);
+  setErrorMsg("");
+
+  const payload = { otp: otp.trim() };  // ✅ only OTP needed now
+
+  try {
+    const res = await axios.post(
+      "https://product-backend-2-6atb.onrender.com/verify-otp",
+      payload
+    );
+
+    const body = res.data;
+    if (body.success) {
+      setOtpVerified(true);
+      alert("OTP Verified! Redirecting to dashboard...");
       navigate("/dashboard");
-      return;
+    } else {
+      setErrorMsg(body.message || "Invalid OTP");
     }
+  } catch (err) {
+    setErrorMsg(
+      err.response?.data?.message || err.message || "OTP verification failed"
+    );
+  } finally {
+    setLoading(false);
+  }
+};
 
-    setLoading(true);
-    setErrorMsg("");
-    const payload = { email, mobileNumber: formData.phone, otp };
-
-    try {
-      const res = await axios.post(
-        "https://product-backend-2-6atb.onrender.com/verify-otp",
-        payload
-      );
-
-      const body = res.data || {};
-      const msg = (body.message || "").toLowerCase();
-      const successDetected =
-        body.success === true ||
-        body.status === true ||
-        body.verified === true ||
-        msg.includes("verified") ||
-        msg.includes("success");
-
-      if (successDetected) {
-        if (body.token) localStorage.setItem("token", body.token);
-        setOtpVerified(true); // mark OTP verified
-        alert("OTP Verified! Redirecting to dashboard...");
-        navigate("/dashboard");
-      } else {
-        // Check if backend says already verified
-        if (msg.includes("already verified")) {
-          setOtpVerified(true);
-          navigate("/dashboard");
-        } else {
-          setErrorMsg(body.message || "Invalid OTP. Try again.");
-        }
-      }
-    } catch (err) {
-      setErrorMsg(
-        err.response?.data?.message || err.message || "OTP verification failed"
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleResendOtp = async () => {
     setLoading(true);
@@ -617,42 +603,168 @@ function Signup() {
         {errorMsg && (
           <div style={{ color: "red", marginBottom: 10 }}>{errorMsg}</div>
         )}
+         {!showOtpBox ? (
+          <form onSubmit={handleSignup} className="signup-form">
+            {/* Form fields */}
+            <div className="field half">
+              <label>First Name <span className="star">*</span></label>
+              <input
+                className="input-design"
+                type="text"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="field half">
+              <label>Last Name<span className="star">*</span></label>
+              <input
+                className="input-design"
+                type="text"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="field full">
+              <label>Email</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+              />
+            </div>
 
-       {showOtpBox && (
-  <div className="otp-box">
-    <h3>Enter OTP sent to {email}</h3>
-    <input
-      type="text"
-      placeholder="Enter OTP"
-      value={otp}
-      onChange={(e) => setOtp(e.target.value)}
-    />
-    <div style={{ marginTop: 10 }}>
-      <button
-        className="btn-primary"
-        onClick={handleVerifyOtp}
-        disabled={loading || otpTimer < 1 || otpVerified}
-      >
-        {loading ? "Verifying..." : "Verify OTP"}
-      </button>
-    </div>
-    <div style={{ marginTop: 5 }}>
-      {otpTimer > 0
-        ? `OTP expires in ${otpTimer}s`
-        : "OTP expired. Please resend OTP."}
-    </div>
-    <div style={{ marginTop: 8 }}>
-      <button
-        className="btn-secondary"
-        onClick={handleResendOtp}
-        disabled={loading}
-      >
-        Resend OTP
-      </button>
-    </div>
-  </div>
-)}
+            
+            <div className="field half">
+              <label>Phone </label>
+              <input
+                className="input-design"
+                type="text"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="field half">
+              <label>GST Number</label>
+              <input
+                className="input-design"
+                type="text"
+                name="gst"
+                value={formData.gst}
+                onChange={handleChange}
+              />
+            </div>
+          
 
+            <div className="field half">
+              <label>City </label>
+              <input
+              className="input-design"
+                type="text"
+                name="city"
+                value={formData.city}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="field half">
+              <label>Country </label>
+              <input
+                className="input-design"
+                type="text"
+                name="country"
+                value={formData.country}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="field half password-field">
+              <label>Password</label>
+              <div className="password-wrapper ">
+                <input
+                 className="input-part2"
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  
+                />
+                <span
+                  className="eye-icon"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </span>
+              </div>
+            </div>
+            
+            
+             <div className="field half password-field">
+              
+              <label>Confirm_Password</label>
+              <div className="password-wrapper">
+                <input
+                 className="input-part"
+                  type={showConfirm ? "text" : "password"}
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                />
+                <span
+                  className="eye-icon2"
+                  onClick={() => setShowConfirm(!showConfirm)}
+                >
+                  {showConfirm ? <FaEyeSlash /> : <FaEye />}
+                </span>
+              </div>
+            </div>
+            <div>
+              <p><input type="checkbox"/>i agree terms and conditions</p>
+            </div>
+            <div className="field full">
+              <button type="submit" className="btn-primary" disabled={loading}>
+                {loading ? "Please wait..." : "SignUp"}
+              </button>
+            </div>
+            <p className="login-link">
+              Already have an account? <Link to="/login">Login</Link>
+            </p>
+          </form>
+        ) : (
+          <div className="otp-box">
+            <h3>Enter OTP sent to {email}</h3>
+            <input
+              type="text"
+              placeholder="Enter OTP"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+            />
+            <div style={{ marginTop: 10 }}>
+              <button
+                className="btn-primary"
+                onClick={handleVerifyOtp}
+                disabled={loading || otpTimer <= 0 || otpVerified}
+              >
+                {loading ? "Verifying..." : "Verify OTP"}
+              </button>
+            </div>
+            <div style={{ marginTop: 5 }}>
+              {otpTimer > 0
+                ? `OTP expires in ${otpTimer}s`
+                : "OTP expired. Please resend OTP."}
+            </div>
+            <div style={{ marginTop: 8 }}>
+              <button
+                className="btn-secondary"
+                onClick={handleResendOtp}
+                disabled={loading}
+              >
+                Resend OTP
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
