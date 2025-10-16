@@ -417,7 +417,7 @@ function Signup() {
     phone: "",
     gst: "",
     city: "",
-    country: "",
+    state: "",
     password: "",
     confirmPassword: "",
   });
@@ -481,7 +481,7 @@ function Signup() {
       mobileNumber: formData.phone,
       gstNumber: formData.gst,
       city: formData.city,
-      country: formData.country,
+      state: formData.state,
       createPassword: formData.password,
       confirmPassword: formData.confirmPassword,
     };
@@ -685,7 +685,7 @@ function Signup() {
               />
             </div>
             <div className="field half">
-              <label>Country </label>
+              <label>State</label>
               <input
                 className="input-design"
                 type="text"
@@ -734,7 +734,7 @@ function Signup() {
                 </span>
               </div>
             </div>
-            
+
             <div>
               <p><input type="checkbox"/>i agree terms and conditions</p>
             </div>
