@@ -734,9 +734,11 @@ function Signup() {
                 </span>
               </div>
             </div>
+            
             <div>
               <p><input type="checkbox"/>i agree terms and conditions</p>
             </div>
+
             <div className="field full">
               <Link to='/dashboard'><button type="submit" className="btn-primary" disabled={loading}>
                 {loading ? "Please wait..." : "SignUp"}

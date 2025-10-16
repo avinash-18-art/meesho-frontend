@@ -231,6 +231,42 @@
 }
 
 
+.terms {
+  grid-column: 1 / -1;       /* full width row */
+  display: flex;
+  align-items: center;       /* center checkbox with text vertically */
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 6px 18px;
+  margin: 6px 0 12px;
+  box-sizing: border-box;
+  flex-wrap: nowrap;         /* keep everything on single flex line */
+  white-space: nowrap;       /* prevent label wrapping */
+  overflow: hidden;          /* avoid pushing layout if text is too long */
+}
+
+/* proper checkbox sizing and no extra offset */
+.terms input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+/* label: inline, can shrink and show ellipsis if too long */
+.terms label,
+.terms p {
+  margin: 0;
+  display: inline-block;
+  min-width: 0;              /* allow flex child to shrink */
+  text-overflow: ellipsis;   /* show "..." if it overflows */
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 14px;           /* tweak this if you want smaller/larger */
+  line-height: 1.1;
+}
+
+
 /* ===== Mobile: two equal columns with full-width inputs ===== */
 @media (max-width: 600px) {
 
@@ -328,21 +364,15 @@
     font-size: 22px;
     margin-bottom: 8px;
   }
-    .terms {
-    grid-column: 1 / -1; /* span full width */
-    display: flex;
-    align-items: center;
-    justify-content: center; /* center horizontally */
-    gap: 8px; /* small spacing between checkbox and text */
-    font-size: 14px;
-    margin-top: 6px;
+
+  .terms label,
+  .terms p {
+    font-size: 13px;
   }
 
-  .terms input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-  }
 }
+
+
 
 
 
