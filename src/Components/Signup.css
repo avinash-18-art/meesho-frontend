@@ -11,9 +11,6 @@
   padding: 20px;
 }
 
-
-
-/* Main Signup Box with two sections */
 .signup-box {
   
   display: flex;
@@ -193,37 +190,50 @@
   margin-top: 10px;
 }
 
-/* ===== Responsive Design ===== */
+/* ===== Responsive Design (Only Mobile) ===== */
 @media (max-width: 600px) {
+  /* Stack the box vertically */
   .signup-box {
-    flex-direction: column;
-    width: 100%;
+    flex-direction: column;        /* ✅ only affects mobile */
+    width: 95%;                    /* ✅ narrower for small screens */
+    max-width: 100%;
+    margin: 0 auto;
   }
 
   .signup-box::before {
     content: "Meesho";
-    flex: none;
+    flex: none;                    /* ✅ reset flex for mobile */
     width: 100%;
-    font-size: 30px;
-    padding: 25px 0;
+    font-size: 28px;
+    padding: 20px 0;
+    text-align: center;
   }
 
   .signup-form {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr;    /* ✅ single column for mobile */
+    padding: 20px;
   }
 
   .btn-primary,
   .signup-box p {
-    grid-column: span 1;
+    grid-column: span 1;           /* ✅ prevent stretching */
   }
 
-  .signup-form,
   .otp-box {
-    padding: 25px;
+    padding: 20px;
   }
 
-  
+  .eye-icon,
+  .eye-icon2 {
+    right: 15px;                   /* ✅ fixes icon position on small screen */
+  }
+
+  .input-part,
+  .input-part2 {
+    width: 100% !important;        /* ✅ full width on mobile */
+  }
 }
+
 
 
 .field-arrange{
