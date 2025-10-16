@@ -190,70 +190,105 @@
   margin-top: 10px;
 }
 
-/* ===== 📱 Mobile View (max-width: 600px) ===== */
+/* ===== Mobile: two equal columns with full-width inputs ===== */
 @media (max-width: 600px) {
 
-  /* Main box stacks vertically */
+  /* keep the main box stacked but allow a two-column form */
   .signup-box {
     flex-direction: column;
     width: 95%;
     max-width: 100%;
-    margin: 20px auto;
+    margin: 16px auto;
     border-radius: 12px;
+    overflow: visible;
   }
 
-  /* Top pink section */
+  /* header */
   .signup-box::before {
     content: "Meesho";
     flex: none;
     width: 100%;
     font-size: 26px;
-    padding: 20px 0;
+    padding: 18px 0;
     text-align: center;
   }
 
-  /* Form layout changes to single column */
+  /* make form display two equal columns on mobile */
   .signup-form {
-    grid-template-columns: 1fr;
-    gap: 15px;
-    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr)); /* equal halves */
+    gap: 14px 16px;
+    padding: 18px;
+    align-items: start;
   }
 
-  /* OTP box and form padding smaller */
-  .signup-form,
-  .otp-box {
-    padding: 20px;
+  /* If you want certain rows to use full width (like Email or SignUp button),
+     keep using the existing .field.full class (it will span both columns) */
+  .field.full {
+    grid-column: 1 / -1; /* spans both columns */
   }
 
-  /* Button and paragraph take single column */
-  .btn-primary,
-  .signup-box p {
-    grid-column: span 1;
+  /* make labels stacked and consistent */
+  .field label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 14px;
   }
 
-  /* Eye icon fixed inside input for small width */
-  .eye-icon,
-  .eye-icon2 {
-    right: 15px;
-  }
-
-  /* Input fields take full width */
+  /* force inputs to fill available space and account for padding/border */
   .field input,
   .input-part,
   .input-part2,
-  .otp-box input {
+  .otp-box input,
+  .password-wrapper input {
     width: 100% !important;
+    box-sizing: border-box; /* include padding/border in width */
+    padding: 10px 14px;
+    border-radius: 22px;
+    font-size: 14px;
   }
 
-  /* Headings adjust size */
+  /* override any small fixed width utility classes */
+  .width,
+  .input-part,
+  .input-part2 {
+    width: 100% !important;
+    min-width: 0;
+  }
+
+  /* place eye icon inside the input area on the right */
+  .eye-icon,
+  .eye-icon2 {
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  /* button and bottom paragraph should span full width */
+  .btn-primary {
+    grid-column: 1 / -1;  /* full width button */
+    padding: 12px;
+    border-radius: 28px;
+  }
+
+  .signup-box p {
+    grid-column: 1 / -1;
+    padding: 0 6px;
+  }
+
+  /* OTP area spacing */
+  .otp-box {
+    grid-column: 1 / -1;
+    padding: 12px 18px;
+  }
+
+  /* adjust heading sizes for mobile */
   .signup-box h2 {
     font-size: 22px;
-  }
-
-  .otp-box h3 {
-    font-size: 18px;
+    margin-bottom: 8px;
   }
 }
+
 
 
 
