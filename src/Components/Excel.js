@@ -609,10 +609,13 @@ function Signup() {
 
   return (
     <div className="signup-container">
+     
       
       <div className="signup-box">
       
-        <h2 className="sign-up">SignUp</h2>
+      
+      {/* <h3 className="sign-up">SignUp</h3> */}
+      
 
         {errorMsg && (
           <div style={{ color: "red", marginBottom: 10 }}>{errorMsg}</div>
@@ -622,7 +625,7 @@ function Signup() {
           <form onSubmit={handleSignup} className="signup-form">
             {/* Form fields */}
             <div className="field half">
-              <label>First Name <span className="star">*</span></label>
+              <label>First_Name<span className="spd">*</span></label>
               <input
                 className="input-design"
                 type="text"
@@ -631,8 +634,8 @@ function Signup() {
                 onChange={handleChange}
               />
             </div>
-            <div className="field half">
-              <label>Last Name<span className="star">*</span></label>
+            <div className="field half length">
+              <label>Last_Name<span className="spd">*</span></label>
               <input
                 className="input-design"
                 type="text"
@@ -644,6 +647,7 @@ function Signup() {
             <div className="field full">
               <label>Email</label>
               <input
+                className="input-design2"
                 type="email"
                 name="email"
                 value={formData.email}
@@ -653,7 +657,7 @@ function Signup() {
 
             
             <div className="field half">
-              <label>Phone </label>
+              <label>Phone <span className="spd">*</span> </label>
               <input
                 className="input-design"
                 type="text"
@@ -662,8 +666,8 @@ function Signup() {
                 onChange={handleChange}
               />
             </div>
-            <div className="field half">
-              <label>GST Number</label>
+            <div className="field half length">
+              <label>GST_Number<span className="spd">*</span> </label>
               <input
                 className="input-design"
                 type="text"
@@ -675,7 +679,7 @@ function Signup() {
           
 
             <div className="field half">
-              <label>City </label>
+              <label>City<span className="spd">*</span></label>
               <input
               className="input-design"
                 type="text"
@@ -684,8 +688,8 @@ function Signup() {
                 onChange={handleChange}
               />
             </div>
-            <div className="field half">
-              <label>State</label>
+            <div className="field half length">
+              <label>State <span className="spd">*</span></label>
               <input
                 className="input-design"
                 type="text"
@@ -694,11 +698,13 @@ function Signup() {
                 onChange={handleChange}
               />
             </div>
+
+            
             <div className="field half password-field">
-              <label>Password</label>
+              <label>Password <span className="spd">*</span></label>
               <div className="password-wrapper ">
                 <input
-                 className="input-part2"
+                 className="setting2"
                   type={showPassword ? "text" : "password"}
                   name="password"
                   value={formData.password}
@@ -715,12 +721,13 @@ function Signup() {
             </div>
             
             
-            <div className="field half password-field">
+            <div className="field half password-field ">
               
-              <label>Confirm_Password</label>
+              <label>Confirm_Password<span className="spd">*</span></label>
               <div className="password-wrapper">
                 <input
-                 className="input-part"
+                
+                 className="setting1"
                   type={showConfirm ? "text" : "password"}
                   name="confirmPassword"
                   value={formData.confirmPassword}
@@ -736,7 +743,7 @@ function Signup() {
             </div>
 
             <div>
-              <p><input type="checkbox"/>i agree terms and conditions</p>
+              <p className="prg"><input type="checkbox"/>i agree terms & conditions</p>
             </div>
 
             <div className="field full">
@@ -744,9 +751,11 @@ function Signup() {
                 {loading ? "Please wait..." : "SignUp"}
               </button></Link>
             </div>
-            <p className="login-link">
+            
+            <p className="upper">
               Already have an account? <Link to="/login">Login</Link>
             </p>
+            
           </form>
         ) : (
           <div className="otp-box">

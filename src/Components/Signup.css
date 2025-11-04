@@ -14,8 +14,8 @@
 .signup-box {
   
   display: flex;
-  width: 850px;
-  max-width: 95%;
+  width: 648px !important;
+  height:645px;
   border-radius: 15px;
   overflow: hidden;
   box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
@@ -114,7 +114,7 @@
 
 .eye-icon {
   position: absolute;
-  right: -92px;
+  right: -78px;
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
@@ -123,7 +123,7 @@
 
 .eye-icon2 {
   position: absolute;
-  right: -92px;
+  right: -69px;
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
@@ -143,6 +143,7 @@
   cursor: pointer;
   transition: 0.3s ease;
   grid-column: span 2;
+  margin-top: -20px !important;
 }
 
 .btn-primary:hover {
@@ -224,6 +225,15 @@
   background-color: #fff;
   transition: all 0.2s ease-in-out;
 }
+.setting1{
+  width:160px !important;
+  margin-left: -20px;
+}
+
+.setting2{
+  width:160px !important;
+  
+}
 
 .sign-up{
  padding: 8px;
@@ -266,6 +276,29 @@
   line-height: 1.1;
 }
 
+.input-design{
+  width:160px;
+}
+
+.input-design2{
+  width:330px;
+
+}
+
+.length{
+  margin-left: -20px;
+}
+.prg{
+  font-size: 12px;
+  color: grey;
+}
+.uper{
+  margin-top: -100px;
+}
+
+.spd{
+  color:red;
+}
 
 /* ===== Mobile: two equal columns with full-width inputs ===== */
 @media (max-width: 600px) {
