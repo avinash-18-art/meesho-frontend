@@ -416,6 +416,7 @@ function Signup() {
     gst: "",
     city: "",
     state: "",
+    country: "",
     password: "",
     confirmPassword: "",
   });
@@ -427,32 +428,31 @@ function Signup() {
 
   const navigate = useNavigate();
 
+  // handle input change
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrorMsg("");
   };
 
-  const isValidEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
-  const isValidPhone = (v) => /^[0-9]{10,15}$/.test(v.trim());
-
+  // validation
   const validateForm = () => {
-    const f = formData;
-    if (!f.firstName) return "First Name is required";
-    if (!f.lastName) return "Last Name is required";
-    if (!f.email) return "Email is required";
-    if (!isValidEmail(f.email)) return "Enter a valid email";
-    if (!f.phone) return "Phone number is required";
-    if (!isValidPhone(f.phone)) return "Enter a valid phone number (10-15 digits)";
-    if (!f.city) return "City is required";
-    if (!f.state) return "State is required";
-    if (!f.password) return "Password is required";
-    if (f.password.length < 6) return "Password must be at least 6 characters";
-    if (!f.confirmPassword) return "Confirm Password is required";
-    if (f.password !== f.confirmPassword) return "Passwords do not match";
+    if (!formData.firstName.trim()) return "First Name is required";
+    if (!formData.lastName.trim()) return "Last Name is required";
+    if (!formData.email.trim()) return "Email is required";
+    if (!formData.phone.trim()) return "Phone number is required";
+    if (!formData.gst.trim()) return "GST Number is required";
+    if (!formData.city.trim()) return "City is required";
+    if (!formData.state.trim()) return "State is required";
+    if (!formData.country.trim()) return "Country is required";
+    if (!formData.password.trim()) return "Password is required";
+    if (!formData.confirmPassword.trim())
+      return "Confirm Password is required";
+    if (formData.password !== formData.confirmPassword)
+      return "Passwords do not match";
     return null;
   };
 
+  // handle signup
   const handleSignup = async (e) => {
     e.preventDefault();
     setErrorMsg("");
@@ -474,6 +474,7 @@ function Signup() {
       gstNumber: formData.gst,
       city: formData.city,
       state: formData.state,
+      country: formData.country,
       createPassword: formData.password,
       confirmPassword: formData.confirmPassword,
     };
@@ -485,8 +486,17 @@ function Signup() {
       );
 
       const body = res.data || {};
-      if (body.success || body.status) {
+      const msg = (body.message || "").toLowerCase();
+      const successDetected =
+        body.success === true ||
+        body.status === true ||
+        msg.includes("success") ||
+        msg.includes("created") ||
+        msg.includes("registered");
+
+      if (successDetected) {
         alert("Signup successful! Redirecting to dashboard...");
+        if (body.token) localStorage.setItem("token", body.token);
         navigate("/dashboard");
       } else {
         setErrorMsg(body.message || "Signup failed. Please try again.");
@@ -509,7 +519,9 @@ function Signup() {
 
         <form onSubmit={handleSignup} className="signup-form">
           <div className="field half">
-            <label>First Name <span className="spd">*</span></label>
+            <label>
+              First_Name<span className="spd">*</span>
+            </label>
             <input
               className="input-design"
               type="text"
@@ -520,7 +532,9 @@ function Signup() {
           </div>
 
           <div className="field half length">
-            <label>Last Name <span className="spd">*</span></label>
+            <label>
+              Last_Name<span className="spd">*</span>
+            </label>
             <input
               className="input-design"
               type="text"
@@ -531,7 +545,7 @@ function Signup() {
           </div>
 
           <div className="field full">
-            <label>Email <span className="spd">*</span></label>
+            <label>Email<span className="spd">*</span></label>
             <input
               className="input-design2"
               type="email"
@@ -542,7 +556,9 @@ function Signup() {
           </div>
 
           <div className="field half">
-            <label>Phone <span className="spd">*</span></label>
+            <label>
+              Phone<span className="spd">*</span>
+            </label>
             <input
               className="input-design"
               type="text"
@@ -553,7 +569,9 @@ function Signup() {
           </div>
 
           <div className="field half length">
-            <label>GST Number</label>
+            <label>
+              GST_Number<span className="spd">*</span>
+            </label>
             <input
               className="input-design"
               type="text"
@@ -564,7 +582,9 @@ function Signup() {
           </div>
 
           <div className="field half">
-            <label>City <span className="spd">*</span></label>
+            <label>
+              City<span className="spd">*</span>
+            </label>
             <input
               className="input-design"
               type="text"
@@ -575,7 +595,9 @@ function Signup() {
           </div>
 
           <div className="field half length">
-            <label>State <span className="spd">*</span></label>
+            <label>
+              State<span className="spd">*</span>
+            </label>
             <input
               className="input-design"
               type="text"
@@ -585,8 +607,10 @@ function Signup() {
             />
           </div>
 
-          <div className="field half password-field">
-            <label>Password <span className="spd">*</span></label>
+        <div className="field half password-field">
+            <label>
+              Password<span className="spd">*</span>
+            </label>
             <div className="password-wrapper">
               <input
                 className="setting2"
@@ -597,7 +621,7 @@ function Signup() {
               />
               <span
                 className="eye-icon"
-                onClick={() => setShowPassword((s) => !s)}
+                onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </span>
@@ -605,7 +629,9 @@ function Signup() {
           </div>
 
           <div className="field half password-field">
-            <label>Confirm Password <span className="spd">*</span></label>
+            <label>
+              Confirm_Password<span className="spd">*</span>
+            </label>
             <div className="password-wrapper">
               <input
                 className="setting1"
@@ -616,7 +642,7 @@ function Signup() {
               />
               <span
                 className="eye-icon2"
-                onClick={() => setShowConfirm((s) => !s)}
+                onClick={() => setShowConfirm(!showConfirm)}
               >
                 {showConfirm ? <FaEyeSlash /> : <FaEye />}
               </span>
@@ -625,13 +651,13 @@ function Signup() {
 
           <div>
             <p className="prg">
-              <input type="checkbox" required /> I agree to terms &amp; conditions
+              <input type="checkbox" /> I agree to terms & conditions
             </p>
           </div>
 
           <div className="field full">
             <button type="submit" className="btn-primary" disabled={loading}>
-              {loading ? "Please wait..." : "Sign Up"}
+              {loading ? "Please wait..." : "SignUp"}
             </button>
           </div>
 
