@@ -747,9 +747,9 @@ function Signup() {
             </div>
 
             <div className="field full">
-              <Link to='/dashboard'><button type="submit" className="btn-primary" disabled={loading}>
+              <button type="submit" className="btn-primary" disabled={loading}>
                 {loading ? "Please wait..." : "SignUp"}
-              </button></Link>
+              </button>
             </div>
             
             <p className="upper">
