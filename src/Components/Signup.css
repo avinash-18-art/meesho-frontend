@@ -300,7 +300,7 @@
   color:red;
 }
 
-/* ===== Mobile: two equal columns with full-width inputs ===== */
+//* ===== Mobile: two equal columns with full-width inputs ===== */
 @media (max-width: 600px) {
 
   /* keep the main box stacked but allow a two-column form */
@@ -319,46 +319,53 @@
     flex: none;
     width: 100%;
     font-size: 26px;
+    font-weight: bold;
+    color: #fff;
+    background: #c2185b;
     padding: 18px 0;
     text-align: center;
+    border-radius: 12px 12px 0 0;
   }
 
-  /* make form display two equal columns on mobile */
+  /* two equal columns layout */
   .signup-form {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr)); /* equal halves */
-    gap: 14px 16px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 20px; /* horizontal & vertical spacing between inputs */
     padding: 18px;
     align-items: start;
+    background-color: #ffe6f0;
   }
 
-  /* If you want certain rows to use full width (like Email or SignUp button),
-     keep using the existing .field.full class (it will span both columns) */
+  /* fields that should take full width (like email, submit, checkbox) */
   .field.full {
-    grid-column: 1 / -1; /* spans both columns */
+    grid-column: 1 / -1;
   }
 
-  /* make labels stacked and consistent */
+  /* label style */
   .field label {
     display: block;
     margin-bottom: 6px;
     font-size: 14px;
+    font-weight: 500;
   }
 
-  /* force inputs to fill available space and account for padding/border */
+  /* input boxes fill width nicely */
   .field input,
   .input-part,
   .input-part2,
   .otp-box input,
   .password-wrapper input {
     width: 100% !important;
-    box-sizing: border-box; /* include padding/border in width */
+    box-sizing: border-box;
     padding: 10px 14px;
     border-radius: 22px;
     font-size: 14px;
+    border: 1px solid #ccc;
+    background-color: #fff;
   }
 
-  /* override any small fixed width utility classes */
+  /* fix narrow elements */
   .width,
   .input-part,
   .input-part2 {
@@ -366,36 +373,37 @@
     min-width: 0;
   }
 
-  /* place eye icon inside the input area on the right */
+  /* eye icons position correctly */
   .eye-icon,
   .eye-icon2 {
+    position: absolute;
     right: 14px;
     top: 50%;
     transform: translateY(-50%);
+    cursor: pointer;
   }
 
-  /* button and bottom paragraph should span full width */
+  /* make sure password wrapper is positioned relative */
+  .password-wrapper {
+    position: relative;
+  }
+
+  /* submit button full width */
   .btn-primary {
-    grid-column: 1 / -1;  /* full width button */
+    grid-column: 1 / -1;
     padding: 12px;
     border-radius: 28px;
+    background-color: #c2185b;
+    color: #fff;
+    font-weight: bold;
+    border: none;
   }
 
+  /* terms & conditions */
   .signup-box p {
     grid-column: 1 / -1;
-    padding: 0 6px;
-  }
-
-  /* OTP area spacing */
-  .otp-box {
-    grid-column: 1 / -1;
-    padding: 12px 18px;
-  }
-
-  /* adjust heading sizes for mobile */
-  .signup-box h2 {
-    font-size: 22px;
-    margin-bottom: 8px;
+    padding: 4px 6px;
+    font-size: 13px;
   }
 
   .terms label,
@@ -403,6 +411,17 @@
     font-size: 13px;
   }
 
+  /* OTP area spacing (if used) */
+  .otp-box {
+    grid-column: 1 / -1;
+    padding: 12px 18px;
+  }
+
+  /* heading size */
+  .signup-box h2 {
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
 }
 
 
