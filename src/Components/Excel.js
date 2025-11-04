@@ -408,7 +408,11 @@ e.preventDefault();
 
 //-------------------------signup component--------------------------
 
- 
+import React, { useState } from "react";
+import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+
 function Signup() {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -424,40 +428,34 @@ function Signup() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [showOtpBox, setShowOtpBox] = useState(false);
-  const [otp, setOtp] = useState("");
-  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-  const [otpTimer, setOtpTimer] = useState(120); // 2 minutes timer
-  const [otpVerified, setOtpVerified] = useState(false); // <-- track OTP success
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    let timer;
-    if (showOtpBox && otpTimer > 0 && !otpVerified) {
-      timer = setInterval(() => setOtpTimer((prev) => prev - 1), 1000);
-    }
-    return () => clearInterval(timer);
-  }, [showOtpBox, otpTimer, otpVerified]);
-
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
     setErrorMsg("");
   };
 
+  const isValidEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
+  const isValidPhone = (v) => /^[0-9]{10,15}$/.test(v.trim());
+
   const validateForm = () => {
-    if (!formData.firstName) return "First Name is required";
-    if (!formData.lastName) return "Last Name is required";
-    if (!formData.email) return "Email is required";
-    if (!formData.phone) return "Phone number is required";
-    if (!formData.city) return "City is required";
-    if (!formData.country) return "Country is required";
-    if (!formData.password) return "Password is required";
-    if (!formData.confirmPassword) return "Confirm Password is required";
-    if (formData.password !== formData.confirmPassword)
-      return "Passwords do not match";
+    const f = formData;
+    if (!f.firstName) return "First Name is required";
+    if (!f.lastName) return "Last Name is required";
+    if (!f.email) return "Email is required";
+    if (!isValidEmail(f.email)) return "Enter a valid email";
+    if (!f.phone) return "Phone number is required";
+    if (!isValidPhone(f.phone)) return "Enter a valid phone number (10-15 digits)";
+    if (!f.city) return "City is required";
+    if (!f.state) return "State is required";
+    if (!f.password) return "Password is required";
+    if (f.password.length < 6) return "Password must be at least 6 characters";
+    if (!f.confirmPassword) return "Confirm Password is required";
+    if (f.password !== f.confirmPassword) return "Passwords do not match";
     return null;
   };
 
@@ -493,21 +491,11 @@ function Signup() {
       );
 
       const body = res.data || {};
-      const msg = (body.message || "").toLowerCase();
-      const successDetected =
-        body.success === true ||
-        body.status === true ||
-        body.otpSent === true ||
-        msg.includes("otp");
-
-      if (successDetected) {
-        setShowOtpBox(true);
-        setEmail(formData.email);
-        setOtpTimer(120); // reset timer
-        setOtpVerified(false); // reset
-        alert("Signup successful! OTP sent to your email/phone.");
+      if (body.success || body.status) {
+        alert("Signup successful! Redirecting to dashboard...");
+        navigate("/dashboard");
       } else {
-        setErrorMsg(body.message || "Signup failed. Check your details.");
+        setErrorMsg(body.message || "Signup failed. Please try again.");
       }
     } catch (err) {
       setErrorMsg(
@@ -518,284 +506,149 @@ function Signup() {
     }
   };
 
-  const handleVerifyOtp = async () => {
-    if (!otp) {
-      setErrorMsg("Please enter the OTP.");
-      return;
-    }
-
-    if (otpTimer <= 0) {
-      setErrorMsg("OTP expired! Please resend OTP.");
-      return;
-    }
-
-    if (otpVerified) {
-      // Already verified, prevent double click
-      navigate("/dashboard");
-      return;
-    }
-
-    setLoading(true);
-    setErrorMsg("");
-    const payload = { email, mobileNumber: formData.phone, otp };
-
-    try {
-      const res = await axios.post(
-        "https://product-backend-2-6atb.onrender.com/verify-otp",
-        payload
-      );
-
-      const body = res.data || {};
-      const msg = (body.message || "").toLowerCase();
-      const successDetected =
-        body.success === true ||
-        body.status === true ||
-        body.verified === true ||
-        msg.includes("verified") ||
-        msg.includes("success");
-
-      if (successDetected) {
-        if (body.token) localStorage.setItem("token", body.token);
-        setOtpVerified(true); // mark OTP verified
-        alert("OTP Verified! Redirecting to dashboard...");
-        navigate("/dashboard");
-      } else {
-        // Check if backend says already verified
-        if (msg.includes("already verified")) {
-          setOtpVerified(true);
-          navigate("/dashboard");
-        } else {
-          setErrorMsg(body.message || "Invalid OTP. Try again.");
-        }
-      }
-    } catch (err) {
-      setErrorMsg(
-        err.response?.data?.message || err.message || "OTP verification failed"
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleResendOtp = async () => {
-    setLoading(true);
-    setErrorMsg("");
-
-    try {
-      const res = await axios.post(
-        "https://product-backend-2-6atb.onrender.com/resend-otp",
-        { email, mobileNumber: formData.phone }
-      );
-
-      const body = res.data || {};
-      const successDetected =
-        body.success === true || body.otpSent === true || body.status === true;
-
-      if (successDetected) {
-        setOtpTimer(120); // reset timer
-        setOtpVerified(false); // reset
-        alert("OTP resent successfully!");
-      } else {
-        setErrorMsg(body.message || "Failed to resend OTP.");
-      }
-    } catch (err) {
-      setErrorMsg(
-        err.response?.data?.message || err.message || "Failed to resend OTP."
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="signup-container">
-     
-      
       <div className="signup-box">
-      
-      
-      {/* <h3 className="sign-up">SignUp</h3> */}
-      
-
         {errorMsg && (
           <div style={{ color: "red", marginBottom: 10 }}>{errorMsg}</div>
         )}
 
-        {!showOtpBox ? (
-          <form onSubmit={handleSignup} className="signup-form">
-            {/* Form fields */}
-            <div className="field half">
-              <label>First_Name<span className="spd">*</span></label>
-              <input
-                className="input-design"
-                type="text"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="field half length">
-              <label>Last_Name<span className="spd">*</span></label>
-              <input
-                className="input-design"
-                type="text"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="field full">
-              <label>Email</label>
-              <input
-                className="input-design2"
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-              />
-            </div>
-
-            
-            <div className="field half">
-              <label>Phone <span className="spd">*</span> </label>
-              <input
-                className="input-design"
-                type="text"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="field half length">
-              <label>GST_Number<span className="spd">*</span> </label>
-              <input
-                className="input-design"
-                type="text"
-                name="gst"
-                value={formData.gst}
-                onChange={handleChange}
-              />
-            </div>
-          
-
-            <div className="field half">
-              <label>City<span className="spd">*</span></label>
-              <input
-              className="input-design"
-                type="text"
-                name="city"
-                value={formData.city}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="field half length">
-              <label>State <span className="spd">*</span></label>
-              <input
-                className="input-design"
-                type="text"
-                name="country"
-                value={formData.country}
-                onChange={handleChange}
-              />
-            </div>
-
-            
-            <div className="field half password-field">
-              <label>Password <span className="spd">*</span></label>
-              <div className="password-wrapper ">
-                <input
-                 className="setting2"
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  
-                />
-                <span
-                  className="eye-icon"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <FaEyeSlash /> : <FaEye />}
-                </span>
-              </div>
-            </div>
-            
-            
-            <div className="field half password-field ">
-              
-              <label>Confirm_Password<span className="spd">*</span></label>
-              <div className="password-wrapper">
-                <input
-                
-                 className="setting1"
-                  type={showConfirm ? "text" : "password"}
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                />
-                <span
-                  className="eye-icon2"
-                  onClick={() => setShowConfirm(!showConfirm)}
-                >
-                  {showConfirm ? <FaEyeSlash /> : <FaEye />}
-                </span>
-              </div>
-            </div>
-
-            <div>
-              <p className="prg"><input type="checkbox"/>i agree terms & conditions</p>
-            </div>
-
-            <div className="field full">
-              <button type="submit" className="btn-primary" disabled={loading}>
-                {loading ? "Please wait..." : "SignUp"}
-              </button>
-            </div>
-            
-            <p className="upper">
-              Already have an account? <Link to="/login">Login</Link>
-            </p>
-            
-          </form>
-        ) : (
-          <div className="otp-box">
-            <h3>Enter OTP sent to {email}</h3>
+        <form onSubmit={handleSignup} className="signup-form">
+          <div className="field half">
+            <label>First Name <span className="spd">*</span></label>
             <input
+              className="input-design"
               type="text"
-              placeholder="Enter OTP"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
+              name="firstName"
+              value={formData.firstName}
+              onChange={handleChange}
             />
-            <div style={{ marginTop: 10 }}>
-              <button
-                className="btn-primary"
-                onClick={handleVerifyOtp}
-                disabled={loading || otpTimer <= 0 || otpVerified}
+          </div>
+
+          <div className="field half length">
+            <label>Last Name <span className="spd">*</span></label>
+            <input
+              className="input-design"
+              type="text"
+              name="lastName"
+              value={formData.lastName}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="field full">
+            <label>Email <span className="spd">*</span></label>
+            <input
+              className="input-design2"
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="field half">
+            <label>Phone <span className="spd">*</span></label>
+            <input
+              className="input-design"
+              type="text"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="field half length">
+            <label>GST Number</label>
+            <input
+              className="input-design"
+              type="text"
+              name="gst"
+              value={formData.gst}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="field half">
+            <label>City <span className="spd">*</span></label>
+            <input
+              className="input-design"
+              type="text"
+              name="city"
+              value={formData.city}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="field half length">
+            <label>State <span className="spd">*</span></label>
+            <input
+              className="input-design"
+              type="text"
+              name="state"
+              value={formData.state}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="field half password-field">
+            <label>Password <span className="spd">*</span></label>
+            <div className="password-wrapper">
+              <input
+                className="setting2"
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+              />
+              <span
+                className="eye-icon"
+                onClick={() => setShowPassword((s) => !s)}
               >
-                {loading ? "Verifying..." : "Verify OTP"}
-              </button>
-            </div>
-            <div style={{ marginTop: 5 }}>
-              {otpTimer > 0
-                ? `OTP expires in ${otpTimer}s`
-                : "OTP expired. Please resend OTP."}
-            </div>
-            <div style={{ marginTop: 8 }}>
-              <button
-                className="btn-secondary"
-                onClick={handleResendOtp}
-                disabled={loading}
-              >
-                Resend OTP
-              </button>
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
             </div>
           </div>
-        )}
+
+          <div className="field half password-field">
+            <label>Confirm Password <span className="spd">*</span></label>
+            <div className="password-wrapper">
+              <input
+                className="setting1"
+                type={showConfirm ? "text" : "password"}
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+              />
+              <span
+                className="eye-icon2"
+                onClick={() => setShowConfirm((s) => !s)}
+              >
+                {showConfirm ? <FaEyeSlash /> : <FaEye />}
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <p className="prg">
+              <input type="checkbox" required /> I agree to terms &amp; conditions
+            </p>
+          </div>
+
+          <div className="field full">
+            <button type="submit" className="btn-primary" disabled={loading}>
+              {loading ? "Please wait..." : "Sign Up"}
+            </button>
+          </div>
+
+          <p className="upper">
+            Already have an account? <Link to="/login">Login</Link>
+          </p>
+        </form>
       </div>
     </div>
   );
 }
-
 
 // ---------------------- DASHBOARD COMPONENT ----------------------
 function Dashboard() {
