@@ -424,6 +424,7 @@ function Signup() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [agree, setAgree] = useState(false); // ✅ checkbox state
 
   const navigate = useNavigate();
 
@@ -447,6 +448,7 @@ function Signup() {
       return "Confirm Password is required";
     if (formData.password !== formData.confirmPassword)
       return "Passwords do not match";
+    if (!agree) return "Please agree to terms & conditions"; // ✅ checkbox validation
     return null;
   };
 
@@ -604,7 +606,7 @@ function Signup() {
             />
           </div>
 
-        <div className="field half password-field">
+          <div className="field half password-field">
             <label>
               Password<span className="spd">*</span>
             </label>
@@ -648,7 +650,12 @@ function Signup() {
 
           <div>
             <p className="prg">
-              <input type="checkbox" /> I agree to terms & conditions
+              <input
+                type="checkbox"
+                checked={agree}
+                onChange={(e) => setAgree(e.target.checked)}
+              />{" "}
+              I agree to terms & conditions
             </p>
           </div>
 
