@@ -300,7 +300,7 @@
   color:red;
 }
 
-//* ===== Mobile: two equal columns with full-width inputs ===== */
+/* ===== Mobile: two equal columns with full-width inputs ===== */
 @media (max-width: 600px) {
 
   /* keep the main box stacked but allow a two-column form */
