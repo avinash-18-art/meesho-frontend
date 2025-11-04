@@ -366,12 +366,18 @@
   }
 
   /* fix narrow elements */
-  .width,
-  .input-part,
-  .input-part2 {
-    width: 100% !important;
-    min-width: 0;
-  }
+ .width,
+.input-part,
+.input-part2 {
+  width: 100% !important;
+  min-width: 0;
+}
+
+/* give slight horizontal spacing only to .input-part2 */
+.input-part2 {
+  margin-left: 8px; /* small gap between two inputs */
+}
+
 
   /* eye icons position correctly */
 /* eye icons */
