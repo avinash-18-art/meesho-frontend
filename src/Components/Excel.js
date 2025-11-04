@@ -416,7 +416,6 @@ function Signup() {
     gst: "",
     city: "",
     state: "",
-    country: "",
     password: "",
     confirmPassword: "",
   });
@@ -443,7 +442,6 @@ function Signup() {
     if (!formData.gst.trim()) return "GST Number is required";
     if (!formData.city.trim()) return "City is required";
     if (!formData.state.trim()) return "State is required";
-    if (!formData.country.trim()) return "Country is required";
     if (!formData.password.trim()) return "Password is required";
     if (!formData.confirmPassword.trim())
       return "Confirm Password is required";
@@ -474,7 +472,6 @@ function Signup() {
       gstNumber: formData.gst,
       city: formData.city,
       state: formData.state,
-      country: formData.country,
       createPassword: formData.password,
       confirmPassword: formData.confirmPassword,
     };
