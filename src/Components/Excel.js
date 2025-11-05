@@ -544,7 +544,7 @@ function Signup() {
           </div>
 
           <div className="field full">
-            <label>Email<span className="spd">*</span></label>
+            <label>Email</label>
             <input
               className="input-design2"
               type="email"
@@ -655,7 +655,7 @@ function Signup() {
                 checked={agree}
                 onChange={(e) => setAgree(e.target.checked)}
               />{" "}
-              I agree to terms & conditions
+              I agree to terms & conditions<span className="spd">*</span>
             </p>
           </div>
 
