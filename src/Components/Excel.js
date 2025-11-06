@@ -424,7 +424,8 @@ function Signup() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-  const [agree, setAgree] = useState(false); // ✅ checkbox state
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [agree, setAgree] = useState(false);
 
   const navigate = useNavigate();
 
@@ -432,35 +433,41 @@ function Signup() {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrorMsg("");
+    setFieldErrors((prev) => ({ ...prev, [e.target.name]: "" }));
   };
 
   // validation
   const validateForm = () => {
-    if (!formData.firstName.trim()) return "First Name is required";
-    if (!formData.lastName.trim()) return "Last Name is required";
-    if (!formData.email.trim()) return "Email is required";
-    if (!formData.phone.trim()) return "Phone number is required";
-    if (!formData.gst.trim()) return "GST Number is required";
-    if (!formData.city.trim()) return "City is required";
-    if (!formData.state.trim()) return "State is required";
-    if (!formData.password.trim()) return "Password is required";
+    const errors = {};
+    if (!formData.firstName.trim()) errors.firstName = "First name required";
+    if (!formData.lastName.trim()) errors.lastName = "Last name required";
+    if (!formData.email.trim()) errors.email = "Email required";
+    if (!formData.phone.trim()) errors.phone = "Phone required";
+    if (!formData.gst.trim()) errors.gst = "GST required";
+    if (!formData.city.trim()) errors.city = "City required";
+    if (!formData.state.trim()) errors.state = "State required";
+    if (!formData.password.trim()) errors.password = "Password required";
     if (!formData.confirmPassword.trim())
-      return "Confirm Password is required";
-    if (formData.password !== formData.confirmPassword)
-      return "Passwords do not match";
-    if (!agree) return "Please agree to terms & conditions"; // ✅ checkbox validation
-    return null;
+      errors.confirmPassword = "Confirm password required";
+    if (
+      formData.password.trim() &&
+      formData.confirmPassword.trim() &&
+      formData.password !== formData.confirmPassword
+    )
+      errors.confirmPassword = "Passwords do not match";
+    if (!agree) errors.agree = "Please agree to terms & conditions";
+    return errors;
   };
 
   // handle signup
   const handleSignup = async (e) => {
     e.preventDefault();
     setErrorMsg("");
+    setFieldErrors({});
 
-    const err = validateForm();
-    if (err) {
-      setErrorMsg(err);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+    const errors = validateForm();
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
       return;
     }
 
@@ -517,104 +524,120 @@ function Signup() {
         )}
 
         <form onSubmit={handleSignup} className="signup-form">
+          {/* First Name */}
           <div className="field half">
             <label>
               First_Name<span className="spd">*</span>
             </label>
             <input
-              className="input-design"
+              className={`input-design ${fieldErrors.firstName ? "input-error" : ""}`}
               type="text"
               name="firstName"
+              placeholder={fieldErrors.firstName || ""}
               value={formData.firstName}
               onChange={handleChange}
             />
           </div>
 
+          {/* Last Name */}
           <div className="field half length">
             <label>
               Last_Name<span className="spd">*</span>
             </label>
             <input
-              className="input-design"
+              className={`input-design ${fieldErrors.lastName ? "input-error" : ""}`}
               type="text"
               name="lastName"
+              placeholder={fieldErrors.lastName || ""}
               value={formData.lastName}
               onChange={handleChange}
             />
           </div>
 
+          {/* Email */}
           <div className="field full">
             <label>Email</label>
             <input
-              className="input-design2"
+              className={`input-design2 ${fieldErrors.email ? "input-error" : ""}`}
               type="email"
               name="email"
+              placeholder={fieldErrors.email || ""}
               value={formData.email}
               onChange={handleChange}
             />
           </div>
 
+          {/* Phone */}
           <div className="field half">
             <label>
               Phone<span className="spd">*</span>
             </label>
             <input
-              className="input-design"
+              className={`input-design ${fieldErrors.phone ? "input-error" : ""}`}
               type="text"
               name="phone"
+              placeholder={fieldErrors.phone || ""}
               value={formData.phone}
               onChange={handleChange}
             />
           </div>
 
+          {/* GST */}
           <div className="field half length">
             <label>
               GST_Number<span className="spd">*</span>
             </label>
             <input
-              className="input-design"
+              className={`input-design ${fieldErrors.gst ? "input-error" : ""}`}
               type="text"
               name="gst"
+              placeholder={fieldErrors.gst || ""}
               value={formData.gst}
               onChange={handleChange}
             />
           </div>
 
+          {/* City */}
           <div className="field half">
             <label>
               City<span className="spd">*</span>
             </label>
             <input
-              className="input-design"
+              className={`input-design ${fieldErrors.city ? "input-error" : ""}`}
               type="text"
               name="city"
+              placeholder={fieldErrors.city || ""}
               value={formData.city}
               onChange={handleChange}
             />
           </div>
 
+          {/* State */}
           <div className="field half length">
             <label>
               State<span className="spd">*</span>
             </label>
             <input
-              className="input-design"
+              className={`input-design ${fieldErrors.state ? "input-error" : ""}`}
               type="text"
               name="state"
+              placeholder={fieldErrors.state || ""}
               value={formData.state}
               onChange={handleChange}
             />
           </div>
 
+          {/* Password */}
           <div className="field half password-field">
             <label>
               Password<span className="spd">*</span>
             </label>
             <div className="password-wrapper">
               <input
-                className="setting2"
+                className={`setting2 ${fieldErrors.password ? "input-error" : ""}`}
                 type={showPassword ? "text" : "password"}
                 name="password"
+                placeholder={fieldErrors.password || ""}
                 value={formData.password}
                 onChange={handleChange}
               />
@@ -627,15 +650,17 @@ function Signup() {
             </div>
           </div>
 
+          {/* Confirm Password */}
           <div className="field half password-field">
             <label>
               Confirm_Password<span className="spd">*</span>
             </label>
             <div className="password-wrapper">
               <input
-                className="setting1"
+                className={`setting1 ${fieldErrors.confirmPassword ? "input-error" : ""}`}
                 type={showConfirm ? "text" : "password"}
                 name="confirmPassword"
+                placeholder={fieldErrors.confirmPassword || ""}
                 value={formData.confirmPassword}
                 onChange={handleChange}
               />
@@ -648,6 +673,7 @@ function Signup() {
             </div>
           </div>
 
+          {/* Checkbox */}
           <div>
             <p className="prg">
               <input
@@ -655,8 +681,11 @@ function Signup() {
                 checked={agree}
                 onChange={(e) => setAgree(e.target.checked)}
               />{" "}
-              I agree to terms & conditions<span className="spd">*</span>
+              I agree to terms & conditions <span className="spd">*</span>
             </p>
+            {fieldErrors.agree && (
+              <p style={{ color: "red", fontSize: "12px" }}>{fieldErrors.agree}</p>
+            )}
           </div>
 
           <div className="field full">

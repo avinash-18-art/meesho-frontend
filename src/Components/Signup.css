@@ -441,6 +441,15 @@
 }
 
 
+.input-error::placeholder {
+  color: red !important;
+  opacity: 0.9; /* makes red color more visible */
+}
+
+
+
+
+
 
 
 
