@@ -448,7 +448,7 @@ function Signup() {
       // allow only digits and must be exactly 10
       const phoneDigitsOnly = /^\d{10}$/;
       if (!phoneDigitsOnly.test(formData.phone.trim())) {
-        errors.phone = "Make sure your mobile number is 10 digits";
+        errors.phone = "your mobile number is 10 digits";
       }
     }
 
