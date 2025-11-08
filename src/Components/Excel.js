@@ -24,7 +24,7 @@ import "./Signup.css";
 
 
 function Login() {
-  const [mode, setMode] = useState("login"); // login | signup
+  const [mode] = useState("login"); // login | signup
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -47,7 +47,7 @@ function Login() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [setLoading] = useState(false);
   const [step, setStep] = useState(null); 
   
   // null: no modal, 0: forgot form, 1: otp, 2: reset password
@@ -267,15 +267,14 @@ e.preventDefault();
                 </div>
               </div>
               <p className="forgot-link">
-                <a
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setStep(0); // open forgot modal
-                  }}
-                >
-                  Forgot Password?
-                </a>
+               <button
+               type="button"
+               onClick={() => setStep(0)} // open forgot modal
+               className="forgot-link"
+                  >
+                Forgot Password?
+               </button>
+
               </p>
               <div className="field full">
                 <button type="submit" className="btn-primary">
@@ -325,15 +324,14 @@ e.preventDefault();
             </button>
             <p className="resend-text">
               Didn't get OTP?{" "}
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleResend();
-                }}
+              <button
+               type="button"
+               onClick={handleResend}
+               className="resend-link"
               >
                 Resend
-              </a>
+               </button>
+
             </p>
           </div>
         </div>
