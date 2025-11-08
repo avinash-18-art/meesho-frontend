@@ -439,14 +439,41 @@ function Signup() {
   // validation
   const validateForm = () => {
     const errors = {};
+
     if (!formData.firstName.trim()) errors.firstName = "First name required";
     if (!formData.lastName.trim()) errors.lastName = "Last name required";
     if (!formData.email.trim()) errors.email = "Email required";
-    if (!formData.phone.trim()) errors.phone = "Phone required";
-    if (!formData.gst.trim()) errors.gst = "GST required";
+
+    // Phone: must be exactly 10 digits (numeric)
+    if (!formData.phone.trim()) {
+      errors.phone = "Phone required";
+    } else {
+      const phoneDigits = formData.phone.replace(/\D/g, ""); // keep only digits
+      if (!/^\d{10}$/.test(phoneDigits)) {
+        errors.phone = "mobile number 10 digit";
+      }
+    }
+
+    // GST: must be 8 to 15 digits (numeric) as requested
+    if (!formData.gst.trim()) {
+      errors.gst = "GST required";
+    } else {
+      const gstDigits = formData.gst.replace(/\s+/g, "");
+      if (!/^\d{8,15}$/.test(gstDigits)) {
+        errors.gst = "GST must be 8 to 15 digits";
+      }
+    }
+
     if (!formData.city.trim()) errors.city = "City required";
     if (!formData.state.trim()) errors.state = "State required";
-    if (!formData.password.trim()) errors.password = "Password required";
+
+    // Password length: 8 to 15 characters
+    if (!formData.password.trim()) {
+      errors.password = "Password required";
+    } else if (formData.password.length < 8 || formData.password.length > 15) {
+      errors.password = "Password must be 8 to 15 characters";
+    }
+
     if (!formData.confirmPassword.trim())
       errors.confirmPassword = "Confirm password required";
     if (
@@ -455,6 +482,7 @@ function Signup() {
       formData.password !== formData.confirmPassword
     )
       errors.confirmPassword = "Passwords do not match";
+
     if (!agree) errors.agree = "Please agree to terms & conditions";
     return errors;
   };
@@ -702,6 +730,7 @@ function Signup() {
     </div>
   );
 }
+
 
 // ---------------------- DASHBOARD COMPONENT ----------------------
 function Dashboard() {
