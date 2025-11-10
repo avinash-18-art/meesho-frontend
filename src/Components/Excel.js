@@ -402,7 +402,6 @@ e.preventDefault();
     </div>
   );
 }
-// ---------------------- SIGNUP COMPONENT ----------------------//
 
 function Signup() {
   const [formData, setFormData] = useState({
@@ -439,24 +438,19 @@ function Signup() {
     if (!formData.firstName.trim()) errors.firstName = "First name required";
     if (!formData.lastName.trim()) errors.lastName = "Last name required";
     if (!formData.email.trim()) errors.email = "Email required";
-     if (!/^\d{10}$/.test(formData.gst.trim())) {
-    errors.phone = "enter 10 digit number";
-    }
-     if (!/^\d{8}$/.test(formData.gst.trim())) {
-    errors.gst = "enter your 8-digit GST number";
-    }
+    if (!formData.phone.trim()) errors.phone = "10 digit phone number";
+    if (!formData.gst.trim()) errors.gst = "8 digit gst number";
     if (!formData.city.trim()) errors.city = "City required";
     if (!formData.state.trim()) errors.state = "State required";
-if (!formData.password.trim() || formData.password.length < 8 || formData.password.length > 15) {
-  errors.password = "password 8-15 chars";
-    }
-
-if (!formData.confirmPassword.trim()) {
-  errors.confirmPassword = "Confirm password required";
-} else if (formData.password !== formData.confirmPassword) {
-  errors.confirmPassword = "Passwords do not match";
-}
-
+    if (!formData.password.trim()) errors.password = "8-15 digit pass";
+    if (!formData.confirmPassword.trim())
+      errors.confirmPassword = "Confirm pass";
+    if (
+      formData.password.trim() &&
+      formData.confirmPassword.trim() &&
+      formData.password !== formData.confirmPassword
+    )
+      errors.confirmPassword = "Passwords do not match";
     if (!agree) errors.agree = "Please agree to terms & conditions";
     return errors;
   };
@@ -704,7 +698,6 @@ if (!formData.confirmPassword.trim()) {
     </div>
   );
 }
-
 
 
 
