@@ -528,7 +528,7 @@ function Signup() {
           {/* First Name */}
           <div className="field half">
             <label>
-              First_Name<span className="spd">*</span>
+              First Name<span className="spd">*</span>
             </label>
             <input
               className={`input-design ${fieldErrors.firstName ? "input-error" : ""}`}
@@ -543,7 +543,7 @@ function Signup() {
           {/* Last Name */}
           <div className="field half length">
             <label>
-              Last_Name<span className="spd">*</span>
+              Last Name<span className="spd">*</span>
             </label>
             <input
               className={`input-design ${fieldErrors.lastName ? "input-error" : ""}`}
@@ -586,7 +586,7 @@ function Signup() {
           {/* GST */}
           <div className="field half length">
             <label>
-              GST_Number<span className="spd">*</span>
+              GST Number<span className="spd">*</span>
             </label>
             <input
               className={`input-design ${fieldErrors.gst ? "input-error" : ""}`}
@@ -654,7 +654,7 @@ function Signup() {
           {/* Confirm Password */}
           <div className="field half password-field">
             <label>
-              Confirm_Password<span className="spd">*</span>
+              Confirm Password<span className="spd">*</span>
             </label>
             <div className="password-wrapper">
               <input
