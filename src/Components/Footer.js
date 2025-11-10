@@ -7,7 +7,16 @@ function Footer() {
     <footer className="footer">
       <div className="footer-top">
         <h2 className="footer-logo">Meesho</h2>
-        <h3 className="footer-title">Terms and privacy Policy </h3>
+        <h3 className="footer-title">
+        <a 
+        href="https://docs.google.com/document/d/1b62cQSL8ovgdLkWnWXZIpFL96Kd4SqVXmt6JAdeBCq0/edit?tab=t.0#heading=h.lfnnqlbxlyqh" 
+       target="_blank" 
+        rel="noopener noreferrer" 
+        style={{ textDecoration: "none", color: "inherit" }}
+        >
+        Terms and Privacy Policy
+      </a>
+      </h3>
         <div className="footer-form">
           <input
             type="email"
