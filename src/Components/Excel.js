@@ -439,8 +439,12 @@ function Signup() {
     if (!formData.firstName.trim()) errors.firstName = "First name required";
     if (!formData.lastName.trim()) errors.lastName = "Last name required";
     if (!formData.email.trim()) errors.email = "Email required";
-    if (!formData.phone.trim()) errors.phone = "10 digit phone required";
-    if (!formData.gst.trim()) errors.gst = "8 digit GST required";
+    if (!/^\d{10}$/.test(formData.phone.trim())) {
+     errors.phone = "10 digit phone required";
+}
+        if (!/^\d{8}$/.test(formData.phone.trim())) {
+     errors.gst = "8 digit gst no. required";
+}
     if (!formData.city.trim()) errors.city = "City required";
     if (!formData.state.trim()) errors.state = "State required";
     if (!formData.password.trim()) errors.password = "8-15 char password required";
