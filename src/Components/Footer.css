@@ -37,7 +37,7 @@
   border-style: solid ;
   border-width: 2px;
   border-radius: 5px;
-  margin-right: -470px;
+  margin-right: -410px !important;
 }
 
 .footer-input {
@@ -87,7 +87,7 @@
   font-size: 17px;
   text-align: center;
   font-family: poppins;
-  margin-right:  80px !important;
+  margin-right:  125px !important;
 }
 
 @media (max-width: 768px) {
