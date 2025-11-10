@@ -402,9 +402,8 @@ e.preventDefault();
     </div>
   );
 }
+// ---------------------- SIGNUP COMPONENT ----------------------//
 
-
-//-------------------------signup component--------------------------
 function Signup() {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -440,50 +439,23 @@ function Signup() {
     if (!formData.firstName.trim()) errors.firstName = "First name required";
     if (!formData.lastName.trim()) errors.lastName = "Last name required";
     if (!formData.email.trim()) errors.email = "Email required";
-
-    // Phone validation: required + exactly 10 digits (numbers only)
-    if (!formData.phone.trim()) {
-      errors.phone = "Phone required";
-    } else {
-      // allow only digits and must be exactly 10
-      const phoneDigitsOnly = /^\d{10}$/;
-      if (!phoneDigitsOnly.test(formData.phone.trim())) {
-        errors.phone = "your mobile number is 10 digits";
-      }
+     if (!/^\d{10}$/.test(formData.gst.trim())) {
+    errors.phone = "enter 10 digit number";
     }
-
-    // GST validation: required + exactly 8 digits as requested
-    if (!formData.gst.trim()) {
-      errors.gst = "GST required";
-    } else {
-      const gstDigitsOnly = /^\d{8}$/;
-      if (!gstDigitsOnly.test(formData.gst.trim())) {
-        errors.gst = "Please enter an 8 digit GST number";
-      }
+     if (!/^\d{8}$/.test(formData.gst.trim())) {
+    errors.gst = "enter your 8-digit GST number";
     }
-
     if (!formData.city.trim()) errors.city = "City required";
     if (!formData.state.trim()) errors.state = "State required";
-
-    // Password validation: required + length between 8 and 10
-    if (!formData.password.trim()) {
-      errors.password = "Password required";
-    } else {
-      const len = formData.password.length;
-      if (len < 8 || len > 10) {
-        errors.password = "Password must be 8 to 10 characters";
-      }
+if (!formData.password.trim() || formData.password.length < 8 || formData.password.length > 15) {
+  errors.password = "password 8-15 chars";
     }
 
-    if (!formData.confirmPassword.trim())
-      errors.confirmPassword = "Confirm password required";
-
-    if (
-      formData.password.trim() &&
-      formData.confirmPassword.trim() &&
-      formData.password !== formData.confirmPassword
-    )
-      errors.confirmPassword = "Passwords do not match";
+if (!formData.confirmPassword.trim()) {
+  errors.confirmPassword = "Confirm password required";
+} else if (formData.password !== formData.confirmPassword) {
+  errors.confirmPassword = "Passwords do not match";
+}
 
     if (!agree) errors.agree = "Please agree to terms & conditions";
     return errors;
@@ -567,9 +539,6 @@ function Signup() {
               value={formData.firstName}
               onChange={handleChange}
             />
-            {fieldErrors.firstName && (
-              <p style={{ color: "red", fontSize: "12px" }}>{fieldErrors.firstName}</p>
-            )}
           </div>
 
           {/* Last Name */}
@@ -585,9 +554,6 @@ function Signup() {
               value={formData.lastName}
               onChange={handleChange}
             />
-            {fieldErrors.lastName && (
-              <p style={{ color: "red", fontSize: "12px" }}>{fieldErrors.lastName}</p>
-            )}
           </div>
 
           {/* Email */}
@@ -601,9 +567,6 @@ function Signup() {
               value={formData.email}
               onChange={handleChange}
             />
-            {fieldErrors.email && (
-              <p style={{ color: "red", fontSize: "12px" }}>{fieldErrors.email}</p>
-            )}
           </div>
 
           {/* Phone */}
@@ -619,9 +582,6 @@ function Signup() {
               value={formData.phone}
               onChange={handleChange}
             />
-            {fieldErrors.phone && (
-              <p style={{ color: "red", fontSize: "12px" }}>{fieldErrors.phone}</p>
-            )}
           </div>
 
           {/* GST */}
@@ -637,9 +597,6 @@ function Signup() {
               value={formData.gst}
               onChange={handleChange}
             />
-            {fieldErrors.gst && (
-              <p style={{ color: "red", fontSize: "12px" }}>{fieldErrors.gst}</p>
-            )}
           </div>
 
           {/* City */}
@@ -655,9 +612,6 @@ function Signup() {
               value={formData.city}
               onChange={handleChange}
             />
-            {fieldErrors.city && (
-              <p style={{ color: "red", fontSize: "12px" }}>{fieldErrors.city}</p>
-            )}
           </div>
 
           {/* State */}
@@ -673,9 +627,6 @@ function Signup() {
               value={formData.state}
               onChange={handleChange}
             />
-            {fieldErrors.state && (
-              <p style={{ color: "red", fontSize: "12px" }}>{fieldErrors.state}</p>
-            )}
           </div>
 
           {/* Password */}
@@ -699,9 +650,6 @@ function Signup() {
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </span>
             </div>
-            {fieldErrors.password && (
-              <p style={{ color: "red", fontSize: "12px" }}>{fieldErrors.password}</p>
-            )}
           </div>
 
           {/* Confirm Password */}
@@ -725,9 +673,6 @@ function Signup() {
                 {showConfirm ? <FaEyeSlash /> : <FaEye />}
               </span>
             </div>
-            {fieldErrors.confirmPassword && (
-              <p style={{ color: "red", fontSize: "12px" }}>{fieldErrors.confirmPassword}</p>
-            )}
           </div>
 
           {/* Checkbox */}
@@ -759,6 +704,7 @@ function Signup() {
     </div>
   );
 }
+
 
 
 

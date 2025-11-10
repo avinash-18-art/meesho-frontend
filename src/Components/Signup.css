@@ -12,15 +12,15 @@
 }
 
 .signup-box {
-  
   display: flex;
-  width: 648px !important;
-  height:645px;
+  width: 700px !important;
+  height: 645px;
   border-radius: 15px;
-  overflow: hidden;
+  overflow-y: auto; /* enables vertical scroll */
   box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
-  background:#f9dbf2 !important;
+  background: #f9dbf2 !important;
 }
+
 
 /* ===== Left Pink Section ===== */
 .signup-box::before {
