@@ -24,7 +24,8 @@
 
 .footer-title {
   font-size: 33px;
-  font-weight: bold;
+  
+  text-align: center !important;
   
 }
 
@@ -85,6 +86,8 @@
 .paragraph{
   font-size: 17px;
   text-align: center;
+  font-family: poppins;
+  margin-right:  80px !important;
 }
 
 @media (max-width: 768px) {

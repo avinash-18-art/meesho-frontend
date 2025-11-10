@@ -10,7 +10,7 @@ function Footer() {
         <h3 className="footer-title">
         <a 
         href="https://docs.google.com/document/d/1b62cQSL8ovgdLkWnWXZIpFL96Kd4SqVXmt6JAdeBCq0/edit?tab=t.0#heading=h.lfnnqlbxlyqh" 
-       target="_blank" 
+        target="_blank" 
         rel="noopener noreferrer" 
         style={{ textDecoration: "none", color: "inherit" }}
         >
@@ -32,7 +32,7 @@ function Footer() {
        
       <hr className="footer-divider" />
       <div className="footer-bottom">
-        <p className="paragraph">© 2025 meesho. All rights reserved.</p>
+      <p className="paragraph">© 2025 meesho. All rights reserved.</p>
       </div>
     </footer>
   );
