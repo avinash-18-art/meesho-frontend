@@ -683,7 +683,7 @@ function Signup() {
           </div>
 
           {/* Checkbox */}
-          <div>
+          <div className="warning">
             <p className="prg">
               <input
                 type="checkbox"
@@ -703,11 +703,11 @@ function Signup() {
             </button>
           </div>
 
-          
+          <div className="account">
           <p className="upper">
             Already have an account? <Link to="/login">Login</Link>
           </p>
-          
+          </div>
         </form>
       </div>
     </div>
