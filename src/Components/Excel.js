@@ -404,6 +404,7 @@ e.preventDefault();
 }
 
 //----signup component -----//
+
 function Signup() {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -423,6 +424,8 @@ function Signup() {
   const [errorMsg, setErrorMsg] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
   const [agree, setAgree] = useState(false);
+  const [setSuccessMsg] = useState("");
+
 
   const navigate = useNavigate();
 
@@ -501,13 +504,20 @@ function Signup() {
         msg.includes("created") ||
         msg.includes("registered");
 
-      if (successDetected) {
-        alert("Signup successful! Redirecting to dashboard...");
-        if (body.token) localStorage.setItem("token", body.token);
-        navigate("/dashboard");
-      } else {
-        setErrorMsg(body.message || "Signup failed. Please try again.");
-      }
+if (successDetected) {
+  setErrorMsg(""); // clear errors
+  // show quick success message instead of alert
+  setSuccessMsg("Signup successful! Redirecting to dashboard...");
+  if (body.token) localStorage.setItem("token", body.token);
+
+  // delay navigation slightly for UX
+  setTimeout(() => {
+    navigate("/dashboard");
+  }, 1000);
+} else {
+  setErrorMsg(body.message || "Signup failed. Please try again.");
+}
+
     } catch (err) {
       setErrorMsg(
         err.response?.data?.message || err.message || "Server/network error"
