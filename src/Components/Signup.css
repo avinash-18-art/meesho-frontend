@@ -5,7 +5,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  min-height: 100vh !important;
   
   font-family: "Poppins", sans-serif;
   padding: 20px;
@@ -295,9 +295,22 @@
   font-size: 12px;
   color: grey;
 }
-.uper{
-  margin-top: -100px;
+.upper {
+  text-align: center !important;
+  margin-top: 15px; /* adjust spacing below SignUp button */
+  font-size: 14px;
 }
+
+.upper a {
+  color: #c21880; /* match the Meesho theme */
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.upper a:hover {
+  text-decoration: underline;
+}
+
 
 .spd{
   color:red;
@@ -382,7 +395,7 @@
 }
 
 
-  /* eye icons position correctly */
+/* eye icons position correctly */
 /* eye icons */
 .eye-icon {
   position: absolute;
@@ -456,7 +469,7 @@
 }
 
 .emailamg{
-  margin-top: -18px !important;
+  margin-top: -12px !important;
 
 }
 
@@ -465,7 +478,7 @@
 }
 
 .password-mange{
-  margin-top: 18px !important;
+  margin-top: 17px !important;
 
 }
 
@@ -475,4 +488,12 @@
 
 .account{
   margin-top: -30px !important;
+
+
 }
+
+.fst{
+  margin-right: -30px !important;
+}
+
+ 

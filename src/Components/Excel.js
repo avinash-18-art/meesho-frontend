@@ -590,7 +590,7 @@ function Signup() {
           {/* GST */}
           <div className="field half length">
             <div className="gstamg">
-            <label>
+            <label className="fst">
               GST Number<span className="spd">*</span>
             </label>
             <input
@@ -1256,6 +1256,8 @@ function Dashboard() {
     </div>
   );
 }
+
+
 
 function App() {
 const isLoggedIn = localStorage.getItem("user");
