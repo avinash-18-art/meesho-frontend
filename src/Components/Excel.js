@@ -540,10 +540,17 @@ const validateForm = () => {
         msg.includes("registered");
 
       if (successDetected) {
-        alert("Signup successful! Redirecting to dashboard...");
-        if (body.token) localStorage.setItem("token", body.token);
-        navigate("/dashboard");
-      } else {
+      alert("Signup successful! Redirecting to dashboard...");
+      if (body.token) localStorage.setItem("token", body.token);
+
+  // ✅ clear loading state before navigation
+       setLoading(false);
+
+  // ✅ navigate immediately (faster transition)
+     navigate("/dashboard", { replace: true });
+     return; // stop running any more code
+     }
+       else {
         setErrorMsg(body.message || "Signup failed. Please try again.");
         setShowPopup(true);
       }
