@@ -405,6 +405,7 @@ e.preventDefault();
 
 //----signup component -----//
 
+
 function Signup() {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -424,9 +425,8 @@ function Signup() {
   const [errorMsg, setErrorMsg] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
   const [agree, setAgree] = useState(false);
+  const [setSuccessMsg] = useState("");
 
-  // popup visibility state
-  const [showPopup, setShowPopup] = useState(false);
 
   const navigate = useNavigate();
 
@@ -435,67 +435,34 @@ function Signup() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrorMsg("");
     setFieldErrors((prev) => ({ ...prev, [e.target.name]: "" }));
-
-    // if there are no more field errors after clearing this one, hide popup
-    setTimeout(() => {
-      // small timeout so state updates settle
-      const remaining = { ...fieldErrors, [e.target.name]: "" };
-      const hasAny = Object.values(remaining).some((v) => v && v.length > 0);
-      if (!hasAny && !errorMsg) setShowPopup(false);
-    }, 10);
   };
 
   // validation
-const validateForm = () => {
-  const errors = {};
-
-  if (!formData.firstName.trim()) errors.firstName = "First name required";
-  if (!formData.lastName.trim()) errors.lastName = "Last name required";
-  if (!formData.email.trim()) errors.email = "Email required";
-
-  // Phone: required and must be exactly 10 digits
-  const phoneVal = formData.phone.trim();
-  if (!phoneVal) {
-    errors.phone = "Phone required";
-  } else if (!/^\d{10}$/.test(phoneVal)) {
-    errors.phone = "Phone must be exactly 10 digits";
-  }
-
-  // GST: required and must be exactly 8 digits (adjust regex if GST can be alphanumeric)
-  const gstVal = formData.gst.trim();
-  if (!gstVal) {
-    errors.gst = "GST required";
-  } else if (!/^\d{8}$/.test(gstVal)) {
-    errors.gst = "GST must be exactly 8 digits";
-  }
-
-  if (!formData.city.trim()) errors.city = "City required";
-  if (!formData.state.trim()) errors.state = "State required";
-
-  // Password: required and must be 8-15 characters
-  const pwd = formData.password.trim();
-  if (!pwd) {
-    errors.password = "Password required";
-  } else if (pwd.length < 8 || pwd.length > 15) {
-    errors.password = "Password must be 8 to 15 characters";
-  }
-
-  if (!formData.confirmPassword.trim())
-    errors.confirmPassword = "Confirm password required";
-
-  if (
-    pwd &&
-    formData.confirmPassword.trim() &&
-    formData.password !== formData.confirmPassword
-  ) {
-    errors.confirmPassword = "Passwords do not match";
-  }
-
-  if (!agree) errors.agree = "Please agree to terms & conditions";
-
-  return errors;
-};
-
+  const validateForm = () => {
+    const errors = {};
+    if (!formData.firstName.trim()) errors.firstName = "First name required";
+    if (!formData.lastName.trim()) errors.lastName = "Last name required";
+    if (!formData.email.trim()) errors.email = "Email required";
+    if (!(formData.phone.trim())) {
+     errors.phone = "10 digit phone required";
+}
+    if (!(formData.phone.trim())) {
+     errors.gst = "8 digit gst no. required";
+}
+    if (!formData.city.trim()) errors.city = "City required";
+    if (!formData.state.trim()) errors.state = "State required";
+    if (!formData.password.trim()) errors.password = "8-15 char password required";
+    if (!formData.confirmPassword.trim())
+      errors.confirmPassword = "Confirm password required";
+    if (
+      formData.password.trim() &&
+      formData.confirmPassword.trim() &&
+      formData.password !== formData.confirmPassword
+    )
+      errors.confirmPassword = "Passwords do not match";
+    if (!agree) errors.agree = "Please agree to terms & conditions";
+    return errors;
+  };
 
   // handle signup
   const handleSignup = async (e) => {
@@ -506,7 +473,6 @@ const validateForm = () => {
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
-      setShowPopup(true); // show popup when validation fails
       return;
     }
 
@@ -539,141 +505,33 @@ const validateForm = () => {
         msg.includes("created") ||
         msg.includes("registered");
 
-      if (successDetected) {
-      alert("Signup successful! Redirecting to dashboard...");
-      if (body.token) localStorage.setItem("token", body.token);
+if (successDetected) {
+  setErrorMsg(""); // clear errors
+  // show quick success message instead of alert
+  setSuccessMsg("Signup successful! Redirecting to dashboard...");
+  if (body.token) localStorage.setItem("token", body.token);
 
-  // ✅ clear loading state before navigation
-       setLoading(false);
+  // delay navigation slightly for UX
+  setTimeout(() => {
+    navigate("/dashboard");
+  }, 1000);
+} else {
+  setErrorMsg(body.message || "Signup failed. Please try again.");
+}
 
-  // ✅ navigate immediately (faster transition)
-     navigate("/dashboard", { replace: true });
-     return; // stop running any more code
-     }
-       else {
-        setErrorMsg(body.message || "Signup failed. Please try again.");
-        setShowPopup(true);
-      }
     } catch (err) {
       setErrorMsg(
         err.response?.data?.message || err.message || "Server/network error"
       );
-      setShowPopup(true);
     } finally {
       setLoading(false);
     }
   };
 
-  const closePopup = () => {
-    setShowPopup(false);
-    setErrorMsg("");
-    // optionally clear field errors when user closes popup:
-    // setFieldErrors({});
-  };
-
-  // build an array of error messages to show inside popup (field errors first)
-  const popupMessages = [];
-  if (errorMsg) popupMessages.push(errorMsg);
-  Object.keys(fieldErrors).forEach((k) => {
-    if (fieldErrors[k]) popupMessages.push(fieldErrors[k]);
-  });
-
   return (
     <div className="signup-container">
       <div className="signup-box">
-        {/* POPUP OVERLAY */}
-        {showPopup && popupMessages.length > 0 && (
-          <div
-            style={{
-              position: "fixed",
-              inset: 0,
-              zIndex: 9999,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-            onClick={closePopup} // clicking backdrop closes popup
-          >
-            {/* backdrop */}
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                background: "rgba(0,0,0,0.35)",
-              }}
-            />
-            {/* popup card */}
-            <div
-              role="dialog"
-              aria-modal="true"
-              onClick={(e) => e.stopPropagation()}
-              style={{
-                position: "relative",
-                width: "420px",
-                maxWidth: "92%",
-                background: "#fff",
-                borderRadius: 10,
-                boxShadow: "0 10px 30px rgba(0,0,0,0.25)",
-                padding: "18px 18px 14px 18px",
-                zIndex: 10000,
-              }}
-            >
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                <h3 style={{ margin: 0, color: "#b00020" }}>Error</h3>
-                <button
-                  onClick={closePopup}
-                  aria-label="Close"
-                  style={{
-                    background: "transparent",
-                    border: "none",
-                    fontSize: 20,
-                    cursor: "pointer",
-                    lineHeight: 1,
-                  }}
-                >
-                  ×
-                </button>
-              </div>
-
-              <div style={{ maxHeight: 260, overflowY: "auto", paddingRight: 6 }}>
-                {popupMessages.map((m, idx) => (
-                  <div
-                    key={idx}
-                    style={{
-                      color: "#7a0012",
-                      background: "#fff5f6",
-                      borderRadius: 6,
-                      padding: "8px 10px",
-                      marginBottom: 8,
-                      fontSize: 14,
-                    }}
-                  >
-                    {m}
-                  </div>
-                ))}
-              </div>
-
-              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 6 }}>
-                <button
-                  onClick={closePopup}
-                  style={{
-                    border: "none",
-                    padding: "8px 14px",
-                    borderRadius: 6,
-                    background: "#b00020",
-                    color: "#fff",
-                    cursor: "pointer",
-                  }}
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* existing inline error (kept for backward compat) */}
-        {errorMsg && !showPopup && (
+        {errorMsg && (
           <div style={{ color: "red", marginBottom: 10 }}>{errorMsg}</div>
         )}
 
@@ -709,19 +567,21 @@ const validateForm = () => {
           </div>
 
           {/* Email */}
+          
           <div className="field full">
             <div className="emailamg">
-              <label>Email</label>
-              <input
-                className={`input-design2 ${fieldErrors.email ? "input-error" : ""}`}
-                type="email"
-                name="email"
-                placeholder={fieldErrors.email || ""}
-                value={formData.email}
-                onChange={handleChange}
-              />
-            </div>
+            <label>Email</label>
+            <input
+              className={`input-design2 ${fieldErrors.email ? "input-error" : ""}`}
+              type="email"
+              name="email"
+              placeholder={fieldErrors.email || ""}
+              value={formData.email}
+              onChange={handleChange}
+            />
           </div>
+          </div>
+          
 
           {/* Phone */}
           <div className="field half">
@@ -741,18 +601,18 @@ const validateForm = () => {
           {/* GST */}
           <div className="field half length">
             <div className="gstamg">
-              <label className="fst">
-                GST Number<span className="spd">*</span>
-              </label>
-              <input
-                className={`input-design ${fieldErrors.gst ? "input-error" : ""}`}
-                type="text"
-                name="gst"
-                placeholder={fieldErrors.gst || ""}
-                value={formData.gst}
-                onChange={handleChange}
-              />
-            </div>
+            <label className="fst">
+              GST Number<span className="spd">*</span>
+            </label>
+            <input
+              className={`input-design ${fieldErrors.gst ? "input-error" : ""}`}
+              type="text"
+              name="gst"
+              placeholder={fieldErrors.gst || ""}
+              value={formData.gst}
+              onChange={handleChange}
+            />
+          </div>
           </div>
 
           {/* City */}
@@ -788,26 +648,26 @@ const validateForm = () => {
           {/* Password */}
           <div className="field half password-field">
             <div className="password-mange">
-              <label>
-                Password<span className="spd">*</span>
-              </label>
-              <div className="password-wrapper">
-                <input
-                  className={`setting2 ${fieldErrors.password ? "input-error" : ""}`}
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  placeholder={fieldErrors.password || ""}
-                  value={formData.password}
-                  onChange={handleChange}
-                />
-                <span
-                  className="eye-icon"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <FaEyeSlash /> : <FaEye />}
-                </span>
-              </div>
+            <label>
+              Password<span className="spd">*</span>
+            </label>
+            <div className="password-wrapper">
+              <input
+                className={`setting2 ${fieldErrors.password ? "input-error" : ""}`}
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder={fieldErrors.password || ""}
+                value={formData.password}
+                onChange={handleChange}
+              />
+              <span
+                className="eye-icon"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
             </div>
+          </div>
           </div>
 
           {/* Confirm Password */}
@@ -855,16 +715,15 @@ const validateForm = () => {
           </div>
 
           <div className="account">
-            <p className="upper">
-              Already have an account? <Link to="/login">Login</Link>
-            </p>
+          <p className="upper">
+            Already have an account? <Link to="/login">Login</Link>
+          </p>
           </div>
         </form>
       </div>
     </div>
   );
 }
-
 
 
 // ---------------------- DASHBOARD COMPONENT ----------------------
