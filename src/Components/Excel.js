@@ -428,10 +428,16 @@ function Signup() {
   const [errorMsg, setErrorMsg] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
   const [agree, setAgree] = useState(false);
-  const [setSuccessMsg] = useState("");
-
+  const [successMsg, setSuccessMsg] = useState("");
 
   const navigate = useNavigate();
+
+  // hide error toast automatically after 4s
+  useEffect(() => {
+    if (!errorMsg) return;
+    const t = setTimeout(() => setErrorMsg(""), 4000);
+    return () => clearTimeout(t);
+  }, [errorMsg]);
 
   // handle input change
   const handleChange = (e) => {
@@ -447,11 +453,11 @@ function Signup() {
     if (!formData.lastName.trim()) errors.lastName = "Last name required";
     if (!formData.email.trim()) errors.email = "Email required";
     if (!(formData.phone.trim())) {
-     errors.phone = "10 digit phone required";
-}
-    if (!(formData.phone.trim())) {
-     errors.gst = "8 digit gst no. required";
-}
+      errors.phone = "10 digit phone required";
+    }
+    if (!(formData.gst.trim())) {
+      errors.gst = "8 digit gst no. required";
+    }
     if (!formData.city.trim()) errors.city = "City required";
     if (!formData.state.trim()) errors.state = "State required";
     if (!formData.password.trim()) errors.password = "8-15 char password required";
@@ -508,20 +514,20 @@ function Signup() {
         msg.includes("created") ||
         msg.includes("registered");
 
-if (successDetected) {
-  setErrorMsg(""); // clear errors
-  // show quick success message instead of alert
-  setSuccessMsg("Signup successful! Redirecting to dashboard...");
-  if (body.token) localStorage.setItem("token", body.token);
+      if (successDetected) {
+        setErrorMsg(""); // clear errors
+        // show quick success message instead of alert (kept for completeness)
+        setSuccessMsg("Signup successful! Redirecting to dashboard...");
+        if (body.token) localStorage.setItem("token", body.token);
 
-  // delay navigation slightly for UX
-  setTimeout(() => {
-    navigate("/dashboard");
-  }, 1000);
-} else {
-  setErrorMsg(body.message || "Signup failed. Please try again.");
-}
-
+        // delay navigation slightly for UX
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 1000);
+      } else {
+        // show popup toast instead of inline message that moves layout
+        setErrorMsg(body.message || "Signup failed. Please try again.");
+      }
     } catch (err) {
       setErrorMsg(
         err.response?.data?.message || err.message || "Server/network error"
@@ -534,8 +540,27 @@ if (successDetected) {
   return (
     <div className="signup-container">
       <div className="signup-box">
+        {/* TOAST / POPUP: fixed so it doesn't push content (top-right) */}
         {errorMsg && (
-          <div style={{ color: "red", marginBottom: 10 }}>{errorMsg}</div>
+          <div
+            style={{
+              position: "fixed",
+              top: 16,
+              right: 16,
+              maxWidth: 320,
+              background: "#ffe6e6",
+              color: "#a80000",
+              padding: "12px 16px",
+              borderRadius: 8,
+              boxShadow: "0 6px 18px rgba(0,0,0,0.12)",
+              zIndex: 9999,
+              fontWeight: 600,
+            }}
+            role="alert"
+            aria-live="assertive"
+          >
+            {errorMsg}
+          </div>
         )}
 
         <form onSubmit={handleSignup} className="signup-form">
@@ -570,21 +595,19 @@ if (successDetected) {
           </div>
 
           {/* Email */}
-          
           <div className="field full">
             <div className="emailamg">
-            <label>Email</label>
-            <input
-              className={`input-design2 ${fieldErrors.email ? "input-error" : ""}`}
-              type="email"
-              name="email"
-              placeholder={fieldErrors.email || ""}
-              value={formData.email}
-              onChange={handleChange}
-            />
+              <label>Email</label>
+              <input
+                className={`input-design2 ${fieldErrors.email ? "input-error" : ""}`}
+                type="email"
+                name="email"
+                placeholder={fieldErrors.email || ""}
+                value={formData.email}
+                onChange={handleChange}
+              />
+            </div>
           </div>
-          </div>
-          
 
           {/* Phone */}
           <div className="field half">
@@ -604,18 +627,18 @@ if (successDetected) {
           {/* GST */}
           <div className="field half length">
             <div className="gstamg">
-            <label className="fst">
-              GST Number<span className="spd">*</span>
-            </label>
-            <input
-              className={`input-design ${fieldErrors.gst ? "input-error" : ""}`}
-              type="text"
-              name="gst"
-              placeholder={fieldErrors.gst || ""}
-              value={formData.gst}
-              onChange={handleChange}
-            />
-          </div>
+              <label className="fst">
+                GST Number<span className="spd">*</span>
+              </label>
+              <input
+                className={`input-design ${fieldErrors.gst ? "input-error" : ""}`}
+                type="text"
+                name="gst"
+                placeholder={fieldErrors.gst || ""}
+                value={formData.gst}
+                onChange={handleChange}
+              />
+            </div>
           </div>
 
           {/* City */}
@@ -651,26 +674,26 @@ if (successDetected) {
           {/* Password */}
           <div className="field half password-field">
             <div className="password-mange">
-            <label>
-              Password<span className="spd">*</span>
-            </label>
-            <div className="password-wrapper">
-              <input
-                className={`setting2 ${fieldErrors.password ? "input-error" : ""}`}
-                type={showPassword ? "text" : "password"}
-                name="password"
-                placeholder={fieldErrors.password || ""}
-                value={formData.password}
-                onChange={handleChange}
-              />
-              <span
-                className="eye-icon"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
-              </span>
+              <label>
+                Password<span className="spd">*</span>
+              </label>
+              <div className="password-wrapper">
+                <input
+                  className={`setting2 ${fieldErrors.password ? "input-error" : ""}`}
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder={fieldErrors.password || ""}
+                  value={formData.password}
+                  onChange={handleChange}
+                />
+                <span
+                  className="eye-icon"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </span>
+              </div>
             </div>
-          </div>
           </div>
 
           {/* Confirm Password */}
@@ -718,17 +741,15 @@ if (successDetected) {
           </div>
 
           <div className="account">
-          <p className="upper">
-            Already have an account? <Link to="/login">Login</Link>
-          </p>
+            <p className="upper">
+              Already have an account? <Link to="/login">Login</Link>
+            </p>
           </div>
         </form>
       </div>
     </div>
   );
 }
-
-
 
 
 
