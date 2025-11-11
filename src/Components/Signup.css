@@ -13,7 +13,7 @@
 
 .signup-box {
   display: flex;
-  width: 700px !important;
+  width: 670px !important;
   height: 645px;
   border-radius: 15px;
   overflow-y: auto; /* enables vertical scroll */
@@ -28,6 +28,7 @@
   flex: 0.4;
   background: #b00087;
   color: white;
+  height:600px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -448,12 +449,23 @@
 
 
 
+.gstamg{
+  margin-top: -15px;
+}
 
+.emailamg{
+  margin-top: -18px !important;
 
+}
 
+.confirm-pass{
+  font-size: 13px !important;
+}
 
+.password-mange{
+  margin-top: 18px !important;
 
-
+}
 
 
 

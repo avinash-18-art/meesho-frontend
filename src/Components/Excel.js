@@ -556,7 +556,9 @@ function Signup() {
           </div>
 
           {/* Email */}
+          
           <div className="field full">
+            <div className="emailamg">
             <label>Email</label>
             <input
               className={`input-design2 ${fieldErrors.email ? "input-error" : ""}`}
@@ -567,6 +569,8 @@ function Signup() {
               onChange={handleChange}
             />
           </div>
+          </div>
+          
 
           {/* Phone */}
           <div className="field half">
@@ -585,6 +589,7 @@ function Signup() {
 
           {/* GST */}
           <div className="field half length">
+            <div className="gstamg">
             <label>
               GST Number<span className="spd">*</span>
             </label>
@@ -596,6 +601,7 @@ function Signup() {
               value={formData.gst}
               onChange={handleChange}
             />
+          </div>
           </div>
 
           {/* City */}
@@ -630,6 +636,7 @@ function Signup() {
 
           {/* Password */}
           <div className="field half password-field">
+            <div className="password-mange">
             <label>
               Password<span className="spd">*</span>
             </label>
@@ -650,10 +657,11 @@ function Signup() {
               </span>
             </div>
           </div>
+          </div>
 
           {/* Confirm Password */}
           <div className="field half password-field">
-            <label>
+            <label className="confirm-pass">
               Confirm Password<span className="spd">*</span>
             </label>
             <div className="password-wrapper">
@@ -695,9 +703,11 @@ function Signup() {
             </button>
           </div>
 
+          
           <p className="upper">
             Already have an account? <Link to="/login">Login</Link>
           </p>
+          
         </form>
       </div>
     </div>
