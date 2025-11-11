@@ -326,7 +326,8 @@
     max-width: 100%;
     margin: 16px auto;
     border-radius: 12px;
-    overflow: visible;
+    overflow-y: visible;
+    overflow-x: hidden;
   }
 
   /* header */
@@ -341,6 +342,8 @@
     padding: 18px 0;
     text-align: center;
     border-radius: 12px 12px 0 0;
+    height:40px;
+
   }
 
   /* two equal columns layout */
@@ -351,6 +354,7 @@
     padding: 18px;
     align-items: start;
     background-color: #ffe6f0;
+    height:150px;
   }
 
   /* fields that should take full width (like email, submit, checkbox) */
@@ -454,6 +458,33 @@
     font-size: 22px;
     margin-bottom: 8px;
   }
+
+  .gstamg{
+  margin-top: 5px !important;
+ 
+}
+
+.emailamg{
+  margin-top: -12px !important;
+
+}
+
+.confirm-pass{
+  font-size: 13px !important;
+  margin-top: 15px !important;
+}
+
+
+
+.warning{
+  margin-top: -30px !important  ;
+}
+
+.account{
+  margin-top: -30px !important;
+
+
+}
 }
 
 
