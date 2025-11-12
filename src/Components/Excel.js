@@ -549,7 +549,7 @@ function Signup() {
               center: 16,
               maxWidth: 320,
               background: "#ffe6e6",
-              color: "#b00087",
+              color: "#f30505ff",
               padding: "12px 16px",
               borderRadius: 8,
               boxShadow: "0 6px 18px rgba(0,0,0,0.12)",
