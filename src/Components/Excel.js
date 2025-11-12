@@ -548,7 +548,7 @@ function Signup() {
               top: 16,
               center: 16,
               maxWidth: 320,
-              background: "#ffe6e6",
+              background: "white",
               color: "#f30505ff",
               padding: "12px 16px",
               borderRadius: 8,
