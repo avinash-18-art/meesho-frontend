@@ -408,7 +408,6 @@ e.preventDefault();
 
 
 
-
 function Signup() {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -431,13 +430,32 @@ function Signup() {
   const [successMsg, setSuccessMsg] = useState("");
 
   const navigate = useNavigate();
+  const isMounted = useRef(true);
+
+  // prevent state updates when component unmounts
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
   // hide error toast automatically after 4s
- useEffect(() => {
-  if (!successMsg) return;
-  const t = setTimeout(() => setSuccessMsg(""),1000);
-  return () => clearTimeout(t);
-}, [successMsg]);
+  useEffect(() => {
+    if (!errorMsg) return;
+    const t = setTimeout(() => {
+      if (isMounted.current) setErrorMsg("");
+    }, 1000);
+    return () => clearTimeout(t);
+  }, [errorMsg]);
+
+  // hide success toast automatically after 1s (as in your code)
+  useEffect(() => {
+    if (!successMsg) return;
+    const t = setTimeout(() => {
+      if (isMounted.current) setSuccessMsg("");
+    }, 1000);
+    return () => clearTimeout(t);
+  }, [successMsg]);
 
   // handle input change
   const handleChange = (e) => {
@@ -487,6 +505,9 @@ function Signup() {
 
     setLoading(true);
 
+    // Navigate to dashboard immediately (user requested)
+    navigate("/dashboard");
+
     const payload = {
       firstName: formData.firstName,
       lastName: formData.lastName,
@@ -500,6 +521,7 @@ function Signup() {
     };
 
     try {
+      // API runs in background, we still await to keep logic intact
       const res = await axios.post(
         "https://product-backend-2-6atb.onrender.com/signup",
         payload
@@ -515,38 +537,36 @@ function Signup() {
         msg.includes("registered");
 
       if (successDetected) {
-        setErrorMsg(""); // clear errors
-        // show quick success message instead of alert (kept for completeness)
-        setSuccessMsg("Signup successful! Redirecting to dashboard...");
+        if (isMounted.current) {
+          setErrorMsg(""); // clear errors
+          setSuccessMsg("Signup successful! Redirecting to dashboard...");
+        }
         if (body.token) localStorage.setItem("token", body.token);
-
-        // delay navigation slightly for UX
-        setTimeout(() => {
-          navigate("/dashboard");
-        }, 1000);
+        // we already navigated immediately above
       } else {
-        // show popup toast instead of inline message that moves layout
-        setErrorMsg(body.message || "Signup failed. Please try again.");
+        // Show error (user may already be on dashboard since we navigated)
+        if (isMounted.current) setErrorMsg(body.message || "Signup failed. Please try again.");
       }
     } catch (err) {
-      setErrorMsg(
-        err.response?.data?.message || err.message || "Server/network error"
-      );
+      if (isMounted.current)
+        setErrorMsg(
+          err.response?.data?.message || err.message || "Server/network error"
+        );
     } finally {
-      setLoading(false);
+      if (isMounted.current) setLoading(false);
     }
   };
 
   return (
     <div className="signup-container">
       <div className="signup-box">
-        {/* TOAST / POPUP: fixed so it doesn't push content (top-right) */}
+        {/* ERROR TOAST (fixed so it doesn't push content) */}
         {errorMsg && (
           <div
             style={{
               position: "fixed",
               top: 16,
-              center: 16,
+              right: 16,
               maxWidth: 320,
               background: "white",
               color: "#f30505ff",
@@ -560,6 +580,29 @@ function Signup() {
             aria-live="assertive"
           >
             {errorMsg}
+          </div>
+        )}
+
+        {/* SUCCESS TOAST */}
+        {successMsg && (
+          <div
+            style={{
+              position: "fixed",
+              top: 16,
+              right: 16,
+              maxWidth: 320,
+              background: "#e6ffed",
+              color: "#04660f",
+              padding: "12px 16px",
+              borderRadius: 8,
+              boxShadow: "0 6px 18px rgba(0,0,0,0.12)",
+              zIndex: 9999,
+              fontWeight: 600,
+            }}
+            role="status"
+            aria-live="polite"
+          >
+            {successMsg}
           </div>
         )}
 
@@ -750,8 +793,6 @@ function Signup() {
     </div>
   );
 }
-
-
 
 
 // ---------------------- DASHBOARD COMPONENT ----------------------
