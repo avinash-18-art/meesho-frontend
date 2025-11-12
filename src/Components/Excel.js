@@ -406,8 +406,6 @@ e.preventDefault();
 //----signup component -----//
 
 
-
-
 function Signup() {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -426,6 +424,7 @@ function Signup() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
+  const [fieldPopups, setFieldPopups] = useState({}); // { fieldName: message }
   const [agree, setAgree] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
 
@@ -457,11 +456,31 @@ function Signup() {
     return () => clearTimeout(t);
   }, [successMsg]);
 
+  // show a per-field popup for a short time
+  const showFieldPopup = (field, msg, duration = 3000) => {
+    setFieldPopups((prev) => ({ ...prev, [field]: msg }));
+    // clear after duration
+    setTimeout(() => {
+      if (!isMounted.current) return;
+      setFieldPopups((prev) => {
+        const copy = { ...prev };
+        delete copy[field];
+        return copy;
+      });
+    }, duration);
+  };
+
   // handle input change
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrorMsg("");
     setFieldErrors((prev) => ({ ...prev, [e.target.name]: "" }));
+    // also clear popup for that field immediately when user types
+    setFieldPopups((prev) => {
+      const copy = { ...prev };
+      delete copy[e.target.name];
+      return copy;
+    });
   };
 
   // validation - improved checks for phone, gst, password length
@@ -488,7 +507,7 @@ function Signup() {
       errors.phone = "Phone must be exactly 10 digits";
     }
 
-    // gst: exactly 8 digits (per your message). adjust if needed.
+    // gst: exactly 8 digits (per your requirement). adjust if needed.
     const gst = formData.gst.trim();
     const gstRe = /^\d{8}$/;
     if (!gst) {
@@ -532,6 +551,12 @@ function Signup() {
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
+
+      // show a popup for each invalid field so user notices immediately
+      Object.entries(errors).forEach(([field, msg]) => {
+        showFieldPopup(field, msg, 3000);
+      });
+
       return;
     }
 
@@ -587,6 +612,25 @@ function Signup() {
     }
   };
 
+  // small helper styles for popups (inline so you don't need external CSS)
+  const popupStyle = {
+    position: "absolute",
+    left: 0,
+    top: "100%",
+    marginTop: 6,
+    background: "#fff3f3",
+    color: "#c40000",
+    border: "1px solid #f0c0c0",
+    padding: "6px 8px",
+    borderRadius: 6,
+    boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
+    fontSize: 12,
+    zIndex: 999,
+    whiteSpace: "nowrap",
+  };
+
+  const inputContainerStyle = { position: "relative", display: "block" };
+
   return (
     <div className="signup-container">
       <div className="signup-box">
@@ -638,7 +682,7 @@ function Signup() {
 
         <form onSubmit={handleSignup} className="signup-form">
           {/* First Name */}
-          <div className="field half">
+          <div className="field half" style={inputContainerStyle}>
             <label>
               First Name<span className="spd">*</span>
             </label>
@@ -650,10 +694,11 @@ function Signup() {
               value={formData.firstName}
               onChange={handleChange}
             />
+            {fieldPopups.firstName && <div style={popupStyle}>{fieldPopups.firstName}</div>}
           </div>
 
           {/* Last Name */}
-          <div className="field half length">
+          <div className="field half length" style={inputContainerStyle}>
             <label>
               Last Name<span className="spd">*</span>
             </label>
@@ -665,10 +710,11 @@ function Signup() {
               value={formData.lastName}
               onChange={handleChange}
             />
+            {fieldPopups.lastName && <div style={popupStyle}>{fieldPopups.lastName}</div>}
           </div>
 
           {/* Email */}
-          <div className="field full">
+          <div className="field full" style={inputContainerStyle}>
             <div className="emailamg">
               <label>Email</label>
               <input
@@ -679,11 +725,12 @@ function Signup() {
                 value={formData.email}
                 onChange={handleChange}
               />
+              {fieldPopups.email && <div style={popupStyle}>{fieldPopups.email}</div>}
             </div>
           </div>
 
           {/* Phone */}
-          <div className="field half">
+          <div className="field half" style={inputContainerStyle}>
             <label>
               Phone<span className="spd">*</span>
             </label>
@@ -695,10 +742,11 @@ function Signup() {
               value={formData.phone}
               onChange={handleChange}
             />
+            {fieldPopups.phone && <div style={popupStyle}>{fieldPopups.phone}</div>}
           </div>
 
           {/* GST */}
-          <div className="field half length">
+          <div className="field half length" style={inputContainerStyle}>
             <div className="gstamg">
               <label className="fst">
                 GST Number<span className="spd">*</span>
@@ -711,11 +759,12 @@ function Signup() {
                 value={formData.gst}
                 onChange={handleChange}
               />
+              {fieldPopups.gst && <div style={popupStyle}>{fieldPopups.gst}</div>}
             </div>
           </div>
 
           {/* City */}
-          <div className="field half">
+          <div className="field half" style={inputContainerStyle}>
             <label>
               City<span className="spd">*</span>
             </label>
@@ -727,10 +776,11 @@ function Signup() {
               value={formData.city}
               onChange={handleChange}
             />
+            {fieldPopups.city && <div style={popupStyle}>{fieldPopups.city}</div>}
           </div>
 
           {/* State */}
-          <div className="field half length">
+          <div className="field half length" style={inputContainerStyle}>
             <label>
               State<span className="spd">*</span>
             </label>
@@ -742,10 +792,11 @@ function Signup() {
               value={formData.state}
               onChange={handleChange}
             />
+            {fieldPopups.state && <div style={popupStyle}>{fieldPopups.state}</div>}
           </div>
 
           {/* Password */}
-          <div className="field half password-field">
+          <div className="field half password-field" style={inputContainerStyle}>
             <div className="password-mange">
               <label>
                 Password<span className="spd">*</span>
@@ -766,11 +817,12 @@ function Signup() {
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </span>
               </div>
+              {fieldPopups.password && <div style={popupStyle}>{fieldPopups.password}</div>}
             </div>
           </div>
 
           {/* Confirm Password */}
-          <div className="field half password-field">
+          <div className="field half password-field" style={inputContainerStyle}>
             <label className="confirm-pass">
               Confirm Password<span className="spd">*</span>
             </label>
@@ -790,10 +842,13 @@ function Signup() {
                 {showConfirm ? <FaEyeSlash /> : <FaEye />}
               </span>
             </div>
+            {fieldPopups.confirmPassword && (
+              <div style={popupStyle}>{fieldPopups.confirmPassword}</div>
+            )}
           </div>
 
           {/* Checkbox */}
-          <div className="warning">
+          <div className="warning" style={{ position: "relative" }}>
             <p className="prg">
               <input
                 type="checkbox"
@@ -805,6 +860,7 @@ function Signup() {
             {fieldErrors.agree && (
               <p style={{ color: "red", fontSize: "12px" }}>{fieldErrors.agree}</p>
             )}
+            {fieldPopups.agree && <div style={{ ...popupStyle, left: 0 }}>{fieldPopups.agree}</div>}
           </div>
 
           <div className="field full">
@@ -823,7 +879,6 @@ function Signup() {
     </div>
   );
 }
-
 
 // ---------------------- DASHBOARD COMPONENT ----------------------
 function Dashboard() {
