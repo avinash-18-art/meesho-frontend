@@ -433,11 +433,11 @@ function Signup() {
   const navigate = useNavigate();
 
   // hide error toast automatically after 4s
-  useEffect(() => {
-    if (!errorMsg) return;
-    const t = setTimeout(() => setErrorMsg(""), 4000);
-    return () => clearTimeout(t);
-  }, [errorMsg]);
+ useEffect(() => {
+  if (!successMsg) return;
+  const t = setTimeout(() => setSuccessMsg(""),1000);
+  return () => clearTimeout(t);
+}, [successMsg]);
 
   // handle input change
   const handleChange = (e) => {
