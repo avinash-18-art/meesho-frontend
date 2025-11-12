@@ -448,12 +448,12 @@ function Signup() {
     return () => clearTimeout(t);
   }, [errorMsg]);
 
-  // hide success toast automatically after 1s (as in your code)
+  // hide success toast automatically after 1s
   useEffect(() => {
     if (!successMsg) return;
     const t = setTimeout(() => {
       if (isMounted.current) setSuccessMsg("");
-    }, 1000);
+    }, 2000);
     return () => clearTimeout(t);
   }, [successMsg]);
 
@@ -464,30 +464,62 @@ function Signup() {
     setFieldErrors((prev) => ({ ...prev, [e.target.name]: "" }));
   };
 
-  // validation
+  // validation - improved checks for phone, gst, password length
   const validateForm = () => {
     const errors = {};
+
     if (!formData.firstName.trim()) errors.firstName = "First name required";
     if (!formData.lastName.trim()) errors.lastName = "Last name required";
-    if (!formData.email.trim()) errors.email = "Email required";
-    if (!(formData.phone.trim())) {
+
+    if (!formData.email.trim()) {
+      errors.email = "Email required";
+    } else {
+      // basic email format check
+      const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRe.test(formData.email.trim())) errors.email = "Invalid email";
+    }
+
+    // phone: exactly 10 digits
+    const phone = formData.phone.trim();
+    const phoneRe = /^\d{10}$/;
+    if (!phone) {
       errors.phone = "10 digit phone required";
+    } else if (!phoneRe.test(phone)) {
+      errors.phone = "Phone must be exactly 10 digits";
     }
-    if (!(formData.gst.trim())) {
+
+    // gst: exactly 8 digits (per your message). adjust if needed.
+    const gst = formData.gst.trim();
+    const gstRe = /^\d{8}$/;
+    if (!gst) {
       errors.gst = "8 digit gst no. required";
+    } else if (!gstRe.test(gst)) {
+      errors.gst = "GST must be exactly 8 digits";
     }
+
     if (!formData.city.trim()) errors.city = "City required";
     if (!formData.state.trim()) errors.state = "State required";
-    if (!formData.password.trim()) errors.password = "8-15 char password required";
+
+    // password length 8-15
+    const pwd = formData.password;
+    if (!pwd.trim()) {
+      errors.password = "8-15 char password required";
+    } else if (pwd.length < 8 || pwd.length > 15) {
+      errors.password = "Password must be 8 to 15 characters";
+    }
+
     if (!formData.confirmPassword.trim())
       errors.confirmPassword = "Confirm password required";
+
     if (
       formData.password.trim() &&
       formData.confirmPassword.trim() &&
       formData.password !== formData.confirmPassword
     )
       errors.confirmPassword = "Passwords do not match";
+
     if (!agree) errors.agree = "Please agree to terms & conditions";
+
     return errors;
   };
 
@@ -521,7 +553,6 @@ function Signup() {
     };
 
     try {
-      // API runs in background, we still await to keep logic intact
       const res = await axios.post(
         "https://product-backend-2-6atb.onrender.com/signup",
         payload
@@ -542,10 +573,9 @@ function Signup() {
           setSuccessMsg("Signup successful! Redirecting to dashboard...");
         }
         if (body.token) localStorage.setItem("token", body.token);
-        // we already navigated immediately above
       } else {
-        // Show error (user may already be on dashboard since we navigated)
-        if (isMounted.current) setErrorMsg(body.message || "Signup failed. Please try again.");
+        if (isMounted.current)
+          setErrorMsg(body.message || "Signup failed. Please try again.");
       }
     } catch (err) {
       if (isMounted.current)
