@@ -509,11 +509,11 @@ function Signup() {
 
     // gst: exactly 8 digits (per your requirement). adjust if needed.
     const gst = formData.gst.trim();
-    const gstRe = /^\d{8}$/;
+    const gstRe = /^\d{15}$/;
     if (!gst) {
-      errors.gst = "8 digit gst no. required";
+      errors.gst = "15 digit gst no. required";
     } else if (!gstRe.test(gst)) {
-      errors.gst = "GST must be exactly 8 digits";
+      errors.gst = "GST must be exactly 15 digits";
     }
 
     if (!formData.city.trim()) errors.city = "City required";
