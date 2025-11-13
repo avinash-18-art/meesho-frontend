@@ -9,9 +9,7 @@
   
   font-family: "Poppins", sans-serif;
   padding: 20px;
-}
-
-.signup-box {
+}.signup-box {
   display: flex;
   width: 650px !important;
   height: 635px;
@@ -460,7 +458,7 @@
   }
 
   .gstamg{
-  margin-top: 5px !important;
+  margin-top: 1px !important;
  
 }
 
@@ -471,7 +469,7 @@
 
 .confirm-pass{
   font-size: 13px !important;
-  margin-top: 14px !important;
+  margin-top: 19px !important;
 }
 
 
@@ -496,7 +494,7 @@
 
 
 .gstamg{
-  margin-top: -15px;
+  margin-top: -18px;
 }
 
 .emailamg{

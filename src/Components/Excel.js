@@ -823,6 +823,7 @@ function Signup() {
 
           {/* Confirm Password */}
           <div className="field half password-field" style={inputContainerStyle}>
+            <div>
             <label className="confirm-pass">
               Confirm Password<span className="spd">*</span>
             </label>
@@ -845,6 +846,7 @@ function Signup() {
             {fieldPopups.confirmPassword && (
               <div style={popupStyle}>{fieldPopups.confirmPassword}</div>
             )}
+          </div>
           </div>
 
           {/* Checkbox */}
