@@ -6,9 +6,9 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh !important;
-  
   font-family: "Poppins", sans-serif;
   padding: 20px;
+
 }.signup-box {
   display: flex;
   width: 650px !important;
@@ -565,4 +565,114 @@
     opacity: 0;
     transform: translate(-50%, -20px);
   }
+}
+
+
+/* tablet view */ 
+
+@media (min-width: 600px) and (max-width: 1024px) {
+  .signup-box {
+    width: 92vw !important;    /* fluid width */
+    max-width: 720px;         /* cap it for larger tablets */
+    height: auto;             /* let content determine height */
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+  }
+
+  /* keep left panel but reduce padding/size */
+  .signup-box::before {
+    font-size: 34px;
+    padding: 28px;
+    flex: 0.35;
+    height: auto;
+    min-height: 420px;
+  }
+
+  /* right form takes remaining space */
+  .signup-form,
+  .otp-box {
+    flex: 0.65;
+    padding: 28px 32px;
+  }
+
+  /* switch to single-column grid for better tablet portrait */
+  .signup-form {
+    grid-template-columns: 1fr; /* single column */
+    gap: 14px;
+  }
+
+  /* full width inputs */
+  .field.full, .btn-primary {
+    grid-column: auto;
+    width: 100%;
+  }
+
+  /* make input parts fluid */
+  .input-part,
+  .input-part2,
+  .input-design,
+  .input-design2 {
+    width: 100% !important;
+    max-width: none;
+  }
+
+  /* position eye icons inside field on the right */
+  .password-wrapper {
+    position: relative;
+  }
+  .eye-icon, .eye-icon2 {
+    position: absolute;
+    right: 14px;              /* inside input */
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  /* shrink headings a bit */
+  .signup-box h2 { font-size: 24px; }
+  .signup-box::before { font-size: 32px; }
+
+  /* terms: allow wrapping on tablet if needed */
+  .terms {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  /* small tweaks */
+  .btn-primary {
+    margin-top: 6px !important;
+    padding: 12px;
+  }
+
+  .gstamg{
+  margin-top: -18px;
+}
+
+.emailamg{
+  margin-top: -12px !important;
+
+}
+
+.confirm-pass{
+  font-size: 13px !important;
+}
+
+.password-mange{
+  margin-top: 17px !important;
+
+}
+
+.warning{
+  margin-top: -30px !important  ;
+}
+
+.account{
+  margin-top: -30px !important;
+
+
+}
+
+.fst{
+  margin-right: -30px !important;
+}
 }
